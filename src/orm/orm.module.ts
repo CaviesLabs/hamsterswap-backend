@@ -23,6 +23,7 @@ import {
 } from './model/extended-session.model';
 import { PolicyLockModel, PolicyLockSchema } from './model/policy-lock.model';
 import { EnabledIdpModel, EnabledIdpSchema } from './model/enabled-idp.model';
+import { PrismaService } from './prisma.service';
 
 @Module({
   /**
@@ -42,11 +43,13 @@ import { EnabledIdpModel, EnabledIdpSchema } from './model/enabled-idp.model';
       { name: EnabledIdpModel.name, schema: EnabledIdpSchema },
     ]),
   ],
+  providers: [PrismaService],
   exports: [
     /**
      * @dev Need to re-export again the Mongoose module for re-use in other modules.
      */
     MongooseModule,
+    PrismaService,
   ],
 })
 export class OrmModule {}
