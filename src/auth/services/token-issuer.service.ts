@@ -131,9 +131,7 @@ export class TokenIssuerService {
    * @dev The function to generate access jwt.
    * @param config
    */
-  private async grantPreMatureAccessToken(
-    config: AccessTokenConfig,
-  ): Promise<string> {
+  async grantPreMatureAccessToken(config: AccessTokenConfig): Promise<string> {
     /**
      * @dev Should wrap whole process in a transaction.
      */

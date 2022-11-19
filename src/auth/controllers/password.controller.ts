@@ -23,7 +23,6 @@ import {
   KeycloakAuthSession,
   KeycloakAuthStrategy,
 } from '../strategies/keycloak-auth.strategy';
-import { EventType } from '../../audit/entities/trail.entity';
 import { UpdatePasswordDto } from '../dto/update-password.dto';
 import { UtilsProvider } from '../../providers/utils.provider';
 import { TokenSetEntity } from '../entities/token-set.entity';
@@ -43,7 +42,6 @@ import {
 import { ResetPasswordDto } from '../dto/reset-password.dto';
 import { PrematureAuthSession } from '../strategies/premature-auth.strategy';
 import { PasswordService } from '../services/password.service';
-import { AuditLoggerContextMap } from '../../audit/audit-logger.service';
 import { AuthenticationService } from '../services/authentication.service';
 import { CreatePasswordDto } from '../dto/create-password.dto';
 import { AuthSessionService } from '../services/auth-session.service';
@@ -56,7 +54,6 @@ export class PasswordController {
      * @dev Inject services
      */
     private readonly passwordService: PasswordService,
-    private readonly auditLoggerContextMap: AuditLoggerContextMap,
     private readonly authService: AuthenticationService,
     private readonly sessionService: AuthSessionService,
   ) {}
@@ -76,18 +73,12 @@ export class PasswordController {
   })
   @ApiBearerAuth('jwt')
   @UseGuards(AuthGuard(KeycloakAuthStrategy.key))
-  @SetMetadata(EventType, EventType.ACCOUNT_UPDATE_PASSWORD)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('/update')
   public async updatePassword(
     @Request() req,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ): Promise<void> {
-    /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
     /**
      * @dev Extract session.
      */
@@ -118,18 +109,7 @@ export class PasswordController {
     /**
      * @dev Update new password.
      */
-    const result = await this.passwordService.updatePassword(
-      user.sub,
-      updatePasswordDto,
-    );
-    /**
-     * @dev Push audit event
-     */
-    await auditLogger.log({
-      eventName: 'Password update succeeded',
-      additionalEventData: { email: user.email },
-    });
-    return result;
+    return this.passwordService.updatePassword(user.sub, updatePasswordDto);
   }
 
   /**
@@ -146,7 +126,6 @@ export class PasswordController {
     status: HttpStatus.NOT_FOUND,
     description: 'Email is not existed.',
   })
-  @SetMetadata(EventType, EventType.ACCOUNT_FORGOT_PASSWORD)
   @HttpCode(HttpStatus.CREATED)
   @Post('/reset/request')
   public async requestResetPassword(
@@ -154,23 +133,11 @@ export class PasswordController {
     @Body() requestResetPasswordDto: RequestResetPasswordDto,
   ): Promise<void> {
     /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
-    /**
      * @dev Calling request password session service.
      */
     await this.passwordService.requestResetPasswordSession(
       requestResetPasswordDto.email,
     );
-    /**
-     * @dev Push audit event
-     */
-    await auditLogger.log({
-      eventName: 'Request reset password succeeded',
-      additionalEventData: { email: requestResetPasswordDto.email },
-    });
   }
 
   /**
@@ -199,18 +166,12 @@ export class PasswordController {
   @SetMetadata('grantType', [GrantType.Account])
   @SetMetadata('resource', [AllowedResource.ACCOUNT])
   @SetMetadata('scopes', [PreMatureScope.ResetPassword])
-  @SetMetadata(EventType, EventType.ACCOUNT_FORGOT_PASSWORD)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('/reset/confirm')
   public async resetPassword(
     @Request() req,
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<void> {
-    /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
     /**
      * @dev Extract session.
      */
@@ -228,13 +189,6 @@ export class PasswordController {
       await this.sessionService.deleteAllSessions(user.id);
     }
 
-    /**
-     * @dev Push audit event
-     */
-    await auditLogger.log({
-      eventName: 'Reset password succeeded',
-      additionalEventData: { email: user.email },
-    });
     /**
      * @dev Delete old session immediately after reset password successfully.
      */
@@ -254,18 +208,12 @@ export class PasswordController {
   })
   @ApiBearerAuth('jwt')
   @UseGuards(AuthGuard(KeycloakAuthStrategy.key))
-  @SetMetadata(EventType, EventType.ACCOUNT_CREATE_PASSWORD)
   @HttpCode(HttpStatus.CREATED)
   @Post('/create')
   public async createPassword(
     @Request() req,
     @Body() body: CreatePasswordDto,
   ): Promise<void> {
-    /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
     /**
      * @dev Extract session.
      */
@@ -275,10 +223,5 @@ export class PasswordController {
      * @dev Create first password
      */
     await this.passwordService.createPassword(user.sub, body);
-
-    /**
-     * @dev Push audit event
-     */
-    auditLogger.log({ eventName: 'Create first password succeeded' });
   }
 }

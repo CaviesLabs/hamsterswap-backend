@@ -23,8 +23,6 @@ import {
   Role,
 } from '../guards/keycloak-account-resource-access-roles.guard';
 import { ConfirmTwoFactorsDto } from '../dto/2fa-confirm.dto';
-import { AuditLoggerContextMap } from '../../audit/audit-logger.service';
-import { EventType } from '../../audit/entities/trail.entity';
 import { TwoFactorsService } from '../services/two-factor.service';
 
 /**
@@ -37,12 +35,8 @@ export class TwoFactorsController {
    * @dev Constructor that initializes AuthController.s
    * @param authService
    * @param twoFactorsService
-   * @param auditLoggerContextMap
    */
-  constructor(
-    private readonly twoFactorsService: TwoFactorsService,
-    private readonly auditLoggerContextMap: AuditLoggerContextMap,
-  ) {}
+  constructor(private readonly twoFactorsService: TwoFactorsService) {}
 
   /**
    * @dev Request 2 factors code.
@@ -81,17 +75,11 @@ export class TwoFactorsController {
     KeycloakAccountResourceAccessRolesGuard,
   )
   @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
-  @SetMetadata(EventType, EventType.ACCOUNT_REQUEST_2FA)
   @HttpCode(HttpStatus.CREATED)
   @Post('/request')
   public async request2FA(
     @Request() req,
   ): Promise<{ secret: string; base64QrCode: string }> {
-    /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
     /**
      * @dev Extract session.
      */
@@ -101,11 +89,6 @@ export class TwoFactorsController {
      * @dev Get result.
      */
     const result = await this.twoFactorsService.request2FA(user);
-
-    /**
-     * @dev Push audit event
-     */
-    await auditLogger.log({ eventName: 'Request 2FA succeeded' });
 
     /**
      * @dev Return response
@@ -145,17 +128,11 @@ export class TwoFactorsController {
   )
   @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
   @HttpCode(HttpStatus.NO_CONTENT)
-  @SetMetadata(EventType, EventType.ACCOUNT_CONFIRM_2FA)
   @Post('/confirm')
   public async confirm2FA(
     @Request() req,
     @Body() confirmTwoFactorsDto: ConfirmTwoFactorsDto,
   ): Promise<void> {
-    /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
     /**
      * @dev Extract session.
      */
@@ -168,11 +145,6 @@ export class TwoFactorsController {
       user.sub,
       confirmTwoFactorsDto.token,
     );
-
-    /**
-     * @dev Push audit event
-     */
-    await auditLogger.log({ eventName: 'Confirm 2FA succeeded' });
 
     /**
      * @dev Return response

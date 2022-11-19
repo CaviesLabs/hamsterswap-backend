@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER } from '@nestjs/core';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -11,9 +11,6 @@ import { getMemoryServerMongoUri } from './helper';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RegistryProvider } from './providers/registry.provider';
-import { AuditModule } from './audit/audit.module';
-import { AuditGuard } from './audit/audit.guard';
-import { AuditActivityInterceptor } from './audit/audit-activity.interceptor';
 import { AllExceptionsFilter } from './exception.filter';
 
 @Module({
@@ -66,10 +63,6 @@ import { AllExceptionsFilter } from './exception.filter';
       },
     }),
     /**
-     * @dev Import Audit module
-     */
-    AuditModule,
-    /**
      * @dev Import other modules.
      */
     AuthModule,
@@ -85,14 +78,6 @@ import { AllExceptionsFilter } from './exception.filter';
    */
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: AuditGuard,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: AuditActivityInterceptor,
-    },
     {
       provide: APP_FILTER,
       useClass: AllExceptionsFilter,

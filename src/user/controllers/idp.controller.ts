@@ -23,8 +23,6 @@ import {
   CommonApiResponse,
   CommonResponse,
 } from '../../api-docs/api-response.decorator';
-import { AuditLoggerContextMap } from '../../audit/audit-logger.service';
-import { EventType } from '../../audit/entities/trail.entity';
 import { TokenSetEntity } from '../../auth/entities/token-set.entity';
 import {
   KeycloakAccountResourceAccessRolesGuard,
@@ -55,7 +53,6 @@ export class IdpController {
   constructor(
     private readonly idpResourceService: IdpResourceService,
     private readonly idpAuthService: IdpAuthService,
-    private readonly auditLoggerContextMap: AuditLoggerContextMap,
   ) {}
 
   /**
@@ -148,7 +145,6 @@ export class IdpController {
     AuthGuard(KeycloakAuthStrategy.key),
     KeycloakAccountResourceAccessRolesGuard,
   )
-  @SetMetadata(EventType, EventType.IDP_LINK)
   @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put('/:provider/link')
@@ -163,31 +159,15 @@ export class IdpController {
     const { user } = req.user as KeycloakAuthSession;
 
     /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
-    /**
      * @dev Link Identity
      * - only return Unauthorized if error
      */
     return new UtilsProvider().overrideErrorWrap(
-      async () => {
-        await this.idpResourceService.link(IdpMapName[params.provider], {
+      async () =>
+        this.idpResourceService.link(IdpMapName[params.provider], {
           userId: user.sub,
           base64Signature: payload.base64Signature,
-        });
-
-        /**
-         * @dev Push audit event
-         */
-        await auditLogger.log({
-          eventName: 'Link Identity succeeded',
-          additionalEventData: {
-            provider: IdpMapName[params.provider],
-          },
-        });
-      },
+        }),
       {
         exceptionClass: UnauthorizedException,
       },
@@ -210,7 +190,6 @@ export class IdpController {
     AuthGuard(KeycloakAuthStrategy.key),
     KeycloakAccountResourceAccessRolesGuard,
   )
-  @SetMetadata(EventType, EventType.IDP_UNLINK)
   @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put('/:provider/unlink')
@@ -219,11 +198,6 @@ export class IdpController {
     @Param() params: IdpParamsMapping,
     @Body() payload: IdpUnlinkPayload,
   ): Promise<void> {
-    /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
     /**
      * @dev Extract user from request session.
      */
@@ -252,14 +226,6 @@ export class IdpController {
         await this.idpResourceService.unlink(IdpMapName[params.provider], {
           userId: user.sub,
           enabledIdpId: payload.enabledIdpId,
-        });
-
-        /**
-         * @dev Push audit event
-         */
-        await auditLogger.log({
-          eventName: 'Unlink Identity succeeded',
-          additionalEventData: { provider: IdpMapName[params.provider] },
         });
       },
       {

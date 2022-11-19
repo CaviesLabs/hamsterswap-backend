@@ -16,7 +16,6 @@ import {
   TwoFactorsModel,
   TwoFactorsSchema,
 } from './model/auth-two-factors.model';
-import { TrailModel, TrailSchema } from './model/trail.model';
 import {
   ExtendedSessionModel,
   ExtendedSessionSchema,
@@ -37,7 +36,6 @@ import { PrismaService } from './prisma.service';
       { name: AuthSessionModel.name, schema: AuthSessionSchema },
       { name: AuthChallengeModel.name, schema: AuthChallengeSchema },
       { name: TwoFactorsModel.name, schema: TwoFactorsSchema },
-      { name: TrailModel.name, schema: TrailSchema },
       { name: ExtendedSessionModel.name, schema: ExtendedSessionSchema },
       { name: PolicyLockModel.name, schema: PolicyLockSchema },
       { name: EnabledIdpModel.name, schema: EnabledIdpSchema },

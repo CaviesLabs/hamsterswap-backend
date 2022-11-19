@@ -14,14 +14,12 @@ import {
   ExtendedSessionDocument,
   ExtendedSessionModel,
 } from '../../orm/model/extended-session.model';
-import { KeycloakAdminProvider } from '../../providers/federated-users/keycloak-admin.provider';
 import { TokenIssuerService } from '../services/token-issuer.service';
 import { UserService } from '../../user/services/user.service';
 import { AuthSessionService } from '../services/auth-session.service';
 import { AvailableIdpResourceName } from '../../providers/idp/identity-provider.interface';
 import { EvmWalletAuthenticator } from './idp/evm-wallet-auth.authenticator';
 import { IdpResourceBuilder } from '../../user/factories/idp-resource.builder';
-import { GoogleAuthenticator } from './idp/google-auth.authenticator';
 
 /**
  * @dev Define IdpAuthService interface.
@@ -62,10 +60,6 @@ export class IdpAuthBuilder {
     private readonly ExtendedSessionDocument: Model<ExtendedSessionDocument>,
 
     /**
-     * @dev Inject providers
-     */
-    private readonly keycloakAdmin: KeycloakAdminProvider,
-    /**
      * @dev Inject services
      */
     private readonly idpResourceBuilder: IdpResourceBuilder,
@@ -87,25 +81,12 @@ export class IdpAuthBuilder {
         return new EvmWalletAuthenticator(
           this.EnabledIdpDocument,
           this.ExtendedSessionDocument,
-          this.keycloakAdmin,
           this.idpResourceBuilder.getIdpResource(
             AvailableIdpResourceName.EVMWallet,
           ),
           this.tokenIssuer,
           this.userService,
           this.sessionService,
-        );
-      case AvailableIdpResourceName.Google:
-        return new GoogleAuthenticator(
-          this.EnabledIdpDocument,
-          this.ExtendedSessionDocument,
-          this.keycloakAdmin,
-          this.idpResourceBuilder.getIdpResource(
-            AvailableIdpResourceName.Google,
-          ),
-          this.tokenIssuer,
-          this.sessionService,
-          this.userService,
         );
     }
 

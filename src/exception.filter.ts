@@ -15,8 +15,6 @@ import { errors } from 'openid-client';
 import { Socket } from 'socket.io';
 import { FastifyRequest, FastifyReply } from 'fastify';
 
-import { AuditLoggerContextMap } from './audit/audit-logger.service';
-
 interface IError {
   statusCode: number | string;
   message: string;
@@ -163,43 +161,13 @@ class ExceptionResponseBuilder {
  */
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  constructor(private readonly contextMap: AuditLoggerContextMap) {}
   catch(exception: InternalServerErrorException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
-    const request = ctx.getRequest<FastifyRequest>();
-
-    /**
-     * @dev Initialize audit log instance
-     */
-    const auditLogger = this.contextMap.getOrCreate(request.id);
 
     /**
      * @dev response builder
      */
     const error = new ExceptionResponseBuilder(host).detectException(exception);
-
-    /**
-     * @dev catch method must be no async
-     */
-    (async () => {
-      /**
-       * @dev Log the exception
-       */
-      await auditLogger.log({
-        eventName: `HttpException: ${error.error}`,
-        errorCode: String(error.statusCode),
-        errorMessage: String(error.message),
-        additionalEventData: {
-          requestBody: request.body,
-          requestHeader: request.headers,
-        },
-      });
-
-      /**
-       * @dev Last called point, should clean up
-       */
-      this.contextMap.cleanup(request.id);
-    })();
 
     /**
      * @dev Return response
@@ -214,7 +182,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
  */
 @Catch()
 export class AllWsExceptionsFilter extends BaseWsExceptionFilter {
-  constructor(private readonly contextMap: AuditLoggerContextMap) {
+  constructor() {
     super();
   }
 
@@ -226,33 +194,6 @@ export class AllWsExceptionsFilter extends BaseWsExceptionFilter {
      * @dev response builder
      */
     const error = new ExceptionResponseBuilder(host).detectException(exception);
-
-    /**
-     * @dev Initialize audit log instance
-     */
-    const auditLogger = this.contextMap.getOrCreate(socket.id);
-
-    /**
-     * @dev catch method must be no async
-     */
-    (async () => {
-      /**
-       * @dev Log the exception
-       */
-      await auditLogger.log({
-        eventName: `WsException: ${error.error}`,
-        errorCode: String(error.statusCode),
-        errorMessage: String(error.message),
-        additionalEventData: {
-          requestBody: socket.data,
-          requestHeaders: socket.handshake.headers,
-        },
-      });
-      /**
-       * @dev Last called point, should clean up
-       */
-      this.contextMap.cleanup(socket.id);
-    })();
 
     /**
      * @dev Return response

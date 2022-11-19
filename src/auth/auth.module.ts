@@ -36,7 +36,6 @@ import { KeycloakClientAuthStrategy } from './strategies/keycloak-client-auth.st
 import { TwoFactorsController } from './controllers/2fa-auth.controlller';
 import { NetworkProvider } from '../providers/network.provider';
 import { RegistryProvider } from '../providers/registry.provider';
-import { AuditModule } from '../audit/audit.module';
 import { PasswordService } from './services/password.service';
 import { PermissionService } from './services/permission.service';
 import { AccountVerificationService } from './services/account-verification.service';
@@ -98,7 +97,6 @@ import { IdpAuthService } from './services/idp-auth.service';
         return options;
       },
     }),
-    AuditModule,
     AccountPolicyModule,
   ],
   providers: [

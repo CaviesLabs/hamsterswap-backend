@@ -39,8 +39,6 @@ import {
   KeycloakAccountResourceAccessRolesGuard,
   Role,
 } from '../../auth/guards/keycloak-account-resource-access-roles.guard';
-import { AuditLoggerContextMap } from '../../audit/audit-logger.service';
-import { EventType } from '../../audit/entities/trail.entity';
 
 /**
  * @dev Declare user controller, handles profile operations.
@@ -49,13 +47,7 @@ import { EventType } from '../../audit/entities/trail.entity';
 @ApiBearerAuth('jwt')
 @Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    /**
-     * @dev inject audit logger
-     */
-    private readonly auditLoggerContextMap: AuditLoggerContextMap,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   /**
    * @dev Declare endpoint for getting profile.
@@ -107,7 +99,6 @@ export class UserController {
     AuthGuard(KeycloakAuthStrategy.key),
     KeycloakAccountResourceAccessRolesGuard,
   )
-  @SetMetadata(EventType, EventType.ACCOUNT_UPDATE_PROFILE)
   @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
   @Patch('/profile')
   @HttpCode(HttpStatus.OK)
@@ -116,10 +107,6 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-    /**
      * @dev Extract user from request session.
      */
     const { token } = req.user as KeycloakAuthSession;
@@ -127,21 +114,7 @@ export class UserController {
     /**
      * @dev Update profile and return updated profile.
      */
-    return this.userService
-      .updateUserProfile(token, updateUserDto)
-      .then(async (r) => {
-        /**
-         * @dev Log actions
-         */
-        await auditLogger.log({
-          eventName: 'Update profile succeeded',
-          additionalEventData: {
-            requestPayload: updateUserDto,
-          },
-        });
-
-        return r;
-      });
+    return this.userService.updateUserProfile(token, updateUserDto);
   }
 
   /**
@@ -183,7 +156,6 @@ export class UserController {
     KeycloakAccountResourceAccessRolesGuard,
   )
   @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
-  @SetMetadata(EventType, EventType.ACCOUNT_UPDATE_AVATAR)
   @Post('/profile/avatar/upload')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(
@@ -196,11 +168,6 @@ export class UserController {
     @Request() req,
   ) {
     /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
-    /**
      * @dev Extract user from request session.
      */
     const { token } = req.user as KeycloakAuthSession;
@@ -208,15 +175,6 @@ export class UserController {
     /**
      * @dev Upload and update avatar, return updated profile.
      */
-    return this.userService.uploadAvatar(token, files[0]).then(async (r) => {
-      /**
-       * @dev Log actions
-       */
-      await auditLogger.log({
-        eventName: 'Update avatar succeeded',
-      });
-
-      return r;
-    });
+    return this.userService.uploadAvatar(token, files[0]);
   }
 }

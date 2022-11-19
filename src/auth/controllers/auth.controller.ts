@@ -17,8 +17,6 @@ import { AuthGuard } from '@nestjs/passport';
  * @dev Import deps
  */
 import { AuthenticationService } from '../services/authentication.service';
-import { EmailLoginDto } from '../dto/email-login.dto';
-import { EmailSignUpDto } from '../dto/email-signup.dto';
 import { RefreshTokenDto } from '../dto/refresh-token.dto';
 import { TokenSetEntity } from '../entities/token-set.entity';
 import {
@@ -32,8 +30,6 @@ import {
   Role,
 } from '../guards/keycloak-account-resource-access-roles.guard';
 import { RequestWalletPermissionDto } from '../dto/request-wallet-permission.dto';
-import { AuditLoggerContextMap } from '../../audit/audit-logger.service';
-import { EventType } from '../../audit/entities/trail.entity';
 import {
   CommonApiResponse,
   CommonResponse,
@@ -62,7 +58,6 @@ export class AuthController {
    * @param sessionService
    * @param permissionService
    * @param tokenIssuerService
-   * @param auditLoggerContextMap
    * @param otpService
    */
   constructor(
@@ -71,124 +66,9 @@ export class AuthController {
     private readonly sessionService: AuthSessionService,
     private readonly permissionService: PermissionService,
     private readonly tokenIssuerService: TokenIssuerService,
-    private readonly auditLoggerContextMap: AuditLoggerContextMap,
     private readonly otpService: OtpService,
     private readonly authChallengeService: AuthChallengeService,
   ) {}
-
-  /**
-   * @dev Signup endpoint declaration.
-   * @param req
-   * @param body
-   */
-  @CommonApiResponse(
-    CommonResponse.UNAUTHORIZED_SESSION,
-    CommonResponse.WRONG_FIELD_FORMATS,
-  )
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Signed user up successfully',
-    type: TokenSetEntity,
-  })
-  @SetMetadata(EventType, EventType.ACCOUNT_REGISTRATION)
-  @HttpCode(HttpStatus.CREATED)
-  @Post('/sign-up')
-  public async signUp(
-    @Request() req,
-    @Body() body: EmailSignUpDto,
-  ): Promise<TokenSetEntity> {
-    /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
-    /**
-     * @dev check policy lock for:
-     * - maximum invalid OTP 5 times/hour (default)
-     */
-    await this.otpPolicyService.mustNotOverInvalidEmailOtpLimit(body.email);
-
-    try {
-      /**
-       * @dev verify email OTP
-       */
-      await this.otpService.verifyOTPSession(body.email, body.token);
-    } catch (e) {
-      /**
-       * @dev increase invalid OTP counter
-       */
-      await this.otpPolicyService.countInvalidEmailOtp(body.email);
-      throw e;
-    }
-
-    /**
-     * @dev Refresh token. But need to override error and raise unauthorized error only.
-     */
-    return new UtilsProvider().overrideErrorWrap<TokenSetEntity>(
-      async () => {
-        const result = this.authService.signUpUser(body);
-        /**
-         * @dev Push audit event
-         */
-        await auditLogger.log({
-          eventName: 'Signup succeeded',
-          additionalEventData: { email: body.email },
-        });
-        return result;
-      },
-      {
-        exceptionClass: UnauthorizedException,
-      },
-    );
-  }
-
-  /**
-   * @dev Login endpoint declaration.
-   * @param req
-   * @param loginDto
-   */
-  @CommonApiResponse(CommonResponse.WRONG_FIELD_FORMATS)
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Signed in successfully',
-    type: TokenSetEntity,
-  })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Wrong email/password format.',
-  })
-  @SetMetadata(EventType, EventType.ACCOUNT_SIGNIN)
-  @HttpCode(HttpStatus.CREATED)
-  @Post('/sign-in')
-  public async signIn(
-    @Request() req,
-    @Body() loginDto: EmailLoginDto,
-  ): Promise<TokenSetEntity> {
-    /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
-    /**
-     * @dev Refresh token. But need to override error and raise unauthorized error only.
-     */
-    return new UtilsProvider().overrideErrorWrap<TokenSetEntity>(
-      async () => {
-        const result = await this.authService.signInUser(loginDto);
-        /**
-         * @dev Push audit event
-         */
-        await auditLogger.log({
-          eventName: 'Signin succeeded',
-          additionalEventData: { email: loginDto.email },
-        });
-        return result;
-      },
-      {
-        exceptionClass: UnauthorizedException,
-      },
-    );
-  }
 
   /**
    * @dev Logout from all sessions.
@@ -303,18 +183,12 @@ export class AuthController {
     KeycloakAccountResourceAccessRolesGuard,
   )
   @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
-  @SetMetadata(EventType, EventType.ACCOUNT_REQUEST_WALLET_PERMISSION)
   @HttpCode(HttpStatus.CREATED)
   @Post('/permission/wallet/request')
   public async requestWalletPermission(
     @Request() req,
     @Body() requestWalletPermissionDto: RequestWalletPermissionDto,
   ): Promise<TokenSetEntity> {
-    /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
     /**
      * @dev Extract session.
      */
@@ -327,15 +201,6 @@ export class AuthController {
       token,
       requestWalletPermissionDto.walletScope,
     );
-    /**
-     * @dev Push audit event
-     */
-    await auditLogger.log({
-      eventName: 'Request wallet permission succeeded',
-      additionalEventData: {
-        walletScope: requestWalletPermissionDto.walletScope,
-      },
-    });
 
     /**
      * @dev Return response

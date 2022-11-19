@@ -1,4 +1,3 @@
-import { UserQuery } from '@keycloak/keycloak-admin-client/lib/resources/users';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { plainToInstance } from 'class-transformer';
@@ -146,56 +145,10 @@ export class PolicyLockService {
     );
 
     /**
-     * @dev get the related user if exists
-     */
-    const belongUserId = await this.getRelatedKeycloakUserId(target, type);
-
-    /**
      * @dev map belongUserId and return
      */
     return locks.map((lock) =>
-      plainToInstance(LockStatusEntity, { ...lock.toObject(), belongUserId }),
+      plainToInstance(LockStatusEntity, lock.toObject()),
     );
-  }
-
-  /**
-   * @dev retrieve related userId if exists
-   * @param target lock target
-   * @param type lock type
-   * @returns userId if exists
-   */
-  private async getRelatedKeycloakUserId(
-    target: string,
-    type: LockType,
-  ): Promise<string | undefined> {
-    /**
-     * @dev build the filter
-     */
-    const filter: UserQuery = {};
-    switch (type) {
-      /**
-       * @dev by email
-       */
-      case LockType.EMAIL:
-        filter.email = target;
-        break;
-      /**
-       * @dev by username
-       */
-      case LockType.USER_SUB:
-        filter.username = target;
-        break;
-      /**
-       * @dev if target is other type, no need to get user (alway not found)
-       */
-      default:
-        return;
-    }
-
-    const belongUser = await this.keycloakAdminProvider.instance.users.find(
-      filter,
-    );
-
-    return belongUser[0]?.id;
   }
 }

@@ -23,8 +23,6 @@ import {
   KeycloakAccountResourceAccessRolesGuard,
   Role,
 } from '../guards/keycloak-account-resource-access-roles.guard';
-import { AuditLoggerContextMap } from '../../audit/audit-logger.service';
-import { EventType } from '../../audit/entities/trail.entity';
 import { AuthSessionService } from '../services/auth-session.service';
 import { ExtendedSessionDocument } from '../../orm/model/extended-session.model';
 import { ExtendedSessionEntity } from '../entities/extended-session.entity';
@@ -38,12 +36,8 @@ export class AuthSessionController {
   /**
    * @dev Constructor that initializes AuthController.s
    * @param sessionService
-   * @param auditLoggerContextMap
    */
-  constructor(
-    private readonly sessionService: AuthSessionService,
-    private readonly auditLoggerContextMap: AuditLoggerContextMap,
-  ) {}
+  constructor(private readonly sessionService: AuthSessionService) {}
 
   /**
    * @dev Remove a sessions
@@ -72,18 +66,12 @@ export class AuthSessionController {
     KeycloakAccountResourceAccessRolesGuard,
   )
   @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
-  @SetMetadata(EventType, EventType.SESSION_REMOVE)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
   public async endSession(
     @Request() req,
     @Param('id') extendedSessionId: string,
   ): Promise<void> {
-    /**
-     * @dev get audit logger instance
-     */
-    const auditLogger = this.auditLoggerContextMap.getOrCreate(req.id);
-
     /**
      * @dev Extract session.
      */
@@ -96,11 +84,6 @@ export class AuthSessionController {
       user.sub,
       extendedSessionId,
     );
-
-    /**
-     * @dev Push audit event
-     */
-    await auditLogger.log({ eventName: 'Ended session successfully' });
 
     /**
      * @dev Return response

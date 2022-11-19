@@ -10,7 +10,6 @@ import { KeycloakAccountResourceAccessRolesGuard } from '../auth/guards/keycloak
 import { KeycloakAuthStrategy } from '../auth/strategies/keycloak-auth.strategy';
 import { ClientUserController } from './controllers/client-user.controller';
 import { OrmModule } from '../orm/orm.module';
-import { AuditModule } from '../audit/audit.module';
 import { NetworkProvider } from '../providers/network.provider';
 import { RegistryProvider } from '../providers/registry.provider';
 import { IdpController } from './controllers/idp.controller';
@@ -27,7 +26,7 @@ import { IdpAuthBuilder } from '../auth/factories/idp-auth.builder';
   /**
    * @dev Import modules
    */
-  imports: [OrmModule, AuditModule],
+  imports: [OrmModule],
   /**
    * @dev Import controllers.
    */

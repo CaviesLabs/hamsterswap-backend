@@ -7,7 +7,6 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { IdpAuthenticator } from '../idp-auth.builder';
 import { EnabledIdpDocument } from '../../../orm/model/enabled-idp.model';
 import { ExtendedSessionDocument } from '../../../orm/model/extended-session.model';
-import { KeycloakAdminProvider } from '../../../providers/federated-users/keycloak-admin.provider';
 import { TokenIssuerService } from '../../services/token-issuer.service';
 import { UserService } from '../../../user/services/user.service';
 import { AuthSessionService } from '../../services/auth-session.service';
@@ -22,11 +21,6 @@ export class EvmWalletAuthenticator implements IdpAuthenticator {
      */
     private readonly EnabledIdpDocument: Model<EnabledIdpDocument>,
     private readonly ExtendedSessionDocument: Model<ExtendedSessionDocument>,
-
-    /**
-     * @dev Inject providers
-     */
-    private readonly keycloakAdmin: KeycloakAdminProvider,
 
     /**
      * @dev Inject services
@@ -54,16 +48,6 @@ export class EvmWalletAuthenticator implements IdpAuthenticator {
      */
     if (!idpDoc) {
       throw new NotFoundException('ACCOUNT::IDENTITY_NOT_ENABLED');
-    }
-
-    /**
-     * @dev If user cannot be found, raise error
-     */
-    const user = await this.keycloakAdmin.instance.users.findOne({
-      id: idpDoc.userId,
-    });
-    if (!user) {
-      throw new NotFoundException('ACCOUNT::ACCOUNT_NOT_FOUND');
     }
 
     /**

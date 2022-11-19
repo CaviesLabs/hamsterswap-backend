@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AuditModule } from '../audit/audit.module';
 import { OrmModule } from '../orm/orm.module';
 import { KeycloakAdminProvider } from '../providers/federated-users/keycloak-admin.provider';
 import { OpenIDProvider } from '../providers/federated-users/openid.provider';
@@ -11,7 +10,7 @@ import { OtpPolicyService } from './services/opt-policy.service';
 import { PolicyLockService } from './services/policy-lock.service';
 
 @Module({
-  imports: [OrmModule, AuditModule],
+  imports: [OrmModule],
   providers: [
     /**
      * @dev Import providers.
