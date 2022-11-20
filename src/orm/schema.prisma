@@ -1,0 +1,85 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String
+  sub            String
+  email_verified Boolean
+  birthdate      String?
+  name           String?
+  family_name    String?
+  middle_name    String?
+  given_name     String?
+  nickname       String?
+  website        String?
+  locale         String?
+  avatar         String?
+  wallet         String?
+  group          String[]
+}
+
+model AuthChallenge {
+  id            String   @id @default(uuid())
+  target        String
+  memo          String
+  expiryDate    DateTime
+  isResolved    Boolean
+  durationDelta Int
+}
+
+model AuthSession {
+  id                String   @id @default(uuid())
+  actorId           String
+  authorizedPartyId String
+  checksum          String
+  grantType         String
+  sessionType       String
+  expiryDate        DateTime
+  scopes            String[]
+}
+
+model ExtendedSession {
+  id               String   @id @default(uuid())
+  userId           String
+  userIpAddress    String[]
+  userAgent        String[]
+  lastActiveTime   DateTime
+  distributionType String
+  sessionOrigin    String
+  enabledIdpId     String
+}
+
+model TwoFactors {
+  id                  String @id @default(uuid())
+  userId              String
+  hash                String
+  confirmedAt         Int
+  confirmedExpiryDate Int
+  step                Int
+}
+
+model EnabledIdp {
+  id         String @id @default(uuid())
+  identityId String
+  type       String
+  userId     String
+}
+
+model PolicyLock {
+  id          String   @id @default(uuid())
+  target      String
+  type        String
+  counter     Int
+  lockedUntil DateTime
+  reason      String
+}

@@ -396,20 +396,6 @@ export class TokenIssuerService {
    * @param jwtToken
    */
   public async introspect(jwtToken: string): Promise<JWTPayload> {
-    let response;
-
-    try {
-      /**
-       * @dev Default we introspect premature jwt first.
-       */
-      response = await this.jwtProvider.introspect(jwtToken);
-    } catch {
-      /**
-       * @dev If the premature one isn't able to verify, try introspecting as a keycloak token.
-       */
-      response = await this.openIdProvider.instance.introspect(jwtToken);
-    }
-
-    return response;
+    return this.jwtProvider.introspect(jwtToken);
   }
 }

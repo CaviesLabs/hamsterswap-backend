@@ -24,6 +24,9 @@
     "test:e2e": "NODE_ENV=test npx nyc --reporter=lcov --reporter=text --reporter=clover --reporter=text-summary mocha --require ts-node/register test/e2e/test-entrypoint.e2e-spec.ts",
     "prepare": "husky install"
   },
+  "prisma": {
+    "schema": "./src/orm/schema.prisma"
+  },
   "dependencies": {
     "@fastify/cookie": "6.0.0",
     "@fastify/helmet": "^9.1.0",
