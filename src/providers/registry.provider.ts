@@ -74,6 +74,14 @@ export class SystemConfig {
   )
   MONGO_URL: string;
 
+  @IsUrl(
+    { protocols: ['postgresql'], require_tld: false },
+    {
+      message: '$property should be a valid Postgres URL',
+    },
+  )
+  POSTGRES_URL: string;
+
   /**
    * @description SMTP Configs
    */

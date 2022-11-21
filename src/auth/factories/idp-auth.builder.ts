@@ -1,19 +1,13 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 /**
  * @dev Import logic deps.
  */
 import { TokenSetEntity } from '../entities/token-set.entity';
-import {
-  EnabledIdpDocument,
-  EnabledIdpModel,
-} from '../../orm/model/enabled-idp.model';
-import {
-  ExtendedSessionDocument,
-  ExtendedSessionModel,
-} from '../../orm/model/extended-session.model';
+import { EnabledIdpModel } from '../../orm/model/enabled-idp.model';
+import { ExtendedSessionModel } from '../../orm/model/extended-session.model';
 import { TokenIssuerService } from '../services/token-issuer.service';
 import { UserService } from '../../user/services/user.service';
 import { AuthSessionService } from '../services/auth-session.service';
@@ -54,10 +48,10 @@ export class IdpAuthBuilder {
     /**
      * @dev Inject models
      */
-    @InjectModel(EnabledIdpModel.name)
-    private readonly EnabledIdpDocument: Model<EnabledIdpDocument>,
-    @InjectModel(ExtendedSessionModel.name)
-    private readonly ExtendedSessionDocument: Model<ExtendedSessionDocument>,
+    @InjectRepository(EnabledIdpModel)
+    private readonly EnabledIdpRepo: Repository<EnabledIdpModel>,
+    @InjectRepository(ExtendedSessionModel)
+    private readonly ExtendedSessionRepo: Repository<ExtendedSessionModel>,
 
     /**
      * @dev Inject services
@@ -79,8 +73,8 @@ export class IdpAuthBuilder {
     switch (type) {
       case AvailableIdpResourceName.EVMWallet:
         return new EvmWalletAuthenticator(
-          this.EnabledIdpDocument,
-          this.ExtendedSessionDocument,
+          this.EnabledIdpRepo,
+          this.ExtendedSessionRepo,
           this.idpResourceBuilder.getIdpResource(
             AvailableIdpResourceName.EVMWallet,
           ),

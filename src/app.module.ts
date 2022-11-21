@@ -1,13 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { getMemoryServerMongoUri } from './helper';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { RegistryProvider } from './providers/registry.provider';
@@ -36,7 +35,7 @@ import { AllExceptionsFilter } from './exception.filter';
     /**
      * @dev Initialize database
      */
-    MongooseModule.forRootAsync({
+    TypeOrmModule.forRootAsync({
       /**
        * @dev need to override the useFactory
        */
@@ -45,20 +44,13 @@ import { AllExceptionsFilter } from './exception.filter';
          * @dev Extract env.
          */
         const registry = new RegistryProvider();
-        const env = registry.getConfig().NODE_ENV;
-        let uri;
-
-        /**
-         * @dev For test env we can just use memory server uri.
-         */
-        if (env === 'test') uri = await getMemoryServerMongoUri();
-        else uri = registry.getConfig().MONGO_URL;
 
         /**
          * @dev Return the uri.
          */
         return {
-          uri,
+          type: 'postgres',
+          url: registry.getConfig().POSTGRES_URL,
         };
       },
     }),

@@ -5,14 +5,14 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { Model } from 'mongoose';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
+import { Repository } from 'typeorm';
 
 /**
  * @dev Import logic deps
  */
-import { EnabledIdpDocument } from '../../../orm/model/enabled-idp.model';
+import { EnabledIdpModel } from '../../../orm/model/enabled-idp.model';
 import { AuthChallengeService } from '../../../auth/services/auth-challenge.service';
 import {
   EVMSignatureData,
@@ -29,7 +29,7 @@ export class EvmWalletIdpResourceService implements IdpService {
     /**
      * @dev Inject models
      */
-    private readonly EnabledIdpDocument: Model<EnabledIdpDocument>,
+    private readonly EnabledIdpRepo: Repository<EnabledIdpModel>,
 
     /**
      * @dev Inject services
@@ -43,9 +43,9 @@ export class EvmWalletIdpResourceService implements IdpService {
    * @private
    */
   public async checkAvailable(walletAddress: string): Promise<boolean> {
-    return !(await this.EnabledIdpDocument.exists({
-      identityId: walletAddress,
-    }).exec());
+    return !(await this.EnabledIdpRepo.findOne({
+      where: { identityId: walletAddress },
+    }));
   }
 
   /**
@@ -132,7 +132,7 @@ export class EvmWalletIdpResourceService implements IdpService {
     /**
      * @dev Create idp link for user.
      */
-    await this.EnabledIdpDocument.create({
+    await this.EnabledIdpRepo.create({
       userId,
       type: AvailableIdpResourceName.EVMWallet,
       identityId: verifiedWallet.identityId,
@@ -149,9 +149,8 @@ export class EvmWalletIdpResourceService implements IdpService {
      * @dev Raise error if wallet isn't enabled.
      */
     if (
-      !(await this.EnabledIdpDocument.exists({
-        userId,
-        _id: enabledIdpId,
+      !(await this.EnabledIdpRepo.findOne({
+        where: { userId, id: enabledIdpId },
       }))
     ) {
       throw new NotFoundException('IDP::WALLET::WALLET_NOT_FOUND');
@@ -160,9 +159,9 @@ export class EvmWalletIdpResourceService implements IdpService {
     /**
      * @dev Just delete record.
      */
-    await this.EnabledIdpDocument.deleteOne({
+    await this.EnabledIdpRepo.delete({
       userId,
-      _id: enabledIdpId,
-    }).exec();
+      id: enabledIdpId,
+    });
   }
 }

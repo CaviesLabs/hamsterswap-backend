@@ -1,49 +1,31 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { Injectable } from '@nestjs/common';
-
 /**
  * @dev Import base Auth entity.
  */
 import { AuthChallengeEntity } from '../../auth/entities/auth-challenge.entity';
-import { TimestampEntity } from '../extended.entity';
+import { Column, Entity, Index } from 'typeorm';
+import { BaseModel } from './base.model';
 
 /**
  * @dev Define the AuthChallengeModel
  */
-@Injectable()
-@Schema({ timestamps: true, autoIndex: true })
-export class AuthChallengeModel implements AuthChallengeEntity {
-  @Prop({ type: String })
+@Entity()
+@Index(['target', 'createdAt'])
+export class AuthChallengeModel
+  extends BaseModel
+  implements AuthChallengeEntity
+{
+  @Column({ type: String })
   target: string;
 
-  @Prop({ type: String })
+  @Column({ type: String })
   memo: string;
 
-  @Prop({ type: Date })
+  @Column({ type: Date })
   expiryDate: Date;
 
-  @Prop({ type: Boolean })
+  @Column({ type: Boolean })
   isResolved: boolean;
 
-  @Prop({ type: Number })
+  @Column({ type: Number })
   durationDelta: number;
 }
-
-/**
- * @dev Trigger create schema.
- */
-export const AuthChallengeSchema =
-  SchemaFactory.createForClass(AuthChallengeModel);
-
-/**
- * @dev Trigger create index.
- */
-AuthChallengeSchema.index({ target: 1, createdAt: -1 });
-
-/**
- * @dev Define generic type for typescript reference.
- */
-export type AuthChallengeDocument = AuthChallengeModel &
-  TimestampEntity &
-  Document;

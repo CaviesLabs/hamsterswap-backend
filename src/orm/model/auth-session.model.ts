@@ -1,61 +1,42 @@
-import { Injectable } from '@nestjs/common';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Column, Entity, Index } from 'typeorm';
 
 /**
  * @dev Import base entities.
  */
 import {
-  PreMatureAuthSessionEntity,
+  AuthSessionEntity,
   GrantType,
   SessionType,
-  PreMatureScope,
+  AuthScope,
 } from '../../auth/entities/auth-session.entity';
-import { TimestampEntity } from '../extended.entity';
+import { BaseModel } from './base.model';
 
 /**
  * @dev Define model.
  */
-@Injectable()
-@Schema({ timestamps: true, autoIndex: true })
-export class AuthSessionModel implements PreMatureAuthSessionEntity {
-  @Prop({ type: String })
+@Entity()
+export class AuthSessionModel extends BaseModel implements AuthSessionEntity {
+  @Column({ type: String })
+  @Index()
   readonly actorId: string;
 
-  @Prop({ type: String })
+  @Column({ type: String })
+  @Index()
   readonly authorizedPartyId: string;
 
-  @Prop({ type: String })
+  @Column({ type: String })
+  @Index({ unique: true })
   readonly checksum: string;
 
-  @Prop({ type: String, enum: GrantType, default: GrantType.Account })
+  @Column({ type: String, enum: GrantType, default: GrantType.Account })
   readonly grantType: GrantType;
 
-  @Prop({ type: String, enum: SessionType, default: SessionType.Direct })
+  @Column({ type: String, enum: SessionType, default: SessionType.Direct })
   readonly sessionType: SessionType;
 
-  @Prop({ type: Date })
+  @Column({ type: Date })
   readonly expiryDate: Date;
 
-  @Prop({ type: [{ type: String, enum: PreMatureScope }] })
-  scopes: PreMatureScope[];
+  @Column({ enum: AuthScope, array: true })
+  scopes: AuthScope[];
 }
-
-/**
- * @dev Trigger create schema.
- */
-export const AuthSessionSchema = SchemaFactory.createForClass(AuthSessionModel);
-
-/**
- * @dev Trigger create index
- */
-AuthSessionSchema.index({ authorizedParty: 1 });
-AuthSessionSchema.index({ actorId: 1 });
-AuthSessionSchema.index({ checksum: 1 }, { unique: true });
-
-/**
- * @dev Declare document for typescript reference.
- */
-export type AuthSessionDocument = PreMatureAuthSessionEntity &
-  TimestampEntity &
-  Document;

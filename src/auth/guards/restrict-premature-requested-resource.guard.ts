@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { PrematureAuthSession } from '../strategies/premature-auth.strategy';
+import { JwtAuthSession } from '../strategies/premature-auth.strategy';
 
 /**
  * @dev Declare allowed requested resources.
@@ -45,7 +45,7 @@ export class RestrictPrematureRequestedResourceGuard implements CanActivate {
      * @dev Extract the request session.
      */
     const request = context.switchToHttp().getRequest();
-    const { jwtPayload } = request.user as PrematureAuthSession;
+    const { jwtPayload } = request.user as JwtAuthSession;
 
     /**
      * @dev If the request was issued properly, we allow the request.

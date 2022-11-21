@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { PrematureAuthSession } from '../strategies/premature-auth.strategy';
-import { PreMatureScope } from '../entities/auth-session.entity';
+import { JwtAuthSession } from '../strategies/premature-auth.strategy';
+import { AuthScope } from '../entities/auth-session.entity';
 
 /**
  * @dev Declare guard that restricts jwt session type.
@@ -23,7 +23,7 @@ export class RestrictPrematureScopeGuard implements CanActivate {
     /**
      * @dev Extract the session type from metadata.
      */
-    const scopes = this.reflector.get<PreMatureScope[]>(
+    const scopes = this.reflector.get<AuthScope[]>(
       'scopes',
       context.getHandler(),
     );
@@ -39,7 +39,7 @@ export class RestrictPrematureScopeGuard implements CanActivate {
      * @dev Extract the request session.
      */
     const request = context.switchToHttp().getRequest();
-    const { session } = request.user as PrematureAuthSession;
+    const { session } = request.user as JwtAuthSession;
 
     /**
      * @dev If the request was issued properly, we allow the request.

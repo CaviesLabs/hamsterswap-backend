@@ -2,20 +2,16 @@
  * @dev Define Application Interface for Identity Provider Service.
  */
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 
 /**
  * @dev Import logic deps
  */
 import { AvailableIdpResourceName } from '../../providers/idp/identity-provider.interface';
-import {
-  EnabledIdpModel,
-  EnabledIdpDocument,
-} from '../../orm/model/enabled-idp.model';
+import { EnabledIdpModel } from '../../orm/model/enabled-idp.model';
 import { AuthChallengeService } from '../../auth/services/auth-challenge.service';
 import { EvmWalletIdpResourceService } from './idp/evm-wallet-idp.service';
-import { GoogleIdpResourceService } from './idp/google-idp.service';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 /**
  * @dev Define Identity interface
@@ -68,8 +64,8 @@ export class IdpResourceBuilder {
     /**
      * @dev Inject models
      */
-    @InjectModel(EnabledIdpModel.name)
-    private readonly EnabledIdpDocument: Model<EnabledIdpDocument>,
+    @InjectRepository(EnabledIdpModel)
+    private readonly EnabledIdpRepo: Repository<EnabledIdpModel>,
 
     /**
      * @dev Inject services
@@ -88,11 +84,9 @@ export class IdpResourceBuilder {
     switch (type) {
       case AvailableIdpResourceName.EVMWallet:
         return new EvmWalletIdpResourceService(
-          this.EnabledIdpDocument,
+          this.EnabledIdpRepo,
           this.authChallengeService,
         );
-      case AvailableIdpResourceName.Google:
-        return new GoogleIdpResourceService(this.EnabledIdpDocument);
     }
 
     throw new UnprocessableEntityException('IDP::UNSUPPORTED_IDP');

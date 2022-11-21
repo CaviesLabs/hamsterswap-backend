@@ -6,11 +6,9 @@ import {
   HttpCode,
   HttpStatus,
   UseGuards,
-  Request,
   Post,
   UseInterceptors,
   UploadedFiles,
-  SetMetadata,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -26,19 +24,13 @@ import {
  */
 import { UserService } from '../services/user.service';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import {
-  KeycloakAuthSession,
-  KeycloakAuthStrategy,
-} from '../../auth/strategies/keycloak-auth.strategy';
 import { UserEntity } from '../entities/user.entity';
 import {
   FastifyFilesInterceptor,
   imageFileFilter,
 } from '../../file.interceptor';
-import {
-  KeycloakAccountResourceAccessRolesGuard,
-  Role,
-} from '../../auth/guards/keycloak-account-resource-access-roles.guard';
+import { JwtAuthSession } from '../../auth/strategies/premature-auth.strategy';
+import { CurrentSession } from '../../auth/decorators/current-session.decorator';
 
 /**
  * @dev Declare user controller, handles profile operations.
@@ -62,18 +54,10 @@ export class UserController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Session is not authorized',
   })
-  @UseGuards(
-    AuthGuard(KeycloakAuthStrategy.key),
-    KeycloakAccountResourceAccessRolesGuard,
-  )
-  @SetMetadata('roles', [Role.VIEW_PROFILE])
+  @UseGuards(AuthGuard('jwt'))
   @Get('/profile')
   @HttpCode(HttpStatus.OK)
-  public getUserProfile(@Request() req) {
-    /**
-     * @dev Extract and return user from request session.
-     */
-    const { user } = req.user as KeycloakAuthSession;
+  public getUserProfile(@CurrentSession() { user }: JwtAuthSession) {
     return user;
   }
 
@@ -95,26 +79,17 @@ export class UserController {
     status: HttpStatus.BAD_REQUEST,
     description: "Wrong fields' formats.",
   })
-  @UseGuards(
-    AuthGuard(KeycloakAuthStrategy.key),
-    KeycloakAccountResourceAccessRolesGuard,
-  )
-  @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
+  @UseGuards(AuthGuard('jwt'))
   @Patch('/profile')
   @HttpCode(HttpStatus.OK)
   public async updateUserProfile(
-    @Request() req,
+    @CurrentSession() { user }: JwtAuthSession,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     /**
-     * @dev Extract user from request session.
-     */
-    const { token } = req.user as KeycloakAuthSession;
-
-    /**
      * @dev Update profile and return updated profile.
      */
-    return this.userService.updateUserProfile(token, updateUserDto);
+    return this.userService.updateUserProfile(user.id, updateUserDto);
   }
 
   /**
@@ -141,7 +116,6 @@ export class UserController {
       type: 'object',
       properties: {
         files: {
-          // 👈 this property
           type: 'array',
           items: {
             type: 'string',
@@ -151,11 +125,7 @@ export class UserController {
       },
     },
   })
-  @UseGuards(
-    AuthGuard(KeycloakAuthStrategy.key),
-    KeycloakAccountResourceAccessRolesGuard,
-  )
-  @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
+  @UseGuards(AuthGuard('jwt'))
   @Post('/profile/avatar/upload')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(
@@ -165,16 +135,11 @@ export class UserController {
   )
   public async upload(
     @UploadedFiles() files: Express.Multer.File[],
-    @Request() req,
+    @CurrentSession() { user }: JwtAuthSession,
   ) {
-    /**
-     * @dev Extract user from request session.
-     */
-    const { token } = req.user as KeycloakAuthSession;
-
     /**
      * @dev Upload and update avatar, return updated profile.
      */
-    return this.userService.uploadAvatar(token, files[0]);
+    return this.userService.uploadAvatar(user.id, files[0]);
   }
 }

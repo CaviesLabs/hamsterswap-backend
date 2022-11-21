@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { PrematureAuthSession } from '../strategies/premature-auth.strategy';
+import { JwtAuthSession } from '../strategies/premature-auth.strategy';
 import { GrantType } from '../entities/auth-session.entity';
 
 /**
@@ -39,7 +39,7 @@ export class RestrictPrematureGrantTypeGuard implements CanActivate {
      * @dev Extract request session.
      */
     const request = context.switchToHttp().getRequest();
-    const { session } = request.user as PrematureAuthSession;
+    const { session } = request.user as JwtAuthSession;
 
     /**
      * @dev If the grant type was issued for the right purpose, then we allow.

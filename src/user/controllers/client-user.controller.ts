@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Optional,
   Query,
-  SetMetadata,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -15,15 +14,6 @@ import { AuthGuard } from '@nestjs/passport';
 /**
  * @dev Import other services
  */
-import {
-  KeycloakAccountResourceAccessRolesGuard,
-  Role,
-} from '../../auth/guards/keycloak-account-resource-access-roles.guard';
-import {
-  KeycloakAuthorizationPermissionScopeGuard,
-  WalletScope,
-} from '../../auth/guards/keycloak-authorization-permission-scope.guard';
-import { KeycloakClientAuthStrategy } from '../../auth/strategies/keycloak-client-auth.strategy';
 import { UserService } from '../services/user.service';
 import { UserEntity } from '../entities/user.entity';
 
@@ -74,13 +64,7 @@ export class ClientUserController {
   })
   @ApiQuery({ name: 'walletAddress', required: false, type: String })
   @ApiQuery({ name: 'userId', required: false, type: String })
-  @UseGuards(
-    AuthGuard(KeycloakClientAuthStrategy.key),
-    KeycloakAccountResourceAccessRolesGuard,
-    KeycloakAuthorizationPermissionScopeGuard,
-  )
-  @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
-  @SetMetadata('scopes', [WalletScope.WALLET_READ, WalletScope.WALLET_WRITE])
+  @UseGuards(AuthGuard('jwt'))
   @Get('/')
   @HttpCode(HttpStatus.OK)
   public async queryUserByClient(

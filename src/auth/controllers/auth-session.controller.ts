@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Param,
   Request,
-  SetMetadata,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -15,17 +14,11 @@ import { AuthGuard } from '@nestjs/passport';
 /**
  * @dev Import deps
  */
-import {
-  KeycloakAuthSession,
-  KeycloakAuthStrategy,
-} from '../strategies/keycloak-auth.strategy';
-import {
-  KeycloakAccountResourceAccessRolesGuard,
-  Role,
-} from '../guards/keycloak-account-resource-access-roles.guard';
+
 import { AuthSessionService } from '../services/auth-session.service';
-import { ExtendedSessionDocument } from '../../orm/model/extended-session.model';
 import { ExtendedSessionEntity } from '../entities/extended-session.entity';
+import { ExtendedSessionModel } from '../../orm/model/extended-session.model';
+import { JwtAuthSession } from '../strategies/premature-auth.strategy';
 
 /**
  * @dev Define sessions controller.
@@ -61,11 +54,7 @@ export class AuthSessionController {
     description: 'Session is not found.',
   })
   @ApiBearerAuth('jwt')
-  @UseGuards(
-    AuthGuard(KeycloakAuthStrategy.key),
-    KeycloakAccountResourceAccessRolesGuard,
-  )
-  @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
   public async endSession(
@@ -75,13 +64,13 @@ export class AuthSessionController {
     /**
      * @dev Extract session.
      */
-    const { user } = req.user as KeycloakAuthSession;
+    const { user } = req.user as JwtAuthSession;
 
     /**
      * @dev Get result.
      */
     const result = await this.sessionService.endSession(
-      user.sub,
+      user.id,
       extendedSessionId,
     );
 
@@ -109,24 +98,20 @@ export class AuthSessionController {
     description: "The session isn't valid, and get rejected.",
   })
   @ApiBearerAuth('jwt')
-  @UseGuards(
-    AuthGuard(KeycloakAuthStrategy.key),
-    KeycloakAccountResourceAccessRolesGuard,
-  )
-  @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.OK)
   @Get('/')
   public async listExtendedSessions(
     @Request() req,
-  ): Promise<ExtendedSessionDocument[]> {
+  ): Promise<ExtendedSessionModel[]> {
     /**
      * @dev Extract session.
      */
-    const { user } = req.user as KeycloakAuthSession;
+    const { user } = req.user as JwtAuthSession;
 
     /**
      * @dev Get result.
      */
-    return this.sessionService.listUserExtendedSession(user.sub);
+    return this.sessionService.listUserExtendedSession(user.id);
   }
 }

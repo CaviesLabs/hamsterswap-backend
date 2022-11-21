@@ -28,27 +28,16 @@ export enum SessionType {
   OAuth = 'SESSION_TYPE::OAUTH',
 }
 
-export enum PreMatureScope {
-  /**
-   * @dev Declare that the session was for reset credential purpose.
-   */
-  VerifyEmail = 'verify-email.scope.account',
+export enum AuthScope {
+  ReadProfile = 'read.scope.account',
 
-  /**
-   * @dev Declare the session was for confirming 2 factors purpose.
-   */
-  ConfirmTwoFactor = 'confirm-2fa.scope.account',
-
-  /**
-   * @dev Declare the session was for resetting password purpose.
-   */
-  ResetPassword = 'reset-password.scope.account',
+  WriteProfile = 'write.scope.account',
 }
 
 /**
  * @dev Declare auth session entity.
  */
-export class PreMatureAuthSessionEntity {
+export class AuthSessionEntity {
   /**
    * @dev Declare that the session was authorized for a party.
    */
@@ -57,7 +46,7 @@ export class PreMatureAuthSessionEntity {
   /**
    * @dev Associated premature scopes.
    */
-  scopes: PreMatureScope[];
+  scopes: AuthScope[];
 
   /**
    * @dev Declare grant type.

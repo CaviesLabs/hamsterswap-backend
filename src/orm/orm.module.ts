@@ -1,28 +1,15 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 /**
  * @dev Import models.
  */
-import {
-  AuthChallengeModel,
-  AuthChallengeSchema,
-} from './model/auth-challenge.model';
-import {
-  AuthSessionModel,
-  AuthSessionSchema,
-} from './model/auth-session.model';
-import {
-  TwoFactorsModel,
-  TwoFactorsSchema,
-} from './model/auth-two-factors.model';
-import {
-  ExtendedSessionModel,
-  ExtendedSessionSchema,
-} from './model/extended-session.model';
-import { PolicyLockModel, PolicyLockSchema } from './model/policy-lock.model';
-import { EnabledIdpModel, EnabledIdpSchema } from './model/enabled-idp.model';
-import { PrismaService } from './prisma.service';
+import { AuthChallengeModel } from './model/auth-challenge.model';
+import { AuthSessionModel } from './model/auth-session.model';
+
+import { ExtendedSessionModel } from './model/extended-session.model';
+import { EnabledIdpModel } from './model/enabled-idp.model';
+import { UserModel } from './model/user.model';
 
 @Module({
   /**
@@ -32,22 +19,19 @@ import { PrismaService } from './prisma.service';
     /**
      * @dev Use forFeature to declare models.
      */
-    MongooseModule.forFeature([
-      { name: AuthSessionModel.name, schema: AuthSessionSchema },
-      { name: AuthChallengeModel.name, schema: AuthChallengeSchema },
-      { name: TwoFactorsModel.name, schema: TwoFactorsSchema },
-      { name: ExtendedSessionModel.name, schema: ExtendedSessionSchema },
-      { name: PolicyLockModel.name, schema: PolicyLockSchema },
-      { name: EnabledIdpModel.name, schema: EnabledIdpSchema },
+    TypeOrmModule.forFeature([
+      AuthSessionModel,
+      AuthChallengeModel,
+      ExtendedSessionModel,
+      EnabledIdpModel,
+      UserModel,
     ]),
   ],
-  providers: [PrismaService],
   exports: [
     /**
      * @dev Need to re-export again the Mongoose module for re-use in other modules.
      */
-    MongooseModule,
-    PrismaService,
+    TypeOrmModule,
   ],
 })
 export class OrmModule {}

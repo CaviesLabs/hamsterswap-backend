@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 
 /**
  * @dev Import logic deps.
  */
-import {
-  AuthChallengeDocument,
-  AuthChallengeModel,
-} from '../../orm/model/auth-challenge.model';
+import { AuthChallengeModel } from '../../orm/model/auth-challenge.model';
 import { AuthChallengeEntity } from '../entities/auth-challenge.entity';
 import { UtilsProvider } from '../../providers/utils.provider';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MoreThan, Repository } from 'typeorm';
 
 /**
  * @dev AuthChallengeService handles all auth challenge related logic
@@ -21,8 +18,8 @@ export class AuthChallengeService {
     /**
      * @dev Inject auth challenge model.
      */
-    @InjectModel(AuthChallengeModel.name)
-    private readonly AuthChallengeDocument: Model<AuthChallengeDocument>,
+    @InjectRepository(AuthChallengeModel)
+    private readonly AuthChallengeRepo: Repository<AuthChallengeModel>,
   ) {}
 
   /**
@@ -33,7 +30,7 @@ export class AuthChallengeService {
   public async generateAuthChallenge(
     target: string,
     delta = 60,
-  ): Promise<AuthChallengeDocument> {
+  ): Promise<AuthChallengeModel> {
     /**
      * @dev Extract timestamp.
      */
@@ -68,15 +65,10 @@ export class AuthChallengeService {
     /**
      * @dev Create new auth challenge.
      */
-    const authChallenge = new this.AuthChallengeDocument({
+    return this.AuthChallengeRepo.save({
       ...payload,
       memo: message,
     });
-
-    /**
-     * @dev Return challenge document.
-     */
-    return authChallenge.save();
   }
 
   /**
@@ -87,19 +79,19 @@ export class AuthChallengeService {
     /**
      * @dev Find the id.
      */
-    const authChallenge = await this.AuthChallengeDocument.findById(
-      authChallengeId,
+    await this.AuthChallengeRepo.findOneOrFail({
+      where: {
+        id: authChallengeId,
+      },
+    });
+
+    /**
+     * @dev Resolve the auth challenge, and save the status.
+     */
+    return this.AuthChallengeRepo.update(
+      { id: authChallengeId },
+      { isResolved: true },
     );
-
-    /**
-     * @dev Resolve the auth challenge.
-     */
-    authChallenge.isResolved = true;
-
-    /**
-     * @dev Save the status.
-     */
-    return authChallenge.save();
   }
 
   /**
@@ -108,21 +100,19 @@ export class AuthChallengeService {
    */
   public async getLatestAuthChallenge(
     target: string,
-  ): Promise<AuthChallengeDocument | null> {
+  ): Promise<AuthChallengeModel | null> {
     /**
      * @dev Find the latest doc.
      */
-    const result = await this.AuthChallengeDocument.find({
-      target,
-      isResolved: false,
-      expiryDate: {
-        $gt: new Date(),
+    return this.AuthChallengeRepo.findOne({
+      where: {
+        target,
+        isResolved: false,
+        expiryDate: MoreThan(new Date()),
       },
-    })
-      .sort({ createdAt: -1 })
-      .limit(1)
-      .exec();
-
-    return result[0] || null;
+      order: {
+        createdAt: 'DESC',
+      },
+    });
   }
 }

@@ -2,12 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { UserService } from './services/user.service';
 import { UserController } from './controllers/user.controller';
-import { KeycloakAdminProvider } from '../providers/federated-users/keycloak-admin.provider';
-import { OpenIDProvider } from '../providers/federated-users/openid.provider';
 import { StorageProvider } from '../providers/s3.provider';
-import { KeycloakUserProvider } from '../providers/federated-users/keycloak-user.provider';
-import { KeycloakAccountResourceAccessRolesGuard } from '../auth/guards/keycloak-account-resource-access-roles.guard';
-import { KeycloakAuthStrategy } from '../auth/strategies/keycloak-auth.strategy';
 import { ClientUserController } from './controllers/client-user.controller';
 import { OrmModule } from '../orm/orm.module';
 import { NetworkProvider } from '../providers/network.provider';
@@ -21,6 +16,8 @@ import { IdpResourceService } from './services/idp-resource.service';
 import { IdpAuthService } from '../auth/services/idp-auth.service';
 import { AuthSessionService } from '../auth/services/auth-session.service';
 import { IdpAuthBuilder } from '../auth/factories/idp-auth.builder';
+import { JwtAuthStrategy } from '../auth/strategies/premature-auth.strategy';
+import { CookieProvider } from '../providers/cookie.provider';
 
 @Module({
   /**
@@ -52,21 +49,17 @@ import { IdpAuthBuilder } from '../auth/factories/idp-auth.builder';
      */
     RegistryProvider,
     StorageProvider,
-    KeycloakUserProvider,
-    KeycloakAdminProvider,
-    OpenIDProvider,
     NetworkProvider,
     JwtProvider,
+    CookieProvider,
 
     /**
      * @dev Import strategies
      */
-    KeycloakAuthStrategy,
-
+    JwtAuthStrategy,
     /**
      * @dev Import guards.
      */
-    KeycloakAccountResourceAccessRolesGuard,
   ],
 })
 export class UserModule {}

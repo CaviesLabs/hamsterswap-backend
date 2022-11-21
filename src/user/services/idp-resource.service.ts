@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 /**
  * @dev Import logic deps
  */
-import {
-  EnabledIdpModel,
-  EnabledIdpDocument,
-} from '../../orm/model/enabled-idp.model';
+import { EnabledIdpModel } from '../../orm/model/enabled-idp.model';
 import { AvailableIdpResourceName } from '../../providers/idp/identity-provider.interface';
 import {
   Identity,
@@ -51,8 +48,8 @@ export class IdpResourceService {
     /**
      * @dev Inject models
      */
-    @InjectModel(EnabledIdpModel.name)
-    private readonly EnabledIdpDocument: Model<EnabledIdpDocument>,
+    @InjectRepository(EnabledIdpModel)
+    private readonly EnabledIdpRepo: Repository<EnabledIdpModel>,
 
     /**
      * @dev Inject builders
@@ -64,10 +61,8 @@ export class IdpResourceService {
    * @dev List all idp that user has.
    * @param userId
    */
-  public async listUserIdp(userId: string): Promise<EnabledIdpDocument[]> {
-    return this.EnabledIdpDocument.find({
-      userId,
-    });
+  public async listUserIdp(userId: string): Promise<EnabledIdpModel[]> {
+    return this.EnabledIdpRepo.find({ where: { userId } });
   }
 
   /**

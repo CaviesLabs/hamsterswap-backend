@@ -1,85 +1,32 @@
-import { Type } from 'class-transformer';
-import {
-  IsDateString,
-  IsEmail,
-  IsOptional,
-  IsString,
-  IsUrl,
-  Length,
-  Matches,
-  MaxLength,
-  ValidateNested,
-} from 'class-validator';
-
 /**
  * @dev Import UserAttributes.
  */
-import {
-  PASSWORD_EXPLAIN,
-  PASSWORD_REGEX,
-  UserAttributes,
-} from '../entities/user.entity';
-
-/**
- * @dev Declare attribute dto.
- */
-export class CreateUserAttributeDto implements UserAttributes {
-  @IsOptional()
-  @IsUrl({
-    require_protocol: true,
-    require_valid_protocol: true,
-  })
-  avatar?: string;
-
-  @IsOptional()
-  @IsUrl({
-    require_protocol: true,
-    require_valid_protocol: true,
-  })
-  website?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(32)
-  nickname?: string;
-
-  @IsOptional()
-  @IsString()
-  @Length(2)
-  locale?: string;
-
-  @IsOptional()
-  @IsDateString()
-  birthdate?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(32)
-  middle_name?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(32)
-  first_name?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(32)
-  last_name?: string;
-}
+import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
+import { Role, UserGroup } from '../entities/user.entity';
 
 /**
  * @dev Declare create user dto
  */
 export class CreateUserDto {
   @IsEmail()
+  @IsOptional()
   email?: string;
 
   @IsString()
-  @Matches(PASSWORD_REGEX, { message: PASSWORD_EXPLAIN })
-  password?: string;
+  emailVerified?: boolean;
 
-  @ValidateNested()
-  @Type(() => CreateUserAttributeDto)
-  attributes?: CreateUserAttributeDto;
+  @IsString()
+  birthday?: Date;
+
+  @IsString()
+  displayName?: string;
+
+  @IsString()
+  avatar?: string;
+
+  @IsEnum(Role, { each: true })
+  roles: Role[];
+
+  @IsEnum(UserGroup, { each: true })
+  groups?: UserGroup[];
 }

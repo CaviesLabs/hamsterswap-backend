@@ -1,48 +1,37 @@
-import { Injectable } from '@nestjs/common';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-
 /**
  * @dev Import deps
  */
 import { EnabledIdpEntity } from '../../user/entities/enabled-idp.entity';
 import { AvailableIdpResourceName } from '../../providers/idp/identity-provider.interface';
-import { TimestampEntity } from '../extended.entity';
+import { Column, Entity, Index, OneToMany } from 'typeorm';
+import { BaseModel } from './base.model';
+import { ExtendedSessionModel } from './extended-session.model';
 
 /**
  * @dev Define EnabledIdpModel
  */
-@Injectable()
-@Schema({ timestamps: false, autoIndex: true })
-export class EnabledIdpModel implements EnabledIdpEntity {
+@Entity()
+@Index(['userId'])
+@Index(['userId', 'identityId'])
+@Index(['userId', 'type'])
+@Index(['userId', 'id'])
+export class EnabledIdpModel extends BaseModel implements EnabledIdpEntity {
   /**
    * @dev Unique string
    */
-  @Prop({ type: String })
+  @Column({ type: String })
+  @Index({ unique: true })
   identityId: string;
 
-  @Prop({ type: String, enum: AvailableIdpResourceName })
+  @Column({ type: String, enum: AvailableIdpResourceName })
   type: AvailableIdpResourceName;
 
-  @Prop({ type: String })
+  @Column({ type: String })
+  @Index()
   userId: string;
+
+  @OneToMany(() => ExtendedSessionModel, (session) => session.enabledIdp, {
+    lazy: true,
+  })
+  sessions: ExtendedSessionModel[];
 }
-
-/**
- * @dev Trigger create schema.
- */
-export const EnabledIdpSchema = SchemaFactory.createForClass(EnabledIdpModel);
-
-/**
- * @dev Trigger create index.
- */
-EnabledIdpSchema.index({ identityId: 1 }, { unique: true });
-EnabledIdpSchema.index({ userId: 1, identityId: 1 });
-EnabledIdpSchema.index({ userId: 1, type: 1 });
-EnabledIdpSchema.index({ userId: 1, _id: 1 });
-EnabledIdpSchema.index({ userId: 1 });
-
-/**
- * @dev Define generic type for typescript reference.
- */
-export type EnabledIdpDocument = EnabledIdpEntity & TimestampEntity & Document;

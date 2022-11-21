@@ -1,17 +1,13 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { randomUUID } from 'crypto';
-import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
-import { KeycloakAdminProvider } from '../../providers/federated-users/keycloak-admin.provider';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UserEntity, UserGroup } from '../entities/user.entity';
-import { UpdateEmailStatus, UpdateUserDto } from '../dto/update-user.dto';
+import { UserEntity } from '../entities/user.entity';
+import { UpdateUserDto } from '../dto/update-user.dto';
 import { StorageProvider } from '../../providers/s3.provider';
-import { KeycloakUserProvider } from '../../providers/federated-users/keycloak-user.provider';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { plainToInstance } from 'class-transformer';
+import { UserModel } from '../../orm/model/user.model';
 
 /**
  * @dev User service declaration. `UserService` handles all operations related to profile.
@@ -30,8 +26,8 @@ export class UserService {
      * @dev Inject providers
      */
     private readonly storageProvider: StorageProvider,
-    private readonly keycloakAdminProvider: KeycloakAdminProvider,
-    private readonly keycloakUserProvider: KeycloakUserProvider,
+    @InjectRepository(UserModel)
+    private readonly UserRepo: Repository<UserModel>,
   ) {}
 
   /**
@@ -43,8 +39,8 @@ export class UserService {
     /**
      * @dev Find user id.
      */
-    const user = await this.keycloakAdminProvider.instance.users.findOne({
-      id: userId,
+    const user = await this.UserRepo.findOne({
+      where: { id: userId },
     });
     if (!user) {
       throw new NotFoundException('ACCOUNT::ACCOUNT_NOT_FOUND');
@@ -61,49 +57,12 @@ export class UserService {
    * @param createUserDto
    */
   public async createUser(
-    createUserDto: CreateUserDto & UpdateEmailStatus,
+    createUserDto: CreateUserDto,
   ): Promise<{ id: string }> {
-    /**
-     * @dev Create user with the assigned group.
-     */
-    const { first_name, last_name } = createUserDto.attributes || {};
-
-    /**
-     * @dev clean up.
-     */
-    delete createUserDto.attributes?.first_name;
-    delete createUserDto.attributes?.last_name;
-
-    /**
-     * @dev Prepare create user data.
-     * - username: generated UUID v4
-     */
-    const userData: UserRepresentation = {
-      username: randomUUID(),
-      groups: [UserGroup.Gamer],
-      email: createUserDto.email,
-      emailVerified: createUserDto.email_verified,
-      firstName: first_name,
-      lastName: last_name,
-      attributes: createUserDto.attributes,
-      credentials: [],
-      enabled: true,
-    };
-
-    if (createUserDto.password) {
-      userData.credentials.push({
-        type: 'password',
-        value: createUserDto.password,
-        temporary: false,
-      });
-    }
-
     /**
      * @dev Create users based on the signed up data.
      */
-    const { id } = await this.keycloakAdminProvider.instance.users.create(
-      userData,
-    );
+    const { id } = await this.UserRepo.save(createUserDto);
 
     /**
      * @dev Returning the payload.
@@ -116,18 +75,24 @@ export class UserService {
    * @param userId
    * @param email
    */
-  public async updateUserEmail(userId: string, email: string): Promise<void> {
+  public async updateUserEmail(
+    userId: string,
+    email: string,
+  ): Promise<UserEntity> {
     /**
      * @dev TODO: add constraints check.
      */
-    return this.keycloakAdminProvider.instance.users.update(
+    const user = await this.UserRepo.update(
       {
         id: userId,
       },
       {
         email,
+        emailVerified: true,
       },
     );
+
+    return plainToInstance(UserEntity, user);
   }
 
   /**
@@ -136,50 +101,15 @@ export class UserService {
    * @param updateUserDto
    */
   public async updateUserProfile(
-    authToken: string,
-    updateUserDto: UpdateUserDto & UpdateEmailStatus,
+    id: string,
+    updateUserDto: UpdateUserDto,
   ): Promise<UserEntity> {
-    /**
-     * @dev Create user with the assigned group.
-     */
-    const { username, first_name, last_name, email_verified } = updateUserDto;
-
-    /**
-     * @dev clean up.
-     */
-    delete updateUserDto.username;
-    delete updateUserDto.first_name;
-    delete updateUserDto.last_name;
-    delete updateUserDto.email_verified;
-
-    /**
-     * @dev Check for username is already taken.
-     */
-    const [userExists] = await this.keycloakAdminProvider.instance.users.find({
-      username,
-    });
-    if (userExists) {
-      throw new BadRequestException('ACCOUNT::USERNAME_ALREADY_TAKEN');
-    }
-
     /**
      * @dev Perform user update
      */
-    return this.keycloakUserProvider.updateUserProfile(authToken, {
-      username,
-      firstName: first_name,
-      lastName: last_name,
-      emailVerified: email_verified,
-      attributes: updateUserDto,
-    });
-  }
+    const user = await this.UserRepo.update({ id }, updateUserDto);
 
-  /**
-   * @dev Return user profile.
-   * @param authJwt
-   */
-  public getProfile(authJwt: string): Promise<UserEntity> {
-    return this.keycloakUserProvider.getUserProfile(authJwt);
+    return plainToInstance(UserEntity, user);
   }
 
   /**
@@ -187,7 +117,7 @@ export class UserService {
    * @param authToken
    * @param file
    */
-  public async uploadAvatar(authToken: string, file: any): Promise<UserEntity> {
+  public async uploadAvatar(userId: string, file: any): Promise<UserEntity> {
     /**
      * @dev Upload and get file url
      */
@@ -198,7 +128,7 @@ export class UserService {
     /**
      * @dev Update avatar attribute.
      */
-    return this.updateUserProfile(authToken, {
+    return this.updateUserProfile(userId, {
       avatar: url,
     });
   }
@@ -211,8 +141,8 @@ export class UserService {
     /**
      * @dev Find user.
      */
-    const user = await this.keycloakAdminProvider.instance.users.findOne({
-      id: userId,
+    const user = await this.UserRepo.findOne({
+      where: { id: userId },
     });
 
     /**
@@ -222,10 +152,6 @@ export class UserService {
       throw new NotFoundException();
     }
 
-    return {
-      email: user.email,
-      sub: user.id,
-      email_verified: user.emailVerified,
-    };
+    return user;
   }
 }

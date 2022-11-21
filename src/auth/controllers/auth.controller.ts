@@ -5,8 +5,6 @@ import {
   HttpStatus,
   Post,
   Request,
-  SetMetadata,
-  UnauthorizedException,
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
@@ -16,34 +14,20 @@ import { AuthGuard } from '@nestjs/passport';
 /**
  * @dev Import deps
  */
-import { AuthenticationService } from '../services/authentication.service';
-import { RefreshTokenDto } from '../dto/refresh-token.dto';
-import { TokenSetEntity } from '../entities/token-set.entity';
-import {
-  KeycloakAuthSession,
-  KeycloakAuthStrategy,
-} from '../strategies/keycloak-auth.strategy';
 import { UtilsProvider } from '../../providers/utils.provider';
 import { TokenIssuerService } from '../services/token-issuer.service';
-import {
-  KeycloakAccountResourceAccessRolesGuard,
-  Role,
-} from '../guards/keycloak-account-resource-access-roles.guard';
-import { RequestWalletPermissionDto } from '../dto/request-wallet-permission.dto';
 import {
   CommonApiResponse,
   CommonResponse,
 } from '../../api-docs/api-response.decorator';
-import { OtpPolicyService } from '../../account-policy/services/opt-policy.service';
-import { PermissionService } from '../services/permission.service';
-import { OtpService } from '../services/otp.service';
 import { AuthSessionService } from '../services/auth-session.service';
 import { JWTPayload } from '../../providers/hash/jwt.provider';
 import { IntrospectDto } from '../dto/introspect.dto';
 import { AuthChallengeEntity } from '../entities/auth-challenge.entity';
 import { AuthChallengeDto } from '../dto/auth-challenge.dto';
 import { AuthChallengeService } from '../services/auth-challenge.service';
-import { AuthChallengeDocument } from '../../orm/model/auth-challenge.model';
+import { AuthChallengeModel } from '../../orm/model/auth-challenge.model';
+import { JwtAuthSession } from '../strategies/premature-auth.strategy';
 
 /**
  * @dev Hamsterbox Auth controller.
@@ -61,12 +45,8 @@ export class AuthController {
    * @param otpService
    */
   constructor(
-    private readonly otpPolicyService: OtpPolicyService,
-    private readonly authService: AuthenticationService,
     private readonly sessionService: AuthSessionService,
-    private readonly permissionService: PermissionService,
     private readonly tokenIssuerService: TokenIssuerService,
-    private readonly otpService: OtpService,
     private readonly authChallengeService: AuthChallengeService,
   ) {}
 
@@ -84,23 +64,19 @@ export class AuthController {
     description: 'Logout from all sessions.',
   })
   @ApiBearerAuth('jwt')
-  @UseGuards(
-    AuthGuard(KeycloakAuthStrategy.key),
-    KeycloakAccountResourceAccessRolesGuard,
-  )
-  @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('/logout')
   public async logOutFromAllSessions(@Request() req): Promise<void> {
     /**
      * @dev Extract session.
      */
-    const { user } = req.user as KeycloakAuthSession;
+    const { user } = req.user as JwtAuthSession;
 
     /**
      * @dev Return code response.
      */
-    return this.sessionService.deleteAllSessions(user.sub);
+    return this.sessionService.deleteAllSessions(user.id);
   }
 
   /**
@@ -131,84 +107,6 @@ export class AuthController {
   }
 
   /**
-   * @dev Refresh access token.
-   * @param refreshTokenDto
-   */
-  @CommonApiResponse(
-    CommonResponse.UNAUTHORIZED_SESSION,
-    CommonResponse.WRONG_FIELD_FORMATS,
-  )
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Refreshed token successfully',
-    type: TokenSetEntity,
-  })
-  @HttpCode(HttpStatus.CREATED)
-  @Post('/token/refresh')
-  public refreshToken(
-    @Body() refreshTokenDto: RefreshTokenDto,
-  ): Promise<TokenSetEntity> {
-    /**
-     * @dev Refresh token. But need to override error and raise unauthorized error only.
-     */
-    return new UtilsProvider().overrideErrorWrap<TokenSetEntity>(
-      () =>
-        this.tokenIssuerService.refreshKeycloakAccessToken({
-          currentRefreshToken: refreshTokenDto.refresh_token,
-        }),
-      {
-        exceptionClass: UnauthorizedException,
-      },
-    );
-  }
-
-  /**
-   * @dev Request an exchange code.
-   * @param req
-   * @param requestWalletPermissionDto
-   */
-  @CommonApiResponse(
-    CommonResponse.UNAUTHORIZED_SESSION,
-    CommonResponse.FORBIDDEN_SESSION,
-    CommonResponse.WRONG_FIELD_FORMATS,
-  )
-  @ApiResponse({
-    status: HttpStatus.CREATED,
-    description: 'Request wallet permission.',
-    type: TokenSetEntity,
-  })
-  @ApiBearerAuth('jwt')
-  @UseGuards(
-    AuthGuard(KeycloakAuthStrategy.key),
-    KeycloakAccountResourceAccessRolesGuard,
-  )
-  @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
-  @HttpCode(HttpStatus.CREATED)
-  @Post('/permission/wallet/request')
-  public async requestWalletPermission(
-    @Request() req,
-    @Body() requestWalletPermissionDto: RequestWalletPermissionDto,
-  ): Promise<TokenSetEntity> {
-    /**
-     * @dev Extract session.
-     */
-    const { token } = req.user as KeycloakAuthSession;
-
-    /**
-     * @dev Get result.
-     */
-    const result = await this.permissionService.requestWalletPermission(
-      token,
-      requestWalletPermissionDto.walletScope,
-    );
-
-    /**
-     * @dev Return response
-     */
-    return result;
-  }
-
-  /**
    * @dev Request an auth challenge.
    * @param req
    * @param body
@@ -225,7 +123,7 @@ export class AuthController {
   public async requestAuthChallenge(
     @Request() req,
     @Body() body: AuthChallengeDto,
-  ): Promise<AuthChallengeDocument> {
+  ): Promise<AuthChallengeModel> {
     return this.authChallengeService.generateAuthChallenge(body.target);
   }
 }

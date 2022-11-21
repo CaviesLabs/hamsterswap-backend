@@ -1,48 +1,39 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
 
 /**
  * @dev Import deps.
  */
 import { JWTPayload, JwtProvider } from '../../providers/hash/jwt.provider';
-import { BCryptHashProvider } from '../../providers/hash/hashing.provider';
-import { UserService } from '../../user/services/user.service';
-import { AuthenticationService } from '../services/authentication.service';
 import { CookieProvider } from '../../providers/cookie.provider';
-import {
-  KeycloakAdminProvider,
-  UserFullEntity,
-} from '../../providers/federated-users/keycloak-admin.provider';
-import { AuthSessionDocument } from '../../orm/model/auth-session.model';
 import { RegistryProvider } from '../../providers/registry.provider';
-import {
-  ExtendedSessionDocument,
-  ExtendedSessionModel,
-} from '../../orm/model/extended-session.model';
+import { ExtendedSessionModel } from '../../orm/model/extended-session.model';
 import { SessionDistributionType } from '../entities/extended-session.entity';
 import { AuthSessionService } from '../services/auth-session.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../../user/entities/user.entity';
+import { AuthSessionModel } from '../../orm/model/auth-session.model';
+import { UserModel } from '../../orm/model/user.model';
+import { Repository } from 'typeorm';
 
 /**
  * @dev Declare the application native jwt auth session.
  */
-export interface PrematureAuthSession {
-  user: UserFullEntity;
-  session: AuthSessionDocument;
+export type JwtAuthSession = {
+  user: UserEntity;
+  session: AuthSessionModel;
   jwtPayload: JWTPayload;
-}
+};
 
 /**
  * @dev Declare the Jwt Passport strategy.
  */
 @Injectable()
-export class PreMatureAuthStrategy extends PassportStrategy(Strategy) {
+export class JwtAuthStrategy extends PassportStrategy(Strategy) {
   /**
    * @dev Initialize passport strategy.
    * @param jwtOptions
-   * @param hashingService
    * @param cookieService
    * @param keycloakAdminProvider
    * @param userService
@@ -50,31 +41,28 @@ export class PreMatureAuthStrategy extends PassportStrategy(Strategy) {
    * @param registryProvider
    * @param authenticationService
    * @param sessionService
-   * @param ExtendedSessionDocument
+   * @param ExtendedSessionRepo
    */
   constructor(
     /**
      * @dev Import providers
      */
     private readonly jwtOptions: JwtProvider,
-    private readonly hashingService: BCryptHashProvider,
     private readonly cookieService: CookieProvider,
-    private readonly keycloakAdminProvider: KeycloakAdminProvider,
     private readonly registryProvider: RegistryProvider,
 
     /**
      * @dev Import services
      */
-    private readonly userService: UserService,
-    private readonly authService: AuthenticationService,
-    private readonly authenticationService: AuthenticationService,
     private readonly sessionService: AuthSessionService,
 
     /**
      * @dev Import models
      */
-    @InjectModel(ExtendedSessionModel.name)
-    private readonly ExtendedSessionDocument: Model<ExtendedSessionDocument>,
+    @InjectRepository(ExtendedSessionModel)
+    private readonly ExtendedSessionRepo: Repository<ExtendedSessionModel>,
+    @InjectRepository(UserModel)
+    private readonly UserRepo: Repository<UserModel>,
   ) {
     /**
      * @dev Inherit parent class constructor.
@@ -97,21 +85,23 @@ export class PreMatureAuthStrategy extends PassportStrategy(Strategy) {
    */
   private async validateJwtSession(
     jwtPayload: JWTPayload,
-  ): Promise<PrematureAuthSession> {
+  ): Promise<JwtAuthSession> {
     /**
      * @dev Make sure the jwt id matched with a session id.
      */
-    const session = (await this.sessionService.findAuthSessionById(
+    const session = await this.sessionService.findAuthSessionById(
       jwtPayload.sid as string,
-    )) as AuthSessionDocument;
+    );
     if (!session) throw new UnauthorizedException();
 
     /**
      * @dev Make sure the jwt was issued with premature type.
      */
-    const extendedSession = await this.ExtendedSessionDocument.findOne({
-      distributionType: SessionDistributionType.PreMature,
-      sessionOrigin: jwtPayload.sid as string,
+    const extendedSession = await this.ExtendedSessionRepo.findOne({
+      where: {
+        distributionType: SessionDistributionType.PreMature,
+        sessionOrigin: jwtPayload.sid as string,
+      },
     });
     if (!extendedSession) throw new UnauthorizedException();
 
@@ -123,8 +113,8 @@ export class PreMatureAuthStrategy extends PassportStrategy(Strategy) {
     /**
      * @dev Make sure the user existed in the keycloak database.
      */
-    const user = await this.keycloakAdminProvider.instance.users.findOne({
-      id: session.actorId,
+    const user = await this.UserRepo.findOne({
+      where: { id: session.actorId },
     });
     if (!user) throw new UnauthorizedException();
 
@@ -155,7 +145,7 @@ export class PreMatureAuthStrategy extends PassportStrategy(Strategy) {
    * @dev Validate jwt session. Main method.
    * @param payload
    */
-  validate(payload: JWTPayload): Promise<PrematureAuthSession> {
+  validate(payload: JWTPayload): Promise<JwtAuthSession> {
     return this.validateJwtSession(payload);
   }
 }

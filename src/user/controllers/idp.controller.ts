@@ -8,7 +8,6 @@ import {
   Post,
   Put,
   Request,
-  SetMetadata,
   UnauthorizedException,
   UnprocessableEntityException,
   UseGuards,
@@ -24,14 +23,6 @@ import {
   CommonResponse,
 } from '../../api-docs/api-response.decorator';
 import { TokenSetEntity } from '../../auth/entities/token-set.entity';
-import {
-  KeycloakAccountResourceAccessRolesGuard,
-  Role,
-} from '../../auth/guards/keycloak-account-resource-access-roles.guard';
-import {
-  KeycloakAuthSession,
-  KeycloakAuthStrategy,
-} from '../../auth/strategies/keycloak-auth.strategy';
 import { UtilsProvider } from '../../providers/utils.provider';
 import {
   IdpCheckPayload,
@@ -43,6 +34,7 @@ import { Identity } from '../factories/idp-resource.builder';
 import { IdpResourceService } from '../services/idp-resource.service';
 import { IdpAuthService } from '../../auth/services/idp-auth.service';
 import { IdpMapName } from '../../providers/idp/identity-provider.interface';
+import { JwtAuthSession } from '../../auth/strategies/premature-auth.strategy';
 
 /**
  * @dev Declare google user controller, handles Google related profile operations.
@@ -141,11 +133,7 @@ export class IdpController {
     status: HttpStatus.CONFLICT,
     description: 'Identity already existed.',
   })
-  @UseGuards(
-    AuthGuard(KeycloakAuthStrategy.key),
-    KeycloakAccountResourceAccessRolesGuard,
-  )
-  @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put('/:provider/link')
   public link(
@@ -156,7 +144,7 @@ export class IdpController {
     /**
      * @dev Extract user from request session.
      */
-    const { user } = req.user as KeycloakAuthSession;
+    const { user } = req.user as JwtAuthSession;
 
     /**
      * @dev Link Identity
@@ -165,7 +153,7 @@ export class IdpController {
     return new UtilsProvider().overrideErrorWrap(
       async () =>
         this.idpResourceService.link(IdpMapName[params.provider], {
-          userId: user.sub,
+          userId: user.id,
           base64Signature: payload.base64Signature,
         }),
       {
@@ -186,11 +174,7 @@ export class IdpController {
     description: 'Unlink Identity successfully',
   })
   @ApiBearerAuth('jwt')
-  @UseGuards(
-    AuthGuard(KeycloakAuthStrategy.key),
-    KeycloakAccountResourceAccessRolesGuard,
-  )
-  @SetMetadata('roles', [Role.MANAGE_ACCOUNT])
+  @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put('/:provider/unlink')
   public unlink(
@@ -201,7 +185,7 @@ export class IdpController {
     /**
      * @dev Extract user from request session.
      */
-    const { user } = req.user as KeycloakAuthSession;
+    const { user } = req.user as JwtAuthSession;
 
     /**
      * @dev Unlink Identity.
@@ -215,7 +199,7 @@ export class IdpController {
         await this.idpAuthService.removeRelatedSessions(
           IdpMapName[params.provider],
           {
-            userId: user.sub,
+            userId: user.id,
             enabledIdpId: payload.enabledIdpId,
           },
         );
@@ -224,7 +208,7 @@ export class IdpController {
          * @dev Unlink identity.
          */
         await this.idpResourceService.unlink(IdpMapName[params.provider], {
-          userId: user.sub,
+          userId: user.id,
           enabledIdpId: payload.enabledIdpId,
         });
       },
