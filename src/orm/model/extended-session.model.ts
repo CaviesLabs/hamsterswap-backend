@@ -7,7 +7,7 @@ import {
 } from '../../auth/entities/extended-session.entity';
 import { Column, Entity, ManyToOne } from 'typeorm';
 import { EnabledIdpModel } from './enabled-idp.model';
-import { BaseModel } from './base.model';
+import { BaseModel } from '../base.model';
 
 /**
  * @dev Define the UserActivity model
@@ -20,10 +20,10 @@ export class ExtendedSessionModel
   @Column({ type: String })
   userId: string;
 
-  @Column([{ type: String }])
+  @Column({ type: String, array: true })
   userIpAddress: string[];
 
-  @Column([{ type: String }])
+  @Column({ type: String, array: true })
   userAgent: string[];
 
   @Column({ type: Date })

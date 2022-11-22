@@ -4,14 +4,13 @@
 import { EnabledIdpEntity } from '../../user/entities/enabled-idp.entity';
 import { AvailableIdpResourceName } from '../../providers/idp/identity-provider.interface';
 import { Column, Entity, Index, OneToMany } from 'typeorm';
-import { BaseModel } from './base.model';
+import { BaseModel } from '../base.model';
 import { ExtendedSessionModel } from './extended-session.model';
 
 /**
  * @dev Define EnabledIdpModel
  */
 @Entity()
-@Index(['userId'])
 @Index(['userId', 'identityId'])
 @Index(['userId', 'type'])
 @Index(['userId', 'id'])

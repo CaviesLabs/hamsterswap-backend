@@ -3,7 +3,7 @@
  */
 import { AuthChallengeEntity } from '../../auth/entities/auth-challenge.entity';
 import { Column, Entity, Index } from 'typeorm';
-import { BaseModel } from './base.model';
+import { BaseModel } from '../base.model';
 
 /**
  * @dev Define the AuthChallengeModel

@@ -9,7 +9,7 @@ import {
   SessionType,
   AuthScope,
 } from '../../auth/entities/auth-session.entity';
-import { BaseModel } from './base.model';
+import { BaseModel } from '../base.model';
 
 /**
  * @dev Define model.
@@ -37,6 +37,6 @@ export class AuthSessionModel extends BaseModel implements AuthSessionEntity {
   @Column({ type: Date })
   readonly expiryDate: Date;
 
-  @Column({ enum: AuthScope, array: true })
+  @Column({ enum: AuthScope, type: String, array: true })
   scopes: AuthScope[];
 }

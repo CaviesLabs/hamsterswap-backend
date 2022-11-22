@@ -1,6 +1,6 @@
 import { Column } from 'typeorm';
 import { Role, UserEntity, UserGroup } from '../../user/entities/user.entity';
-import { BaseModel } from './base.model';
+import { BaseModel } from '../base.model';
 
 export class UserModel extends BaseModel implements UserEntity {
   @Column({ type: String })

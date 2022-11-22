@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 
 import {
   IsBoolean,
+  IsIn,
   IsNotEmpty,
   IsPort,
   IsString,
@@ -12,6 +13,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 
 import * as fs from 'fs';
+import { DatabaseType } from 'typeorm';
 
 export class SystemConfig {
   /**
@@ -64,15 +66,11 @@ export class SystemConfig {
   DEFAULT_AUDIENCE: string;
 
   /**
-   * @description MongoDB Database Config
+   * @description Database Config
    */
-  @IsUrl(
-    { protocols: ['mongodb', 'mongodb+srv'], require_tld: false },
-    {
-      message: '$property should be a valid mongodb URL',
-    },
-  )
-  MONGO_URL: string;
+  @IsString()
+  @IsIn(['postgres', 'mysql', 'sqlite'])
+  DB_ENGINE: DatabaseType;
 
   @IsUrl(
     { protocols: ['postgresql'], require_tld: false },
@@ -80,7 +78,7 @@ export class SystemConfig {
       message: '$property should be a valid Postgres URL',
     },
   )
-  POSTGRES_URL: string;
+  DB_URL: string;
 
   /**
    * @description SMTP Configs

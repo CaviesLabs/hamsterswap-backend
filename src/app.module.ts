@@ -9,8 +9,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { RegistryProvider } from './providers/registry.provider';
 import { AllExceptionsFilter } from './exception.filter';
+import { getDataSourceConfig } from './helper';
+import { RegistryProvider } from './providers/registry.provider';
 
 @Module({
   imports: [
@@ -41,16 +42,13 @@ import { AllExceptionsFilter } from './exception.filter';
        */
       useFactory: async () => {
         /**
-         * @dev Extract env.
-         */
-        const registry = new RegistryProvider();
-
-        /**
          * @dev Return the uri.
          */
         return {
-          type: 'postgres',
-          url: registry.getConfig().POSTGRES_URL,
+          ...getDataSourceConfig(new RegistryProvider()),
+          migrations: [__dirname + '/orm/migrations/*-Migration.{ts,js}'],
+          synchronize: false,
+          migrationsRun: true,
         };
       },
     }),
