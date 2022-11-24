@@ -1,3 +1,4 @@
+import { Column, Entity, ManyToOne } from 'typeorm';
 /**
  * @dev Import logic deps
  */
@@ -5,14 +6,15 @@ import {
   ExtendedSessionEntity,
   SessionDistributionType,
 } from '../../auth/entities/extended-session.entity';
-import { Column, Entity, ManyToOne } from 'typeorm';
 import { EnabledIdpModel } from './enabled-idp.model';
 import { BaseModel } from '../base.model';
 
 /**
  * @dev Define the UserActivity model
  */
-@Entity()
+@Entity({
+  name: 'extended_session',
+})
 export class ExtendedSessionModel
   extends BaseModel
   implements ExtendedSessionEntity
@@ -35,12 +37,12 @@ export class ExtendedSessionModel
   @Column({ type: String })
   sessionOrigin: string;
 
-  @Column({ type: String })
+  @Column({ type: String, foreignKeyConstraintName: 'enabledIdp_id_fk' })
   enabledIdpId: string;
 
   @ManyToOne(() => EnabledIdpModel, (enabledIdp) => enabledIdp.sessions, {
     lazy: true,
-    onDelete: 'CASCADE',
+    cascade: true,
   })
   enabledIdp: EnabledIdpModel;
 }

@@ -10,5 +10,5 @@ const registry = new RegistryProvider();
 export default new DataSource({
   ...getDataSourceConfig(registry),
   entities: ['./src/orm/model/*.model.ts'],
-  migrations: ['./src/orm/migrations/*-Migration.{ts,js}'],
+  migrations: ['./src/orm/migrations/*-Migration.ts'],
 } as DataSourceOptions);

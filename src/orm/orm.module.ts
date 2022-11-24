@@ -10,6 +10,10 @@ import { AuthSessionModel } from './model/auth-session.model';
 import { ExtendedSessionModel } from './model/extended-session.model';
 import { EnabledIdpModel } from './model/enabled-idp.model';
 import { UserModel } from './model/user.model';
+import { SwapItemModel } from './model/swap-item.model';
+import { SwapOptionModel } from './model/swap-option.model';
+import { SwapPlatformConfigModel } from './model/swap-platform-config.model';
+import { SwapProposalModel } from './model/swap-proposal.model';
 
 @Module({
   /**
@@ -25,6 +29,10 @@ import { UserModel } from './model/user.model';
       ExtendedSessionModel,
       EnabledIdpModel,
       UserModel,
+      SwapPlatformConfigModel,
+      SwapItemModel,
+      SwapOptionModel,
+      SwapProposalModel,
     ]),
   ],
   exports: [

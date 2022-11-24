@@ -1,7 +1,11 @@
-import { Column } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { Role, UserEntity, UserGroup } from '../../user/entities/user.entity';
 import { BaseModel } from '../base.model';
+import { EnabledIdpModel } from './enabled-idp.model';
 
+@Entity({
+  name: 'user',
+})
 export class UserModel extends BaseModel implements UserEntity {
   @Column({ type: String })
   email?: string;
@@ -23,4 +27,7 @@ export class UserModel extends BaseModel implements UserEntity {
 
   @Column({ enum: UserGroup, type: String, array: true })
   groups?: UserGroup[];
+
+  @OneToMany(() => EnabledIdpModel, (enabledIdp) => enabledIdp.userId)
+  enabledIdps: EnabledIdpModel[];
 }

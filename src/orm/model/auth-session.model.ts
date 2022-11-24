@@ -14,18 +14,20 @@ import { BaseModel } from '../base.model';
 /**
  * @dev Define model.
  */
-@Entity()
+@Entity({
+  name: 'auth_session',
+})
 export class AuthSessionModel extends BaseModel implements AuthSessionEntity {
   @Column({ type: String })
-  @Index()
+  @Index('actorId_idx')
   readonly actorId: string;
 
   @Column({ type: String })
-  @Index()
+  @Index('authorizedPartyId_idx')
   readonly authorizedPartyId: string;
 
   @Column({ type: String })
-  @Index({ unique: true })
+  @Index('checksum_uidx', { unique: true })
   readonly checksum: string;
 
   @Column({ type: String, enum: GrantType, default: GrantType.Account })

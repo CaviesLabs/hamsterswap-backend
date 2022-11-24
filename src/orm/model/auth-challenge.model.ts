@@ -8,8 +8,10 @@ import { BaseModel } from '../base.model';
 /**
  * @dev Define the AuthChallengeModel
  */
-@Entity()
-@Index(['target', 'createdAt'])
+@Entity({
+  name: 'auth_challenge',
+})
+@Index('target_createdAt_idx', ['target', 'createdAt'])
 export class AuthChallengeModel
   extends BaseModel
   implements AuthChallengeEntity
