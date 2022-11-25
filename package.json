@@ -54,6 +54,7 @@
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "bip39": "^3.0.4",
+    "bs58": "^5.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "email-templates": "^9.0.0",
@@ -85,6 +86,7 @@
     "rxjs": "^7.2.0",
     "slugify": "^1.6.5",
     "socket.io": "^4.5.2",
+    "tweetnacl": "^1.0.3",
     "typeorm": "^0.3.10",
     "uuid": "^9.0.0",
     "web3": "^1.8.0"

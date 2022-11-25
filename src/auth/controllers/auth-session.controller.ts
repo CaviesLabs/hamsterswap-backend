@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Request,
+  SetMetadata,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -19,12 +20,15 @@ import { AuthSessionService } from '../services/auth-session.service';
 import { ExtendedSessionEntity } from '../entities/extended-session.entity';
 import { ExtendedSessionModel } from '../../orm/model/extended-session.model';
 import { JwtAuthSession } from '../strategies/premature-auth.strategy';
+import { RestrictScopeGuard } from '../guards/restrict-scope.guard';
+import { AuthScope } from '../entities/auth-session.entity';
 
 /**
  * @dev Define sessions controller.
  */
 @Controller('auth/sessions/')
 @ApiTags('sessions')
+@UseGuards(AuthGuard('jwt'), RestrictScopeGuard)
 export class AuthSessionController {
   /**
    * @dev Constructor that initializes AuthController.s
@@ -54,7 +58,7 @@ export class AuthSessionController {
     description: 'Session is not found.',
   })
   @ApiBearerAuth('jwt')
-  @UseGuards(AuthGuard('jwt'))
+  @SetMetadata('scopes', [AuthScope.WriteProfile])
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
   public async endSession(
@@ -98,7 +102,7 @@ export class AuthSessionController {
     description: "The session isn't valid, and get rejected.",
   })
   @ApiBearerAuth('jwt')
-  @UseGuards(AuthGuard('jwt'))
+  @SetMetadata('scopes', [AuthScope.ReadProfile])
   @HttpCode(HttpStatus.OK)
   @Get('/')
   public async listExtendedSessions(

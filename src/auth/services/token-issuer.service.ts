@@ -148,7 +148,7 @@ export class TokenIssuerService {
       azp: config.authorizedPartyId,
       aud: config.requestedResource,
       exp: parseInt((sessionExpiresAt.getTime() / 1000).toString()),
-      iss: this.registryProvider.getConfig().KEYCLOAK_AUTH_PASSPORT_CLIENT_ID,
+      iss: this.registryProvider.getConfig().DOMAIN,
       dist: SessionDistributionType.PreMature,
       /**
        * @dev Other fields.
@@ -167,8 +167,7 @@ export class TokenIssuerService {
      * @dev Verify jwt to make sure the jwt is valid.
      */
     const verifyResult = await this.jwtProvider.verifyJwt(jwt, {
-      issuer:
-        this.registryProvider.getConfig().KEYCLOAK_AUTH_PASSPORT_CLIENT_ID,
+      issuer: this.registryProvider.getConfig().DOMAIN,
       audience: config.requestedResource,
       currentDate: new Date(),
     });
@@ -205,8 +204,7 @@ export class TokenIssuerService {
          */
         actorId: options.actorId,
         expiresIn: '5m',
-        authorizedPartyId:
-          this.registryProvider.getConfig().KEYCLOAK_AUTH_PASSPORT_CLIENT_ID,
+        authorizedPartyId: this.registryProvider.getConfig().DOMAIN,
 
         /**
          * @dev Will be verified via guards.

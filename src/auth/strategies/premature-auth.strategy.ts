@@ -128,10 +128,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     /**
      * @dev Make sure the jwt was issued for the right authorized party.
      */
-    if (
-      jwtPayload.azp !==
-      this.registryProvider.getConfig().KEYCLOAK_AUTH_PASSPORT_CLIENT_ID
-    ) {
+    if (jwtPayload.azp !== this.registryProvider.getConfig().DOMAIN) {
       throw new UnauthorizedException();
     }
 

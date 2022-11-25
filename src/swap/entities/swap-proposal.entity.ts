@@ -18,4 +18,10 @@ export class SwapProposalEntity {
   expireAt: Date;
 
   status: SwapProposalStatus;
+
+  additionalData?: SwapProposalAdditionalDataEntity;
+}
+
+export class SwapProposalAdditionalDataEntity {
+  note: string;
 }

@@ -12,6 +12,7 @@ import { AuthChallengeService } from '../../auth/services/auth-challenge.service
 import { EvmWalletIdpResourceService } from './idp/evm-wallet-idp.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SolanaWalletIdpResourceService } from './idp/solana-wallet-idp.service';
 
 /**
  * @dev Define Identity interface
@@ -84,6 +85,11 @@ export class IdpResourceBuilder {
     switch (type) {
       case AvailableIdpResourceName.EVMWallet:
         return new EvmWalletIdpResourceService(
+          this.EnabledIdpRepo,
+          this.authChallengeService,
+        );
+      case AvailableIdpResourceName.SolanaWallet:
+        return new SolanaWalletIdpResourceService(
           this.EnabledIdpRepo,
           this.authChallengeService,
         );

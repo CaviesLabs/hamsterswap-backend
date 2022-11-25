@@ -132,30 +132,6 @@ export class SystemConfig {
   AWS_BUCKET_REGION: string;
 
   /**
-   * @description Keycloak Configs
-   */
-  @IsUrl({
-    require_protocol: true,
-  })
-  KEYCLOAK_AUTH_URL: string;
-
-  @IsString()
-  @IsNotEmpty()
-  KEYCLOAK_AUTH_REALM_NAME: string;
-
-  @IsString()
-  @IsNotEmpty()
-  KEYCLOAK_AUTH_PASSPORT_CLIENT_ID: string;
-
-  @IsString()
-  @IsNotEmpty()
-  KEYCLOAK_AUTH_PASSPORT_CLIENT_SECRET: string;
-
-  @IsString()
-  @IsNotEmpty()
-  KEYCLOAK_GAMER_GROUP_ID: string;
-
-  /**
    * @description Other Configs
    */
   @IsString()

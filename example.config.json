@@ -18,11 +18,6 @@
   "AWS_SECRET_ACCESS_KEY": "",
   "AWS_BUCKET_NAME": "",
   "AWS_BUCKET_REGION": "",
-  "KEYCLOAK_AUTH_URL": "https://keycloak.hamsterbox.xyz",
-  "KEYCLOAK_AUTH_REALM_NAME": "hamsterbox",
-  "KEYCLOAK_AUTH_PASSPORT_CLIENT_ID": "",
-  "KEYCLOAK_AUTH_PASSPORT_CLIENT_SECRET": "",
-  "KEYCLOAK_GAMER_GROUP_ID": "",
   "SECRET_TOKEN": "",
   "DOMAIN": "",
   "HOST_URI": ""

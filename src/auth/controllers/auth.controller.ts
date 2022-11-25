@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Post,
   Request,
+  SetMetadata,
   UnprocessableEntityException,
   UseGuards,
 } from '@nestjs/common';
@@ -28,6 +29,7 @@ import { AuthChallengeDto } from '../dto/auth-challenge.dto';
 import { AuthChallengeService } from '../services/auth-challenge.service';
 import { AuthChallengeModel } from '../../orm/model/auth-challenge.model';
 import { JwtAuthSession } from '../strategies/premature-auth.strategy';
+import { AuthScope } from '../entities/auth-session.entity';
 
 /**
  * @dev Hamsterbox Auth controller.
@@ -65,6 +67,7 @@ export class AuthController {
   })
   @ApiBearerAuth('jwt')
   @UseGuards(AuthGuard('jwt'))
+  @SetMetadata('scopes', [AuthScope.WriteProfile])
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('/logout')
   public async logOutFromAllSessions(@Request() req): Promise<void> {
@@ -118,6 +121,7 @@ export class AuthController {
     type: AuthChallengeEntity,
   })
   @ApiBearerAuth('jwt')
+  @SetMetadata('scopes', [AuthScope.WriteProfile])
   @HttpCode(HttpStatus.CREATED)
   @Post('/challenge/request')
   public async requestAuthChallenge(

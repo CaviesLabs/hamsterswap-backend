@@ -18,15 +18,12 @@ import { BCryptHashProvider } from '../providers/hash/hashing.provider';
 import { EmailProvider } from '../providers/email.provider';
 import { JwtAuthStrategy } from './strategies/premature-auth.strategy';
 import { CookieProvider } from '../providers/cookie.provider';
-import { RestrictPrematureRequestedResourceGuard } from './guards/restrict-premature-requested-resource.guard';
-import { RestrictPrematureGrantTypeGuard } from './guards/restrict-premature-grant-type.guard';
-import { RestrictPrematureSessionGuard } from './guards/restrict-premature-session.guard';
 import { OtpProvider } from '../providers/two-factors/otp.provider';
 import { NetworkProvider } from '../providers/network.provider';
 import { RegistryProvider } from '../providers/registry.provider';
 import { AuthChallengeService } from './services/auth-challenge.service';
 import { AuthSessionService } from './services/auth-session.service';
-import { RestrictPrematureScopeGuard } from './guards/restrict-premature-scope.guard';
+import { RestrictScopeGuard } from './guards/restrict-scope.guard';
 import { IdpAuthController } from './controllers/idp-auth.controller';
 import { AuthSessionController } from './controllers/auth-session.controller';
 import { IdpResourceBuilder } from '../user/factories/idp-resource.builder';
@@ -104,10 +101,7 @@ import { IdpAuthService } from './services/idp-auth.service';
     /**
      * @dev Import guards.
      */
-    RestrictPrematureRequestedResourceGuard,
-    RestrictPrematureGrantTypeGuard,
-    RestrictPrematureSessionGuard,
-    RestrictPrematureScopeGuard,
+    RestrictScopeGuard,
   ],
 })
 export class AuthModule {}

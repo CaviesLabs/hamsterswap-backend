@@ -72,8 +72,7 @@ export class JwtProvider {
   public getSignOptions(): JwtSignOptions {
     return {
       expiresIn: '7d',
-      issuer:
-        this.registryProvider.getConfig().KEYCLOAK_AUTH_PASSPORT_CLIENT_ID,
+      issuer: this.registryProvider.getConfig().DOMAIN,
       algorithm: 'RS256',
     };
   }
