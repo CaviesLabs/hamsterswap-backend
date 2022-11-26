@@ -9,15 +9,17 @@ export enum SwapProposalStatus {
 export class SwapProposalEntity {
   ownerAddress: string;
 
-  offerItems: SwapItemEntity[];
+  offerItems: SwapItemEntity[] = [];
 
-  swapOptions: SwapOptionEntity[];
+  swapOptions: SwapOptionEntity[] = [];
 
   fulfillBy?: string;
 
   expireAt: Date;
 
   status: SwapProposalStatus;
+
+  searchText?: string = '';
 
   additionalData?: SwapProposalAdditionalDataEntity;
 }

@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  Index,
   JoinColumn,
   JoinTable,
   ManyToMany,
@@ -54,4 +55,8 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   @OneToOne(() => SwapProposalAdditionalDataModel)
   @JoinColumn()
   additionalData: SwapProposalAdditionalDataModel;
+
+  @Column({ type: String })
+  @Index({ fulltext: true })
+  searchText: string;
 }
