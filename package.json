@@ -16,7 +16,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "typeorm": "ts-node ./node_modules/typeorm/cli",
     "migration:run": "yarn typeorm migration:run -- -d ./src/orm/type-orm.config.ts",
-    "migration:generate": "yarn typeorm -- -d ./src/orm/type-orm.config.ts migration:generate ./src/orm/migrations/Migration",
+    "migration:generate": " rm -rf dist && yarn typeorm -- -d ./src/orm/type-orm.config.ts migration:generate ./src/orm/migrations/Migration",
     "migration:create": "yarn typeorm -- migration:create ./src/orm/migrations/Migration",
     "migration:revert": "yarn typeorm -- -d ./src/orm/type-orm.config.ts migration:revert",
     "start": "nest start",
@@ -30,6 +30,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@faker-js/faker": "^7.6.0",
     "@fastify/cookie": "6.0.0",
     "@fastify/helmet": "^9.1.0",
     "@fastify/static": "^6.5.0",

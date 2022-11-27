@@ -2,31 +2,19 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToOne,
 } from 'typeorm';
 
 import {
-  SwapProposalAdditionalDataEntity,
   SwapProposalEntity,
   SwapProposalStatus,
 } from '../../swap/entities/swap-proposal.entity';
 import { BaseModel } from '../base.model';
 import { SwapItemModel } from './swap-item.model';
 import { SwapOptionModel } from './swap-option.model';
-
-@Entity({
-  name: 'swap_proposal_additional_data',
-})
-export class SwapProposalAdditionalDataModel
-  extends BaseModel
-  implements SwapProposalAdditionalDataEntity
-{
-  @Column({ type: String })
-  note: string;
-}
+import { SwapProposalAdditionalDataModel } from './swap-proposal-additional-data.model';
 
 @Entity({
   name: 'swap_proposal',
@@ -43,7 +31,7 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   @JoinTable()
   swapOptions: SwapOptionModel[];
 
-  @Column({ type: String })
+  @Column({ type: String, nullable: true })
   fulfillBy?: string;
 
   @Column({ type: Date })
@@ -53,10 +41,9 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   status: SwapProposalStatus;
 
   @OneToOne(() => SwapProposalAdditionalDataModel)
-  @JoinColumn()
   additionalData: SwapProposalAdditionalDataModel;
 
-  @Column({ type: String })
+  @Column({ type: String, default: '' })
   @Index({ fulltext: true })
   searchText: string;
 }

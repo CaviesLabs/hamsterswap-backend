@@ -11,7 +11,7 @@ import { BaseModel } from '../base.model';
   name: 'swap_item',
 })
 export class SwapItemModel extends BaseModel implements SwapItemEntity {
-  @Column({ type: String })
+  @Column({ type: String, nullable: true })
   ownerAddress?: string;
 
   @Column({ type: String, enum: SwapItemType })
@@ -20,8 +20,8 @@ export class SwapItemModel extends BaseModel implements SwapItemEntity {
   @Column({ type: String })
   contractAddress: string;
 
-  @Column({ type: String })
-  depositedAddress: string;
+  @Column({ type: String, nullable: true })
+  depositedAddress?: string;
 
   @Column({ type: String })
   amount: number;
@@ -29,6 +29,6 @@ export class SwapItemModel extends BaseModel implements SwapItemEntity {
   @Column({ type: String, enum: SwapItemStatus })
   status: SwapItemStatus;
 
-  @Column({ type: 'jsonb' })
+  @Column({ type: 'jsonb', nullable: true })
   nftMetadata?: any;
 }

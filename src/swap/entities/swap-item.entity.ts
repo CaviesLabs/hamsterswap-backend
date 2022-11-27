@@ -16,7 +16,7 @@ export class SwapItemEntity {
 
   contractAddress: string;
 
-  depositedAddress: string;
+  depositedAddress?: string;
 
   amount: number;
 

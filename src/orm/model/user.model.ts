@@ -7,16 +7,16 @@ import { EnabledIdpModel } from './enabled-idp.model';
   name: 'user',
 })
 export class UserModel extends BaseModel implements UserEntity {
-  @Column({ type: String })
+  @Column({ type: String, nullable: true })
   email?: string;
 
-  @Column({ type: Boolean })
+  @Column({ type: Boolean, nullable: true })
   emailVerified?: boolean;
 
-  @Column({ type: Date })
+  @Column({ type: Date, nullable: true })
   birthday?: Date;
 
-  @Column({ type: String })
+  @Column({ type: String, nullable: true })
   displayName?: string;
 
   @Column({ type: String })
@@ -25,7 +25,7 @@ export class UserModel extends BaseModel implements UserEntity {
   @Column({ enum: Role, type: String, array: true })
   roles: Role[];
 
-  @Column({ enum: UserGroup, type: String, array: true })
+  @Column({ enum: UserGroup, type: String, array: true, nullable: true })
   groups?: UserGroup[];
 
   @OneToMany(() => EnabledIdpModel, (enabledIdp) => enabledIdp.userId)

@@ -14,6 +14,7 @@ import { SwapItemModel } from './model/swap-item.model';
 import { SwapOptionModel } from './model/swap-option.model';
 import { SwapPlatformConfigModel } from './model/swap-platform-config.model';
 import { SwapProposalModel } from './model/swap-proposal.model';
+import { SwapProposalAdditionalDataModel } from './model/swap-proposal-additional-data.model';
 
 @Module({
   /**
@@ -33,6 +34,7 @@ import { SwapProposalModel } from './model/swap-proposal.model';
       SwapItemModel,
       SwapOptionModel,
       SwapProposalModel,
+      SwapProposalAdditionalDataModel,
     ]),
   ],
   exports: [

@@ -1,12 +1,12 @@
 import {
   CreateDateColumn,
   DeleteDateColumn,
-  PrimaryColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 export class BaseModel {
-  @PrimaryColumn({ type: String })
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @CreateDateColumn()

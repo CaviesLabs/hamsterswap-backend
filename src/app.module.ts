@@ -13,6 +13,7 @@ import { UserModule } from './user/user.module';
 import { AllExceptionsFilter } from './exception.filter';
 import { getDataSourceConfig, getTestDataSource } from './helper';
 import { RegistryProvider } from './providers/registry.provider';
+import { SeederModule } from './seeder/seeder.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { RegistryProvider } from './providers/registry.provider';
         return {
           ...getDataSourceConfig(new RegistryProvider()),
           migrations: [__dirname + '/orm/migrations/*-Migration.{ts,js}'],
+          autoLoadEntities: true,
           synchronize: false,
           migrationsRun: true,
         };
@@ -59,7 +61,7 @@ import { RegistryProvider } from './providers/registry.provider';
             return getTestDataSource(config);
           }
           default: {
-            return new DataSource(config).initialize();
+            return new DataSource(config);
           }
         }
       },
@@ -69,6 +71,7 @@ import { RegistryProvider } from './providers/registry.provider';
      */
     AuthModule,
     UserModule,
+    SeederModule,
   ],
   /**
    * @dev Import controller.
