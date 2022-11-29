@@ -5,10 +5,12 @@ export class TestState {
     walletAddress: string;
   };
 
-  public static get(suite: Mocha.Suite): TestState {
-    if (!suite['state']) {
-      suite['state'] = new TestState();
+  ownerAddress: string;
+
+  public static get(ctx: any): TestState {
+    if (!ctx['state']) {
+      ctx['state'] = new TestState();
     }
-    return suite['state'];
+    return ctx['state'];
   }
 }

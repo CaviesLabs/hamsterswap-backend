@@ -2,13 +2,12 @@ import { HttpStatus } from '@nestjs/common';
 import * as request from 'supertest';
 import { expect } from 'chai';
 
-import { testHelper } from './test-entrypoint.e2e-spec';
-import { SolanaSignatureData } from '../../src/providers/idp/solana-wallet-idp.provider';
-import { TestState } from './state.suite';
-import { SolanaWalletSignatureDto } from '../../src/user/dto/wallet-signature.dto';
+import { testHelper } from '../test-entrypoint.e2e-spec';
+import { SolanaSignatureData } from '../../../src/providers/idp/solana-wallet-idp.provider';
+import { TestState } from '../state.suite';
+import { SolanaWalletSignatureDto } from '../../../src/user/dto/wallet-signature.dto';
 
-describe('Signup with Solana wallet', signUpWithSolanaWallet);
-async function signUpWithSolanaWallet(this: Mocha.Suite) {
+export async function shouldSignUpSucceedWithSolanaWallet(this: Mocha.Context) {
   const app = testHelper.app;
   const state = TestState.get(this);
 
@@ -67,14 +66,13 @@ async function signUpWithSolanaWallet(this: Mocha.Suite) {
   expect(signUpResponse.body.accessToken).to.be.a('string');
 }
 
-describe('Signin with Solana wallet', signinWithSolanaWallet);
-async function signinWithSolanaWallet(this: Mocha.Suite) {
+export async function shouldSigninSucceedWithSolanaWallet(this: Mocha.Context) {
   const app = testHelper.app;
 
   const state = TestState.get(this);
 
   // Precondition: Sign-up succeed
-  await signUpWithSolanaWallet.bind(this)();
+  await shouldSignUpSucceedWithSolanaWallet.bind(this)();
 
   // Step 1: request auth challenge
   const authChallengeResponse = await request(app.getHttpServer())
@@ -113,3 +111,13 @@ async function signinWithSolanaWallet(this: Mocha.Suite) {
   expect(signInResponse.statusCode).to.equal(HttpStatus.OK);
   expect(signInResponse.body.accessToken).to.be.a('string');
 }
+
+describe('[IDP Auth] sign-up', async function () {
+  it('Should signup succeed with Solana wallet', () =>
+    shouldSignUpSucceedWithSolanaWallet.bind(this)());
+});
+
+describe('[IDP Auth] sign-in', async function () {
+  it('Should signin succeed with Solana wallet', () =>
+    shouldSigninSucceedWithSolanaWallet.bind(this)());
+});

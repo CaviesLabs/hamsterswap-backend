@@ -31,7 +31,7 @@ export class ProposalService {
     statuses,
     offset,
     limit,
-  }: FindProposalDto & CommonQueryDto) {
+  }: FindProposalDto & CommonQueryDto): Promise<SwapProposalModel[]> {
     const filter: FindOptionsWhere<SwapProposalModel> = {};
 
     if (statuses && statuses.length > 0) {
