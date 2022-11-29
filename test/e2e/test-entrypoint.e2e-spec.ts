@@ -28,3 +28,4 @@ after(async () => {
  * @dev Require other test here.
  */
 require('./wallet.e2e-specs');
+require('./idp-auth.e2e-specs');

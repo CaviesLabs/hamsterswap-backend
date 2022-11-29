@@ -3,7 +3,7 @@ import { expect } from 'chai';
 
 describe('[dummy] private key management', () => {
   it('should generate private key successfully', async () => {
-    const privateKey = testHelper.createEvmKeyPair();
+    const privateKey = testHelper.createSolanaKeyPair();
     expect(!!privateKey.privateKey).to.be.true;
   });
 });

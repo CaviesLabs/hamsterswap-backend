@@ -3,6 +3,9 @@
  */
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Keypair } from '@solana/web3.js';
+import Tws from 'tweetnacl';
+import * as bs from 'bs58';
 
 /**
  * @dev Import modules
@@ -43,32 +46,21 @@ export class TestHelper {
   }
 
   /**
-   * @dev Support creating evm keypair.
+   * @dev Support creating Solana keypair.
    * @param keyPair
    */
-  public createEvmKeyPair(
-    keyPair: { walletAddress: string; privateKey: string } = null,
-  ) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const Web3 = require('web3');
-    const w3 = new Web3();
-    let account = w3.eth.accounts.create();
-
-    if (keyPair) {
-      account = w3.eth.accounts.privateKeyToAccount(keyPair.privateKey);
-    }
-
+  public createSolanaKeyPair() {
+    const keypair = Keypair.generate();
+    const publicKey = keypair.publicKey.toBase58();
     const sign = (message: string) => {
-      return account.sign(message).signature;
+      const encodedMessage = new TextEncoder().encode(message);
+      const signedData = Tws.sign.detached(encodedMessage, keypair.secretKey);
+      return bs.encode(signedData);
     };
-
-    /**
-     * @dev Return methods.
-     */
     return {
       sign,
-      privateKey: account.privateKey,
-      walletAddress: account.address,
+      privateKey: keypair.secretKey,
+      walletAddress: publicKey,
     };
   }
 
