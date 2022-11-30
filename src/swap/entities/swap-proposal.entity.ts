@@ -19,7 +19,7 @@ export class SwapProposalEntity {
 
   status: SwapProposalStatus;
 
-  searchText?: string = '';
+  searchText?: string;
 
-  note?: string = '';
+  note?: string;
 }

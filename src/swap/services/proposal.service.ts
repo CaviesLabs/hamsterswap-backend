@@ -1,11 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsWhere, ILike, In, Repository } from 'typeorm';
 
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { SwapProposalModel } from '../../orm/model/swap-proposal.model';
+import { CreateSwapProposalDto } from '../dto/create-proposal.dto';
 import { FindProposalDto } from '../dto/find-proposal.dto';
-import { SwapProposalEntity } from '../entities/swap-proposal.entity';
+import { UpdateSwapProposalAdditionsDto } from '../dto/update-proposal.dto';
+import {
+  SwapProposalEntity,
+  SwapProposalStatus,
+} from '../entities/swap-proposal.entity';
 
 @Injectable()
 export class ProposalService {
@@ -58,5 +63,33 @@ export class ProposalService {
       },
     });
     return proposal;
+  }
+
+  create({
+    ownerAddress,
+    expireAt,
+    note,
+  }: CreateSwapProposalDto): Promise<SwapProposalEntity> {
+    return this.swapProposalModelRepo.save({
+      ownerAddress,
+      expireAt,
+      note,
+      offerItems: [],
+      swapOptions: [],
+      status: SwapProposalStatus.CREATED,
+    });
+  }
+  async updateAdditional(
+    id: string,
+    { note }: UpdateSwapProposalAdditionsDto,
+  ): Promise<SwapProposalEntity> {
+    const proposal = await this.swapProposalModelRepo.findOne({
+      where: { id },
+    });
+    if (!proposal) throw new NotFoundException('PROPOSAL::NOT_FOUND');
+
+    proposal.note = note;
+
+    return this.swapProposalModelRepo.save(proposal);
   }
 }

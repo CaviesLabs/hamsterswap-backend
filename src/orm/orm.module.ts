@@ -12,7 +12,6 @@ import { EnabledIdpModel } from './model/enabled-idp.model';
 import { UserModel } from './model/user.model';
 import { SwapItemModel } from './model/swap-item.model';
 import { SwapOptionModel } from './model/swap-option.model';
-import { SwapPlatformConfigModel } from './model/swap-platform-config.model';
 import { SwapProposalModel } from './model/swap-proposal.model';
 
 @Module({
@@ -29,7 +28,6 @@ import { SwapProposalModel } from './model/swap-proposal.model';
       ExtendedSessionModel,
       EnabledIdpModel,
       UserModel,
-      SwapPlatformConfigModel,
       SwapItemModel,
       SwapOptionModel,
       SwapProposalModel,
