@@ -5,7 +5,9 @@ export class TestState {
     walletAddress: string;
   };
 
-  ownerAddress: string;
+  accessToken: string;
+
+  proposalId: string;
 
   public static get(ctx: any): TestState {
     if (!ctx['state']) {

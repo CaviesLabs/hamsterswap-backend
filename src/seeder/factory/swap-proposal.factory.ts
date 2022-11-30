@@ -22,16 +22,19 @@ export class SwapProposalFactory {
 
   generate({
     ownerAddress,
-  }: Partial<Pick<SwapProposalModel, 'ownerAddress'>>): SwapProposalModel {
+    ownerId,
+  }: Pick<SwapProposalModel, 'ownerId' | 'ownerAddress'>): SwapProposalModel {
     const proposal = this.entityManager
       .getRepository(SwapProposalModel)
       .create({
+        ownerId,
         ownerAddress: ownerAddress ?? randomOwnerAddress(),
         status: faker.helpers.arrayElement<SwapProposalStatus>([
           SwapProposalStatus.CREATED,
           SwapProposalStatus.SETTLED,
         ]),
         expireAt: faker.date.soon(30),
+        note: faker.lorem.paragraphs(),
       });
 
     proposal.fulfillBy = faker.helpers.maybe(
@@ -69,7 +72,7 @@ export class SwapProposalFactory {
   }
 
   generateMany(
-    template: Partial<Pick<SwapProposalModel, 'ownerAddress'>>,
+    template: Pick<SwapProposalModel, 'ownerId' | 'ownerAddress'>,
     count: number,
   ): SwapProposalModel[] {
     return Array.from({ length: count }, () => this.generate(template));

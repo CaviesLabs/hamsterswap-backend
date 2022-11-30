@@ -3,8 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { SwapProposalModel } from '../orm/model/swap-proposal.model';
+import { UserModel } from '../orm/model/user.model';
 import { RegistryProvider } from '../providers/registry.provider';
 import { SwapProposalFactory } from './factory/swap-proposal.factory';
+import { UserFactory } from './factory/user.factory';
 
 @Injectable()
 export class SwapProposalSeeder implements OnApplicationBootstrap {
@@ -13,10 +15,13 @@ export class SwapProposalSeeder implements OnApplicationBootstrap {
     /**
      * @dev Mock factories
      */
+    private readonly userFactory: UserFactory,
     private readonly swapProposalFactory: SwapProposalFactory,
     /**
      * @dev repositories
      */
+    @InjectRepository(UserModel)
+    private readonly UserRepo: Repository<UserModel>,
     @InjectRepository(SwapProposalModel)
     private readonly swapProposalModelRepo: Repository<SwapProposalModel>,
   ) {}
@@ -41,7 +46,14 @@ export class SwapProposalSeeder implements OnApplicationBootstrap {
   }
 
   private async seedingData() {
-    const proposals = this.swapProposalFactory.generateMany({}, 10);
+    const user = await this.UserRepo.save(this.userFactory.generate());
+    const proposals = this.swapProposalFactory.generateMany(
+      {
+        ownerId: user.id,
+        ownerAddress: undefined,
+      },
+      10,
+    );
     await this.swapProposalModelRepo.save(proposals);
   }
 }

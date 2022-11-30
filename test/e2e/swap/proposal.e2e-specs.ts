@@ -4,25 +4,26 @@ import * as request from 'supertest';
 import { EntityManager } from 'typeorm';
 
 import { SwapProposalModel } from '../../../src/orm/model/swap-proposal.model';
+import { CreateSwapProposalDto } from '../../../src/swap/dto/create-proposal.dto';
 import { TestState } from '../state.suite';
 import { testHelper } from '../test-entrypoint.e2e-spec';
+import { shouldSignUpSucceedWithSolanaWallet } from '../auth/idp-auth.e2e-specs';
+import { UpdateSwapProposalAdditionsDto } from '../../../src/swap/dto/update-proposal.dto';
 
 export async function retrieveProposalByOwnerAddress(this: Mocha.Context) {
   const app = testHelper.app;
-  const state = TestState.get(this);
 
   // Precondition 1: Having a ownerAddress
   const entityManager = await app.resolve(EntityManager);
   const { ownerAddress } = await entityManager
     .getRepository(SwapProposalModel)
     .findOne({ where: {} });
-  state.ownerAddress = ownerAddress;
 
   // Step 1: Call find proposals
   const findProposalResponse = await request(app.getHttpServer())
     .get(`/api/proposal`)
     .query({
-      ownerAddresses: [state.ownerAddress],
+      ownerAddresses: [ownerAddress],
     })
     .send();
 
@@ -41,13 +42,94 @@ export async function retrieveProposalByOwnerAddress(this: Mocha.Context) {
   }
 }
 
+export async function retrieveProposalById(this: Mocha.Context) {
+  const app = testHelper.app;
+
+  // Precondition 1: Having a proposal id
+  const entityManager = await app.resolve(EntityManager);
+  const { id } = await entityManager
+    .getRepository(SwapProposalModel)
+    .findOne({ where: {} });
+
+  // Step 1: Call find proposals
+  const findProposalResponse = await request(app.getHttpServer())
+    .get(`/api/proposal/${id}`)
+    .send();
+
+  expect(findProposalResponse.status).to.equal(HttpStatus.OK);
+  expect(findProposalResponse.body.ownerAddress).to.be.a('string');
+  expect(findProposalResponse.body.offerItems).to.be.an('array');
+  expect(findProposalResponse.body.swapOptions).to.be.an('array');
+  expect(new Date(findProposalResponse.body.expireAt)).to.be.an('Date');
+  expect(findProposalResponse.body.status).to.be.oneOf([
+    'SWAP_PROPOSAL_STATUS::CREATED',
+    'SWAP_PROPOSAL_STATUS::SETTLED',
+  ]);
+}
+
+export async function createEmptyProposal(this: Mocha.Context) {
+  const app = testHelper.app;
+  const state = TestState.get(this);
+  // Precondition: Sign-up succeed
+  await shouldSignUpSucceedWithSolanaWallet.bind(this)();
+
+  // Step 1: Call create empty proposal API
+  const createSwapProposalDto = {
+    expireAt: new Date(),
+    ownerAddress: state.keypair.walletAddress,
+    note: 'This can be omit or empty',
+  } as CreateSwapProposalDto;
+
+  const createProposalResponse = await request(app.getHttpServer())
+    .post(`/api/proposal`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .auth(state.accessToken, { type: 'bearer' })
+    .send(createSwapProposalDto);
+
+  expect(createProposalResponse.status).to.equal(HttpStatus.CREATED);
+  expect(createProposalResponse.body.id).to.be.a('string');
+  expect(createProposalResponse.body.ownerId).to.be.a('string');
+  expect(createProposalResponse.body.ownerAddress).to.be.a('string');
+  expect(new Date(createProposalResponse.body.expireAt)).to.be.a('date');
+  expect(createProposalResponse.body.note).to.be.a('string');
+  expect(createProposalResponse.body.status).to.equal(
+    'SWAP_PROPOSAL_STATUS::CREATED',
+  );
+
+  state.proposalId = createProposalResponse.body.id;
+}
+
+export async function updateProposalAdditions(this: Mocha.Context) {
+  const app = testHelper.app;
+  const state = TestState.get(this);
+  // Precondition 1: Sign-up succeed
+  await shouldSignUpSucceedWithSolanaWallet.bind(this)();
+
+  // Precondition 2: A proposal created
+  await createEmptyProposal.bind(this)();
+
+  // Step 1: Call update proposal additions
+  const updateProposalAdditionsDto = {
+    note: 'this can be omit or empty',
+  } as UpdateSwapProposalAdditionsDto;
+
+  const updateProposalResponse = await request(app.getHttpServer())
+    .patch(`/api/proposal/${state.proposalId}/additions`)
+    .set('Content-Type', 'application/json')
+    .set('Accept', 'application/json')
+    .auth(state.accessToken, { type: 'bearer' })
+    .send(updateProposalAdditionsDto);
+
+  expect(updateProposalResponse.status).to.equal(HttpStatus.OK);
+  expect(updateProposalResponse.body.note).to.equal(
+    updateProposalAdditionsDto.note,
+  );
+}
+
 describe('retrieve proposals', async function () {
-  it('Retrieve proposal by ownerAddress', async () => {
-    try {
-      await retrieveProposalByOwnerAddress.bind(this)();
-    } catch (e) {
-      console.log(e);
-      throw e;
-    }
-  });
+  it('Retrieve proposal by ownerAddress', retrieveProposalByOwnerAddress);
+  it('Retrieve proposal by id', retrieveProposalById);
+  it('Create empty proposal', createEmptyProposal);
+  it('update proposal additions', updateProposalAdditions);
 });

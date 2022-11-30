@@ -1,4 +1,11 @@
-import { Column, Entity, Index, JoinTable, ManyToMany } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+} from 'typeorm';
 
 import {
   SwapProposalEntity,
@@ -7,11 +14,18 @@ import {
 import { BaseModel } from '../base.model';
 import { SwapItemModel } from './swap-item.model';
 import { SwapOptionModel } from './swap-option.model';
+import { UserModel } from './user.model';
 
 @Entity({
   name: 'swap_proposal',
 })
 export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
+  @Column({ type: String })
+  ownerId: string;
+
+  @ManyToOne(() => UserModel)
+  owner: UserModel;
+
   @Column({ type: String })
   ownerAddress: string;
 

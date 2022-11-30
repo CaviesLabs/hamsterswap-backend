@@ -1,4 +1,5 @@
 import { PickType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import { IsDate, IsOptional, IsString } from 'class-validator';
 
 import { SwapProposalEntity } from '../entities/swap-proposal.entity';
@@ -15,6 +16,7 @@ export class CreateSwapProposalDto implements _CreateSwapProposalDto {
   ownerAddress: string;
 
   @IsDate()
+  @Type(() => Date)
   expireAt: Date;
 
   @IsString()

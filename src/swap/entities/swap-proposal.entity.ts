@@ -7,6 +7,10 @@ export enum SwapProposalStatus {
 }
 
 export class SwapProposalEntity {
+  id: string;
+
+  ownerId: string;
+
   ownerAddress: string;
 
   offerItems: SwapItemEntity[] = [];

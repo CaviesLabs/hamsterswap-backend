@@ -29,9 +29,15 @@ after(async () => {
   process.exit(0);
 });
 
+afterEach(function () {
+  if (this.currentTest.err) {
+    console.error(this.currentTest.err);
+  }
+});
+
 /**
  * @dev Require other test here.
  */
-// require('./wallet.e2e-specs');
-// require('./auth/idp-auth.e2e-specs');
+require('./wallet.e2e-specs');
+require('./auth/idp-auth.e2e-specs');
 require('./swap/proposal.e2e-specs');

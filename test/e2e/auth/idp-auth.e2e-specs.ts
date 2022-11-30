@@ -63,6 +63,8 @@ export async function shouldSignUpSucceedWithSolanaWallet(this: Mocha.Context) {
 
   expect(signUpResponse.statusCode).to.equal(HttpStatus.CREATED);
   expect(signUpResponse.body.accessToken).to.be.a('string');
+
+  state.accessToken = signUpResponse.body.accessToken;
 }
 
 export async function shouldSigninSucceedWithSolanaWallet(this: Mocha.Context) {
@@ -113,11 +115,15 @@ export async function shouldSigninSucceedWithSolanaWallet(this: Mocha.Context) {
 }
 
 describe('[IDP Auth] sign-up', async function () {
-  it('Should signup succeed with Solana wallet', async () =>
-    shouldSignUpSucceedWithSolanaWallet.bind(this)());
+  it(
+    'Should signup succeed with Solana wallet',
+    shouldSignUpSucceedWithSolanaWallet,
+  );
 });
 
 describe('[IDP Auth] sign-in', async function () {
-  it('Should signin succeed with Solana wallet', async () =>
-    shouldSigninSucceedWithSolanaWallet.bind(this)());
+  it(
+    'Should signin succeed with Solana wallet',
+    shouldSigninSucceedWithSolanaWallet,
+  );
 });

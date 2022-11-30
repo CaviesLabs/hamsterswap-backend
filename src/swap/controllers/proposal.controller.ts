@@ -6,9 +6,13 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
+import { CurrentSession } from '../../auth/decorators/current-session.decorator';
+import { JwtAuthSession } from '../../auth/strategies/premature-auth.strategy';
 import { SwapProposalModel } from '../../orm/model/swap-proposal.model';
 import { CreateSwapProposalDto } from '../dto/create-proposal.dto';
 import { FindProposalDto } from '../dto/find-proposal.dto';
@@ -33,13 +37,16 @@ export class ProposalController {
   }
 
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   createEmpty(
+    @CurrentSession() { user }: JwtAuthSession,
     @Body() body: CreateSwapProposalDto,
   ): Promise<SwapProposalEntity> {
-    return this.proposalService.create(body);
+    return this.proposalService.create({ ...body, ownerId: user.id });
   }
 
   @Patch('/:proposalId/additions')
+  @UseGuards(AuthGuard('jwt'))
   updateAdditions(
     @Param('proposalId') proposalId: string,
     @Body()

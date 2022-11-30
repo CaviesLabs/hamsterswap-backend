@@ -66,11 +66,13 @@ export class ProposalService {
   }
 
   create({
+    ownerId,
     ownerAddress,
     expireAt,
     note,
-  }: CreateSwapProposalDto): Promise<SwapProposalEntity> {
+  }: CreateSwapProposalDto & { ownerId: string }): Promise<SwapProposalEntity> {
     return this.swapProposalModelRepo.save({
+      ownerId,
       ownerAddress,
       expireAt,
       note,
