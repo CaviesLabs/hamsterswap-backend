@@ -9,6 +9,7 @@ import { TestState } from '../state.suite';
 import { testHelper } from '../test-entrypoint.e2e-spec';
 import { shouldSignUpSucceedWithSolanaWallet } from '../auth/idp-auth.e2e-specs';
 import { UpdateSwapProposalAdditionsDto } from '../../../src/swap/dto/update-proposal.dto';
+import { SwapProposalStatus } from '../../../src/swap/entities/swap-proposal.entity';
 
 export async function shouldRetrieveProposalByOwnerAddress(
   this: Mocha.Context,
@@ -38,8 +39,10 @@ export async function shouldRetrieveProposalByOwnerAddress(
     expect(proposal.swapOptions).to.be.an('array');
     expect(new Date(proposal.expireAt)).to.be.an('Date');
     expect(proposal.status).to.be.oneOf([
-      'SWAP_PROPOSAL_STATUS::CREATED',
-      'SWAP_PROPOSAL_STATUS::SETTLED',
+      SwapProposalStatus.CREATED,
+      SwapProposalStatus.DEPOSITED,
+      SwapProposalStatus.FULFILLED,
+      SwapProposalStatus.CANCELED,
     ]);
   }
 }
@@ -64,8 +67,10 @@ export async function shouldRetrieveProposalById(this: Mocha.Context) {
   expect(findProposalResponse.body.swapOptions).to.be.an('array');
   expect(new Date(findProposalResponse.body.expireAt)).to.be.an('Date');
   expect(findProposalResponse.body.status).to.be.oneOf([
-    'SWAP_PROPOSAL_STATUS::CREATED',
-    'SWAP_PROPOSAL_STATUS::SETTLED',
+    SwapProposalStatus.CREATED,
+    SwapProposalStatus.DEPOSITED,
+    SwapProposalStatus.FULFILLED,
+    SwapProposalStatus.CANCELED,
   ]);
 }
 
@@ -96,7 +101,7 @@ export async function shouldCreateEmptyProposal(this: Mocha.Context) {
   expect(new Date(createProposalResponse.body.expireAt)).to.be.a('date');
   expect(createProposalResponse.body.note).to.be.a('string');
   expect(createProposalResponse.body.status).to.equal(
-    'SWAP_PROPOSAL_STATUS::CREATED',
+    SwapProposalStatus.CREATED,
   );
 
   state.proposalId = createProposalResponse.body.id;
