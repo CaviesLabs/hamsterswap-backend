@@ -1,7 +1,9 @@
+import { testHelper } from './test-entrypoint.e2e-spec';
 import { expect } from 'chai';
 
 describe('[dummy] private key management', () => {
   it('should generate private key successfully', async () => {
-    expect(true).to.equal(false);
+    const privateKey = testHelper.createSolanaKeyPair();
+    expect(!!privateKey.privateKey).to.be.true;
   });
 });
