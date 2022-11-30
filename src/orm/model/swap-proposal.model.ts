@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  Index,
-  JoinTable,
-  ManyToMany,
-  OneToOne,
-} from 'typeorm';
+import { Column, Entity, Index, JoinTable, ManyToMany } from 'typeorm';
 
 import {
   SwapProposalEntity,
@@ -14,7 +7,6 @@ import {
 import { BaseModel } from '../base.model';
 import { SwapItemModel } from './swap-item.model';
 import { SwapOptionModel } from './swap-option.model';
-import { SwapProposalAdditionalDataModel } from './swap-proposal-additional-data.model';
 
 @Entity({
   name: 'swap_proposal',
@@ -34,14 +26,14 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   @Column({ type: String, nullable: true })
   fulfillBy?: string;
 
-  @Column({ type: Date })
+  @Column({ type: 'timestamptz' })
   expireAt: Date;
 
   @Column({ type: String, enum: SwapProposalStatus })
   status: SwapProposalStatus;
 
-  @OneToOne(() => SwapProposalAdditionalDataModel)
-  additionalData: SwapProposalAdditionalDataModel;
+  @Column({ type: String, default: '' })
+  note: string;
 
   @Column({ type: String, default: '' })
   @Index({ fulltext: true })

@@ -12,7 +12,6 @@ import { TokenIssuerService } from '../services/token-issuer.service';
 import { UserService } from '../../user/services/user.service';
 import { AuthSessionService } from '../services/auth-session.service';
 import { AvailableIdpResourceName } from '../../providers/idp/identity-provider.interface';
-import { EvmWalletAuthenticator } from './idp/evm-wallet-auth.authenticator';
 import { IdpResourceBuilder } from '../../user/factories/idp-resource.builder';
 import { SolanaWalletAuthenticator } from './idp/solana-wallet-auth.authenticator';
 
@@ -72,17 +71,6 @@ export class IdpAuthBuilder {
      * @dev Switch type and return the auth service accordingly.
      */
     switch (type) {
-      case AvailableIdpResourceName.EVMWallet:
-        return new EvmWalletAuthenticator(
-          this.EnabledIdpRepo,
-          this.ExtendedSessionRepo,
-          this.idpResourceBuilder.getIdpResource(
-            AvailableIdpResourceName.EVMWallet,
-          ),
-          this.tokenIssuer,
-          this.userService,
-          this.sessionService,
-        );
       case AvailableIdpResourceName.SolanaWallet:
         return new SolanaWalletAuthenticator(
           this.EnabledIdpRepo,

@@ -9,7 +9,12 @@ export const testHelper = new TestHelper();
  * @dev Setup before hook.
  */
 before(async () => {
-  await testHelper.bootTestingApp();
+  try {
+    await testHelper.bootTestingApp();
+  } catch (e) {
+    console.log(e);
+    throw e;
+  }
 });
 
 /**
@@ -27,6 +32,6 @@ after(async () => {
 /**
  * @dev Require other test here.
  */
-require('./wallet.e2e-specs');
-require('./auth/idp-auth.e2e-specs');
+// require('./wallet.e2e-specs');
+// require('./auth/idp-auth.e2e-specs');
 require('./swap/proposal.e2e-specs');

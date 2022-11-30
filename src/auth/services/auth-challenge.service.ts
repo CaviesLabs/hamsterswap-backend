@@ -44,7 +44,7 @@ export class AuthChallengeService {
      */
     const payload: AuthChallengeEntity = {
       target,
-      expiryDate: expiryDate,
+      expiryDate: new Date(expiryDate),
       isResolved: false,
       durationDelta: delta,
       memo: '',

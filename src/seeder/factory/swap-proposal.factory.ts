@@ -5,7 +5,6 @@ import { faker } from '@faker-js/faker';
 import { randomInt } from 'crypto';
 
 import { SwapProposalModel } from '../../orm/model/swap-proposal.model';
-import { SwapProposalAdditionalDataModel } from '../../orm/model/swap-proposal-additional-data.model';
 import { SwapProposalStatus } from '../../swap/entities/swap-proposal.entity';
 import { SwapItemFactory } from './swap-item.factory';
 import { SwapOptionFactory } from './swap-option.factory';
@@ -21,17 +20,6 @@ export class SwapProposalFactory {
     private readonly entityManager: EntityManager,
   ) {}
 
-  generateAdditionalData(
-    proposal: SwapProposalModel,
-  ): SwapProposalAdditionalDataModel {
-    return this.entityManager
-      .getRepository(SwapProposalAdditionalDataModel)
-      .create({
-        proposal,
-        note: faker.lorem.lines(),
-      });
-  }
-
   generate({
     ownerAddress,
   }: Partial<Pick<SwapProposalModel, 'ownerAddress'>>): SwapProposalModel {
@@ -45,8 +33,6 @@ export class SwapProposalFactory {
         ]),
         expireAt: faker.date.soon(30),
       });
-
-    console.log(proposal);
 
     proposal.fulfillBy = faker.helpers.maybe(
       () => randomFulfillAddress(proposal.ownerAddress),

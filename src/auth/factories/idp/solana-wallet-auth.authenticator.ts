@@ -79,6 +79,7 @@ export class SolanaWalletAuthenticator implements IdpAuthenticator {
      */
     return this.tokenIssuer.grantSignInAccessToken({
       actorId: identity.userId,
+      enabledIdpId: identity.id,
     });
   }
 
@@ -114,7 +115,7 @@ export class SolanaWalletAuthenticator implements IdpAuthenticator {
     /**
      * @dev Now link wallet
      */
-    await this.EnabledIdpRepo.save({
+    const enabledIdp = await this.EnabledIdpRepo.save({
       userId: user.id,
       type: AvailableIdpResourceName.SolanaWallet,
       identityId: verifiedWallet.identityId,
@@ -123,7 +124,10 @@ export class SolanaWalletAuthenticator implements IdpAuthenticator {
     /**
      * @dev Then return access token
      */
-    return this.tokenIssuer.grantSignInAccessToken({ actorId: user.id });
+    return this.tokenIssuer.grantSignInAccessToken({
+      actorId: user.id,
+      enabledIdpId: enabledIdp.id,
+    });
   }
 
   /**

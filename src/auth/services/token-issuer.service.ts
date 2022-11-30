@@ -35,15 +35,15 @@ export interface AccessTokenConfig {
   grantType: GrantType;
   sessionType: SessionType;
   scopes: AuthScope[];
-  enabledIdpId?: string;
+  enabledIdpId: string;
 }
 
 /**
  * @dev Reset password config for issuer service.
  */
-export interface PreMatureGrantAccessTokenOptions {
+export interface GrantAccessTokenOptions {
   actorId: string;
-  enabledIdpId?: string;
+  enabledIdpId: string;
 }
 
 /**
@@ -129,6 +129,7 @@ export class TokenIssuerService {
         sessionOrigin: session.id,
         distributionType: SessionDistributionType.PreMature,
         enabledIdpId: config.enabledIdpId,
+        lastActiveTime: new Date(),
       });
 
       return session;
@@ -190,7 +191,7 @@ export class TokenIssuerService {
    * @param options
    */
   public async grantSignInAccessToken(
-    options: PreMatureGrantAccessTokenOptions,
+    options: GrantAccessTokenOptions,
   ): Promise<TokenSetEntity> {
     return {
       accessToken: await this.grantAccessToken({
@@ -212,6 +213,8 @@ export class TokenIssuerService {
         grantType: GrantType.Account,
         sessionType: SessionType.Direct,
         requestedResource: 'account',
+
+        enabledIdpId: options.enabledIdpId,
       }),
     };
   }

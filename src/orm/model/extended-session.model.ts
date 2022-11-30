@@ -22,13 +22,13 @@ export class ExtendedSessionModel
   @Column({ type: String })
   userId: string;
 
-  @Column({ type: String, array: true })
+  @Column({ type: String, array: true, default: [] })
   userIpAddress: string[];
 
-  @Column({ type: String, array: true })
+  @Column({ type: String, array: true, default: [] })
   userAgent: string[];
 
-  @Column({ type: Date })
+  @Column({ type: 'timestamptz' })
   lastActiveTime: Date;
 
   @Column({ type: String, enum: SessionDistributionType })

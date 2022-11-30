@@ -42,13 +42,18 @@ export class IdpAuthService {
    * @param type
    * @param signUpPayload
    */
-  public signUp(
+  public async signUp(
     type: AvailableIdpResourceName,
     signUpPayload: IdpSignUpPayload,
   ): Promise<TokenSetEntity> {
-    return this.idpAuthBuilder
-      .getIdpAuthService(type)
-      .signUp(signUpPayload.base64Signature);
+    try {
+      return await this.idpAuthBuilder
+        .getIdpAuthService(type)
+        .signUp(signUpPayload.base64Signature);
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
   }
 
   /**

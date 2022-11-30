@@ -19,7 +19,7 @@ export class UserModel extends BaseModel implements UserEntity {
   @Column({ type: String, nullable: true })
   displayName?: string;
 
-  @Column({ type: String })
+  @Column({ type: String, nullable: true })
   avatar?: string;
 
   @Column({ enum: Role, type: String, array: true })

@@ -36,7 +36,7 @@ export class AuthSessionModel extends BaseModel implements AuthSessionEntity {
   @Column({ type: String, enum: SessionType, default: SessionType.Direct })
   readonly sessionType: SessionType;
 
-  @Column({ type: Date })
+  @Column({ type: 'timestamptz' })
   readonly expiryDate: Date;
 
   @Column({ enum: AuthScope, type: String, array: true })

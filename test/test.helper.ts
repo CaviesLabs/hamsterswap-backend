@@ -4,7 +4,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Keypair } from '@solana/web3.js';
-import Tws from 'tweetnacl';
+import * as Tws from 'tweetnacl';
 import * as bs from 'bs58';
 
 /**
@@ -12,6 +12,7 @@ import * as bs from 'bs58';
  */
 import { AppModule } from '../src/app.module';
 import { globalApply } from '../src/main';
+import { FastifyAdapter } from '@nestjs/platform-fastify';
 
 /**
  * @dev Test helper to setup fixtures and other helpers.
@@ -28,11 +29,11 @@ export class TestHelper {
       imports: [AppModule],
     }).compile();
 
-    this.app = this.moduleFixture.createNestApplication();
+    this.app = this.moduleFixture.createNestApplication(new FastifyAdapter());
     await globalApply(this.app);
 
     await this.app.init();
-
+    await this.app.getHttpAdapter().getInstance().ready();
     // import fixtures
     await this.applyFixtures();
   }

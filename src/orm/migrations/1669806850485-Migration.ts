@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Migration1669797532977 implements MigrationInterface {
-  name = 'Migration1669797532977';
+export class Migration1669806850485 implements MigrationInterface {
+  name = 'Migration1669806850485';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -11,7 +11,22 @@ export class Migration1669797532977 implements MigrationInterface {
       `CREATE TABLE "swap_option" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, CONSTRAINT "PK_b8efcce39e51623156497fca32f" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "email" character varying, "emailVerified" boolean, "birthday" TIMESTAMP, "displayName" character varying, "avatar" character varying NOT NULL, "roles" character varying array NOT NULL, "groups" character varying array, CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "swap_platform_config" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "maxAllowedOptions" integer NOT NULL, "maxAllowedItems" integer NOT NULL, "allowNTFCollections" character varying array NOT NULL, "allowCurrencies" character varying array NOT NULL, CONSTRAINT "PK_4aa32fc19bf4909a1fca227b90c" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "auth_session" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "actorId" character varying NOT NULL, "authorizedPartyId" character varying NOT NULL, "checksum" character varying NOT NULL, "grantType" character varying NOT NULL DEFAULT 'GRANT_TYPE::ACCOUNT', "sessionType" character varying NOT NULL DEFAULT 'SESSION_TYPE::DIRECT', "expiryDate" TIMESTAMP WITH TIME ZONE NOT NULL, "scopes" character varying array NOT NULL, CONSTRAINT "PK_19354ed146424a728c1112a8cbf" PRIMARY KEY ("id"))`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "actorId_idx" ON "auth_session" ("actorId") `,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "authorizedPartyId_idx" ON "auth_session" ("authorizedPartyId") `,
+    );
+    await queryRunner.query(
+      `CREATE UNIQUE INDEX "checksum_uidx" ON "auth_session" ("checksum") `,
+    );
+    await queryRunner.query(
+      `CREATE TABLE "user" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "email" character varying, "emailVerified" boolean, "birthday" TIMESTAMP, "displayName" character varying, "avatar" character varying, "roles" character varying array NOT NULL, "groups" character varying array, CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "enabled_idp" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "identityId" character varying NOT NULL, "type" character varying NOT NULL, "userId" uuid NOT NULL, CONSTRAINT "PK_ad7694acd5567493bca6da79f62" PRIMARY KEY ("id"))`,
@@ -32,34 +47,16 @@ export class Migration1669797532977 implements MigrationInterface {
       `CREATE INDEX "userId_identityId_idx" ON "enabled_idp" ("userId", "identityId") `,
     );
     await queryRunner.query(
-      `CREATE TABLE "extended_session" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "userId" character varying NOT NULL, "userIpAddress" character varying array NOT NULL, "userAgent" character varying array NOT NULL, "lastActiveTime" TIMESTAMP NOT NULL, "distributionType" character varying NOT NULL, "sessionOrigin" character varying NOT NULL, "enabledIdpId" uuid NOT NULL, CONSTRAINT "PK_221a9c21d28163d5485a2f64847" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "extended_session" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "userId" character varying NOT NULL, "userIpAddress" character varying array NOT NULL DEFAULT '{}', "userAgent" character varying array NOT NULL DEFAULT '{}', "lastActiveTime" TIMESTAMP WITH TIME ZONE NOT NULL, "distributionType" character varying NOT NULL, "sessionOrigin" character varying NOT NULL, "enabledIdpId" uuid NOT NULL, CONSTRAINT "PK_221a9c21d28163d5485a2f64847" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "swap_platform_config" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "maxAllowedOptions" integer NOT NULL, "maxAllowedItems" integer NOT NULL, "allowNTFCollections" character varying array NOT NULL, "allowCurrencies" character varying array NOT NULL, CONSTRAINT "PK_4aa32fc19bf4909a1fca227b90c" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "swap_proposal_additional_data" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "note" character varying NOT NULL, "proposalId" uuid, CONSTRAINT "REL_fb59f630ff39e4c7eff2aa7c7d" UNIQUE ("proposalId"), CONSTRAINT "PK_efd757a4d8c8136feeb1cf5be8f" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "swap_proposal" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "ownerAddress" character varying NOT NULL, "fulfillBy" character varying, "expireAt" TIMESTAMP NOT NULL, "status" character varying NOT NULL, "searchText" character varying NOT NULL DEFAULT '', CONSTRAINT "PK_365df198e98b71d4f2cf48b300b" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "swap_proposal" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "ownerAddress" character varying NOT NULL, "fulfillBy" character varying, "expireAt" TIMESTAMP WITH TIME ZONE NOT NULL, "status" character varying NOT NULL, "note" character varying NOT NULL DEFAULT '', "searchText" character varying NOT NULL DEFAULT '', CONSTRAINT "PK_365df198e98b71d4f2cf48b300b" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_d91082441eb45edb7f8e4e7637" ON "swap_proposal" ("searchText") `,
     );
     await queryRunner.query(
-      `CREATE TABLE "auth_session" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "actorId" character varying NOT NULL, "authorizedPartyId" character varying NOT NULL, "checksum" character varying NOT NULL, "grantType" character varying NOT NULL DEFAULT 'GRANT_TYPE::ACCOUNT', "sessionType" character varying NOT NULL DEFAULT 'SESSION_TYPE::DIRECT', "expiryDate" TIMESTAMP NOT NULL, "scopes" character varying array NOT NULL, CONSTRAINT "PK_19354ed146424a728c1112a8cbf" PRIMARY KEY ("id"))`,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "actorId_idx" ON "auth_session" ("actorId") `,
-    );
-    await queryRunner.query(
-      `CREATE INDEX "authorizedPartyId_idx" ON "auth_session" ("authorizedPartyId") `,
-    );
-    await queryRunner.query(
-      `CREATE UNIQUE INDEX "checksum_uidx" ON "auth_session" ("checksum") `,
-    );
-    await queryRunner.query(
-      `CREATE TABLE "auth_challenge" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "target" character varying NOT NULL, "memo" character varying NOT NULL, "expiryDate" TIMESTAMP NOT NULL, "isResolved" boolean NOT NULL, "durationDelta" integer NOT NULL, CONSTRAINT "PK_afd9a8cbeb610e138f30e769eb4" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "auth_challenge" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "deletedAt" TIMESTAMP, "target" character varying NOT NULL, "memo" character varying NOT NULL, "expiryDate" TIMESTAMP WITH TIME ZONE NOT NULL, "isResolved" boolean NOT NULL, "durationDelta" integer NOT NULL, CONSTRAINT "PK_afd9a8cbeb610e138f30e769eb4" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE INDEX "target_createdAt_idx" ON "auth_challenge" ("target", "createdAt") `,
@@ -96,9 +93,6 @@ export class Migration1669797532977 implements MigrationInterface {
     );
     await queryRunner.query(
       `ALTER TABLE "extended_session" ADD CONSTRAINT "FK_c29771521b673074ff49c1e0d84" FOREIGN KEY ("enabledIdpId") REFERENCES "enabled_idp"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
-    );
-    await queryRunner.query(
-      `ALTER TABLE "swap_proposal_additional_data" ADD CONSTRAINT "FK_fb59f630ff39e4c7eff2aa7c7df" FOREIGN KEY ("proposalId") REFERENCES "swap_proposal"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`,
     );
     await queryRunner.query(
       `ALTER TABLE "swap_option_items_swap_item" ADD CONSTRAINT "FK_2033c2577306d764ab1d514c215" FOREIGN KEY ("swapOptionId") REFERENCES "swap_option"("id") ON DELETE CASCADE ON UPDATE CASCADE`,
@@ -140,9 +134,6 @@ export class Migration1669797532977 implements MigrationInterface {
       `ALTER TABLE "swap_option_items_swap_item" DROP CONSTRAINT "FK_2033c2577306d764ab1d514c215"`,
     );
     await queryRunner.query(
-      `ALTER TABLE "swap_proposal_additional_data" DROP CONSTRAINT "FK_fb59f630ff39e4c7eff2aa7c7df"`,
-    );
-    await queryRunner.query(
       `ALTER TABLE "extended_session" DROP CONSTRAINT "FK_c29771521b673074ff49c1e0d84"`,
     );
     await queryRunner.query(
@@ -173,16 +164,10 @@ export class Migration1669797532977 implements MigrationInterface {
     await queryRunner.query(`DROP TABLE "swap_option_items_swap_item"`);
     await queryRunner.query(`DROP INDEX "public"."target_createdAt_idx"`);
     await queryRunner.query(`DROP TABLE "auth_challenge"`);
-    await queryRunner.query(`DROP INDEX "public"."checksum_uidx"`);
-    await queryRunner.query(`DROP INDEX "public"."authorizedPartyId_idx"`);
-    await queryRunner.query(`DROP INDEX "public"."actorId_idx"`);
-    await queryRunner.query(`DROP TABLE "auth_session"`);
     await queryRunner.query(
       `DROP INDEX "public"."IDX_d91082441eb45edb7f8e4e7637"`,
     );
     await queryRunner.query(`DROP TABLE "swap_proposal"`);
-    await queryRunner.query(`DROP TABLE "swap_proposal_additional_data"`);
-    await queryRunner.query(`DROP TABLE "swap_platform_config"`);
     await queryRunner.query(`DROP TABLE "extended_session"`);
     await queryRunner.query(`DROP INDEX "public"."userId_identityId_idx"`);
     await queryRunner.query(`DROP INDEX "public"."userId_type_idx"`);
@@ -191,6 +176,11 @@ export class Migration1669797532977 implements MigrationInterface {
     await queryRunner.query(`DROP INDEX "public"."identityId_uidx"`);
     await queryRunner.query(`DROP TABLE "enabled_idp"`);
     await queryRunner.query(`DROP TABLE "user"`);
+    await queryRunner.query(`DROP INDEX "public"."checksum_uidx"`);
+    await queryRunner.query(`DROP INDEX "public"."authorizedPartyId_idx"`);
+    await queryRunner.query(`DROP INDEX "public"."actorId_idx"`);
+    await queryRunner.query(`DROP TABLE "auth_session"`);
+    await queryRunner.query(`DROP TABLE "swap_platform_config"`);
     await queryRunner.query(`DROP TABLE "swap_option"`);
     await queryRunner.query(`DROP TABLE "swap_item"`);
   }

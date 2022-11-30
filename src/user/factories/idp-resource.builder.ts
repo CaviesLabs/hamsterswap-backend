@@ -9,7 +9,6 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { AvailableIdpResourceName } from '../../providers/idp/identity-provider.interface';
 import { EnabledIdpModel } from '../../orm/model/enabled-idp.model';
 import { AuthChallengeService } from '../../auth/services/auth-challenge.service';
-import { EvmWalletIdpResourceService } from './idp/evm-wallet-idp.service';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SolanaWalletIdpResourceService } from './idp/solana-wallet-idp.service';
@@ -83,11 +82,6 @@ export class IdpResourceBuilder {
      * @dev Switch and return provider accordingly.
      */
     switch (type) {
-      case AvailableIdpResourceName.EVMWallet:
-        return new EvmWalletIdpResourceService(
-          this.EnabledIdpRepo,
-          this.authChallengeService,
-        );
       case AvailableIdpResourceName.SolanaWallet:
         return new SolanaWalletIdpResourceService(
           this.EnabledIdpRepo,

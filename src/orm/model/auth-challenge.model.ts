@@ -22,7 +22,7 @@ export class AuthChallengeModel
   @Column({ type: String })
   memo: string;
 
-  @Column({ type: Date })
+  @Column({ type: 'timestamptz' })
   expiryDate: Date;
 
   @Column({ type: Boolean })

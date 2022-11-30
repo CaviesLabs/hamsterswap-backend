@@ -15,26 +15,25 @@ export async function retrieveProposalByOwnerAddress(this: Mocha.Context) {
   const entityManager = await app.resolve(EntityManager);
   const { ownerAddress } = await entityManager
     .getRepository(SwapProposalModel)
-    .findOne({});
+    .findOne({ where: {} });
   state.ownerAddress = ownerAddress;
 
   // Step 1: Call find proposals
   const findProposalResponse = await request(app.getHttpServer())
-    .get('/api/auth/challenge/request')
+    .get(`/api/proposal`)
     .query({
       ownerAddresses: [state.ownerAddress],
     })
     .send();
 
-  console.log({ body: findProposalResponse.body });
-
   expect(findProposalResponse.status).to.equal(HttpStatus.OK);
+
   expect(findProposalResponse.body).to.be.an('array');
   for (const proposal of findProposalResponse.body) {
     expect(proposal.ownerAddress).to.be.a('string');
     expect(proposal.offerItems).to.be.an('array');
     expect(proposal.swapOptions).to.be.an('array');
-    expect(proposal.expireAt).to.be.an('Date');
+    expect(new Date(proposal.expireAt)).to.be.an('Date');
     expect(proposal.status).to.be.oneOf([
       'SWAP_PROPOSAL_STATUS::CREATED',
       'SWAP_PROPOSAL_STATUS::SETTLED',
@@ -43,8 +42,12 @@ export async function retrieveProposalByOwnerAddress(this: Mocha.Context) {
 }
 
 describe('retrieve proposals', async function () {
-  it(
-    'Retrieve proposal by ownerAddress',
-    retrieveProposalByOwnerAddress.bind(this),
-  );
+  it('Retrieve proposal by ownerAddress', async () => {
+    try {
+      await retrieveProposalByOwnerAddress.bind(this)();
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  });
 });

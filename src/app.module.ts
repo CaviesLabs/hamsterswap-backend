@@ -14,6 +14,7 @@ import { AllExceptionsFilter } from './exception.filter';
 import { getDataSourceConfig, getTestDataSource } from './helper';
 import { RegistryProvider } from './providers/registry.provider';
 import { SeederModule } from './seeder/seeder.module';
+import { SwapModule } from './swap/swap.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { SeederModule } from './seeder/seeder.module';
     AuthModule,
     UserModule,
     SeederModule,
+    SwapModule,
   ],
   /**
    * @dev Import controller.

@@ -15,6 +15,6 @@ export class SolanaWalletSignatureDto {
   @IsString()
   desiredWallet: string;
 
-  @IsHexadecimal()
+  @IsString()
   signature: string;
 }

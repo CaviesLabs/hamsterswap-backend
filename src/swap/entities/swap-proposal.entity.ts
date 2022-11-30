@@ -21,9 +21,5 @@ export class SwapProposalEntity {
 
   searchText?: string = '';
 
-  additionalData?: SwapProposalAdditionalDataEntity;
-}
-
-export class SwapProposalAdditionalDataEntity {
-  note: string;
+  note?: string = '';
 }

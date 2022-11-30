@@ -41,9 +41,7 @@ export class SwapProposalSeeder implements OnApplicationBootstrap {
   }
 
   private async seedingData() {
-    console.log('==========Start seeding==========');
     const proposals = this.swapProposalFactory.generateMany({}, 10);
     await this.swapProposalModelRepo.save(proposals);
-    console.log('==========End seeding==========');
   }
 }

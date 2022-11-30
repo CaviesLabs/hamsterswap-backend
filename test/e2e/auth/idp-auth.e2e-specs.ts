@@ -15,8 +15,8 @@ export async function shouldSignUpSucceedWithSolanaWallet(this: Mocha.Context) {
   state.keypair = keypair;
 
   // Step 1: check account availability
-  const checkWalletAvailabilityResponse = await request(app.getHttpServer)
-    .post(`api/user/idp/${'solana-wallet'}/availability/check`)
+  const checkWalletAvailabilityResponse = await request(app.getHttpServer())
+    .post(`/api/user/idp/${'solana-wallet'}/availability/check`)
     .set('Content-Type', 'application/json')
     .set('Accept', 'application/json')
     .send({
@@ -36,11 +36,10 @@ export async function shouldSignUpSucceedWithSolanaWallet(this: Mocha.Context) {
       target: keypair.walletAddress,
     });
 
-  expect(authChallengeResponse.statusCode).to.equal(HttpStatus.OK);
-  expect(authChallengeResponse.body.id).to.equal(keypair.walletAddress);
-  expect(authChallengeResponse.body.target).to.be.a('string');
+  expect(authChallengeResponse.statusCode).to.equal(HttpStatus.CREATED);
+  expect(authChallengeResponse.body.target).to.equal(keypair.walletAddress);
   expect(authChallengeResponse.body.memo).to.be.a('string');
-  expect(authChallengeResponse.body.expiryDate)
+  expect(new Date(authChallengeResponse.body.expiryDate))
     .to.be.a('Date')
     .to.greaterThan(new Date());
   expect(authChallengeResponse.body.isResolved).to.equal(false);
@@ -62,7 +61,7 @@ export async function shouldSignUpSucceedWithSolanaWallet(this: Mocha.Context) {
       base64Signature: signatureDataBase64,
     });
 
-  expect(signUpResponse.statusCode).to.equal(HttpStatus.OK);
+  expect(signUpResponse.statusCode).to.equal(HttpStatus.CREATED);
   expect(signUpResponse.body.accessToken).to.be.a('string');
 }
 
@@ -83,11 +82,12 @@ export async function shouldSigninSucceedWithSolanaWallet(this: Mocha.Context) {
       target: state.keypair.walletAddress,
     });
 
-  expect(authChallengeResponse.statusCode).to.equal(HttpStatus.OK);
-  expect(authChallengeResponse.body.id).to.equal(state.keypair.walletAddress);
-  expect(authChallengeResponse.body.target).to.be.a('string');
+  expect(authChallengeResponse.statusCode).to.equal(HttpStatus.CREATED);
+  expect(authChallengeResponse.body.target).to.equal(
+    state.keypair.walletAddress,
+  );
   expect(authChallengeResponse.body.memo).to.be.a('string');
-  expect(authChallengeResponse.body.expiryDate)
+  expect(new Date(authChallengeResponse.body.expiryDate))
     .to.be.a('Date')
     .to.greaterThan(new Date());
   expect(authChallengeResponse.body.isResolved).to.equal(false);
@@ -108,16 +108,16 @@ export async function shouldSigninSucceedWithSolanaWallet(this: Mocha.Context) {
       base64Signature: signatureDataBase64,
     });
 
-  expect(signInResponse.statusCode).to.equal(HttpStatus.OK);
+  expect(signInResponse.statusCode).to.equal(HttpStatus.CREATED);
   expect(signInResponse.body.accessToken).to.be.a('string');
 }
 
 describe('[IDP Auth] sign-up', async function () {
-  it('Should signup succeed with Solana wallet', () =>
+  it('Should signup succeed with Solana wallet', async () =>
     shouldSignUpSucceedWithSolanaWallet.bind(this)());
 });
 
 describe('[IDP Auth] sign-in', async function () {
-  it('Should signin succeed with Solana wallet', () =>
+  it('Should signin succeed with Solana wallet', async () =>
     shouldSigninSucceedWithSolanaWallet.bind(this)());
 });

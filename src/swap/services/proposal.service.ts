@@ -46,10 +46,17 @@ export class ProposalService {
       filter.searchText = ILike(`%${search}%`);
     }
 
-    return this.swapProposalModelRepo.find({
+    const proposal = await this.swapProposalModelRepo.find({
       where: filter,
       skip: offset,
       take: limit,
+      relations: {
+        offerItems: true,
+        swapOptions: {
+          items: true,
+        },
+      },
     });
+    return proposal;
   }
 }
