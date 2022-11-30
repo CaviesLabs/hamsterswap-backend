@@ -38,6 +38,5 @@ afterEach(function () {
 /**
  * @dev Require other test here.
  */
-require('./wallet.e2e-specs');
 require('./auth/idp-auth.e2e-specs');
 require('./swap/proposal.e2e-specs');
