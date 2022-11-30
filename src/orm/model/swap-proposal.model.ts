@@ -40,6 +40,12 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   @Column({ type: String, nullable: true })
   fulfillBy?: string;
 
+  @Column({ type: String, nullable: true })
+  fulfilledWithOptionId: string;
+
+  @ManyToOne(() => SwapOptionModel)
+  fulfilledWithOption: SwapOptionModel;
+
   @Column({ type: 'timestamptz' })
   expireAt: Date;
 

@@ -10,7 +10,9 @@ import { testHelper } from '../test-entrypoint.e2e-spec';
 import { shouldSignUpSucceedWithSolanaWallet } from '../auth/idp-auth.e2e-specs';
 import { UpdateSwapProposalAdditionsDto } from '../../../src/swap/dto/update-proposal.dto';
 
-export async function retrieveProposalByOwnerAddress(this: Mocha.Context) {
+export async function shouldRetrieveProposalByOwnerAddress(
+  this: Mocha.Context,
+) {
   const app = testHelper.app;
 
   // Precondition 1: Having a ownerAddress
@@ -42,7 +44,7 @@ export async function retrieveProposalByOwnerAddress(this: Mocha.Context) {
   }
 }
 
-export async function retrieveProposalById(this: Mocha.Context) {
+export async function shouldRetrieveProposalById(this: Mocha.Context) {
   const app = testHelper.app;
 
   // Precondition 1: Having a proposal id
@@ -67,7 +69,7 @@ export async function retrieveProposalById(this: Mocha.Context) {
   ]);
 }
 
-export async function createEmptyProposal(this: Mocha.Context) {
+export async function shouldCreateEmptyProposal(this: Mocha.Context) {
   const app = testHelper.app;
   const state = TestState.get(this);
   // Precondition: Sign-up succeed
@@ -100,14 +102,14 @@ export async function createEmptyProposal(this: Mocha.Context) {
   state.proposalId = createProposalResponse.body.id;
 }
 
-export async function updateProposalAdditions(this: Mocha.Context) {
+export async function shouldUpdateProposalAdditions(this: Mocha.Context) {
   const app = testHelper.app;
   const state = TestState.get(this);
   // Precondition 1: Sign-up succeed
   await shouldSignUpSucceedWithSolanaWallet.bind(this)();
 
   // Precondition 2: A proposal created
-  await createEmptyProposal.bind(this)();
+  await shouldCreateEmptyProposal.bind(this)();
 
   // Step 1: Call update proposal additions
   const updateProposalAdditionsDto = {
@@ -128,8 +130,11 @@ export async function updateProposalAdditions(this: Mocha.Context) {
 }
 
 describe('retrieve proposals', async function () {
-  it('Retrieve proposal by ownerAddress', retrieveProposalByOwnerAddress);
-  it('Retrieve proposal by id', retrieveProposalById);
-  it('Create empty proposal', createEmptyProposal);
-  it('update proposal additions', updateProposalAdditions);
+  it(
+    'Should retrieve proposal by ownerAddress',
+    shouldRetrieveProposalByOwnerAddress,
+  );
+  it('Should retrieve proposal by id', shouldRetrieveProposalById);
+  it('Should create empty proposal', shouldCreateEmptyProposal);
+  it('Should update proposal additions', shouldUpdateProposalAdditions);
 });

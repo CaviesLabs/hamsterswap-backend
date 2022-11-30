@@ -31,7 +31,7 @@ export class SwapProposalFactory {
         ownerAddress: ownerAddress ?? randomOwnerAddress(),
         status: faker.helpers.arrayElement<SwapProposalStatus>([
           SwapProposalStatus.CREATED,
-          SwapProposalStatus.SETTLED,
+          SwapProposalStatus.DEPOSITED,
         ]),
         expireAt: faker.date.soon(30),
         note: faker.lorem.paragraphs(),

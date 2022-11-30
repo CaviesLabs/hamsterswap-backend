@@ -31,6 +31,8 @@ import {
 } from '../../file.interceptor';
 import { JwtAuthSession } from '../../auth/strategies/premature-auth.strategy';
 import { CurrentSession } from '../../auth/decorators/current-session.decorator';
+import { IdpResourceService } from '../services/idp-resource.service';
+import { UserProfileDto } from '../dto/user-profile.dto';
 
 /**
  * @dev Declare user controller, handles profile operations.
@@ -39,7 +41,10 @@ import { CurrentSession } from '../../auth/decorators/current-session.decorator'
 @ApiBearerAuth('jwt')
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly idpResourceService: IdpResourceService,
+  ) {}
 
   /**
    * @dev Declare endpoint for getting profile.
@@ -57,8 +62,15 @@ export class UserController {
   @UseGuards(AuthGuard('jwt'))
   @Get('/profile')
   @HttpCode(HttpStatus.OK)
-  public getUserProfile(@CurrentSession() { user }: JwtAuthSession) {
-    return user;
+  public async getUserProfile(
+    @CurrentSession() { user }: JwtAuthSession,
+  ): Promise<UserProfileDto> {
+    const [idp] = await this.idpResourceService.listUserIdp(user.id);
+    return {
+      id: user.id,
+      avatar: user.avatar,
+      walletAddress: idp.identityId,
+    };
   }
 
   /**

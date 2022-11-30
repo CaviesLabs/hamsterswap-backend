@@ -3,7 +3,9 @@ import { SwapOptionEntity } from './swap-option.entity';
 
 export enum SwapProposalStatus {
   CREATED = 'SWAP_PROPOSAL_STATUS::CREATED',
-  SETTLED = 'SWAP_PROPOSAL_STATUS::SETTLED',
+  DEPOSITED = 'SWAP_PROPOSAL_STATUS::DEPOSITED',
+  FULFILLED = 'SWAP_PROPOSAL_STATUS::FULFILLED',
+  CANCELED = 'SWAP_PROPOSAL_STATUS::CANCELED',
 }
 
 export class SwapProposalEntity {
@@ -18,6 +20,8 @@ export class SwapProposalEntity {
   swapOptions: SwapOptionEntity[] = [];
 
   fulfillBy?: string;
+
+  fulfilledWithOptionId?: string;
 
   expireAt: Date;
 
