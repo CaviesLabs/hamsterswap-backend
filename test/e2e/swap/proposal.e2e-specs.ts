@@ -18,8 +18,6 @@ export async function retrieveProposalByOwnerAddress(this: Mocha.Context) {
     .findOne({});
   state.ownerAddress = ownerAddress;
 
-  console.log({ ownerAddress });
-
   // Step 1: Call find proposals
   const findProposalResponse = await request(app.getHttpServer())
     .get('/api/auth/challenge/request')
