@@ -2,11 +2,9 @@ import {
   Column,
   Entity,
   Index,
-  JoinColumn,
   JoinTable,
   ManyToOne,
   OneToMany,
-  OneToOne,
 } from 'typeorm';
 
 import {
@@ -48,10 +46,6 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
 
   @Column({ type: String, nullable: true })
   fulfilledWithOptionId?: string;
-
-  @OneToOne(() => SwapOptionModel, { nullable: true })
-  @JoinColumn()
-  fulfilledWithOption: SwapOptionModel;
 
   @Column({ type: 'timestamptz' })
   expireAt: Date;

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { Check, Column, Entity, ManyToOne } from 'typeorm';
 
 import {
   SwapItemEntity,
@@ -12,6 +12,10 @@ import { SwapProposalModel } from './swap-proposal.model';
 @Entity({
   name: 'swap_item',
 })
+@Check(
+  `("proposalId" IS NOT NULL AND "swapOptionId" IS NULL)
+  OR ("proposalId" IS NULL AND "swapOptionId" IS NOT NULL)`,
+)
 export class SwapItemModel extends BaseModel implements SwapItemEntity {
   @Column({ type: String, nullable: true })
   ownerAddress?: string;
