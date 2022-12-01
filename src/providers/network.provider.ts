@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type fetch from 'node-fetch';
+import { RequestInit } from 'node-fetch';
 
 /**
  * `NetworkProvider` acts as interface for network actions.
@@ -32,7 +33,7 @@ export class NetworkProvider {
    * @param options
    * @private
    */
-  public async request<T>(url: string, options: any): Promise<T> {
+  public async request<T>(url: string, options?: RequestInit): Promise<T> {
     /**
      * @dev await for dynamic import finish.
      */

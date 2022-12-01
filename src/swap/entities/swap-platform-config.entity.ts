@@ -3,7 +3,7 @@ export class SwapPlatformConfigEntity {
 
   maxAllowedItems: number;
 
-  allowNTFCollections: object[];
+  allowNTFCollections: string[];
 
-  allowCurrencies: object[];
+  allowCurrencies: string[];
 }
