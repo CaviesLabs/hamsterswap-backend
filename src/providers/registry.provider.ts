@@ -148,6 +148,14 @@ export class SystemConfig {
   })
   HOST_URI: string;
 
+  @IsString()
+  @IsNotEmpty()
+  SOLANA_CLUSTER: string;
+
+  @IsString()
+  @IsNotEmpty()
+  SWAP_PROGRAM_ADDRESS: string;
+
   /**
    * @dev Validate schema.
    */

@@ -50,6 +50,7 @@
     "@nestjs/throttler": "^3.0.0",
     "@nestjs/typeorm": "^9.0.1",
     "@nestjs/websockets": "^9.1.2",
+    "@project-serum/anchor": "^0.25.0",
     "@truffle/hdwallet-provider": "^2.0.15",
     "aes-js": "^3.1.2",
     "aws-sdk": "^2.1215.0",

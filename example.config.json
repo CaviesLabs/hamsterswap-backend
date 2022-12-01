@@ -20,5 +20,7 @@
   "AWS_BUCKET_REGION": "",
   "SECRET_TOKEN": "",
   "DOMAIN": "",
-  "HOST_URI": ""
+  "HOST_URI": "",
+  "SOLANA_CLUSTER": "devnet",
+  "SWAP_PROGRAM_ADDRESS": ""
 }

@@ -20,5 +20,7 @@
   "AWS_BUCKET_REGION": "ap-southeast-1",
   "SECRET_TOKEN": "4E635266556A586E3272357538782F413F4428472D4B6150645367566B597033",
   "DOMAIN": "hamsterbox.xyz",
-  "HOST_URI": "https://hamsterbox.xyz/profile"
+  "HOST_URI": "https://hamsterbox.xyz/profile",
+  "SOLANA_CLUSTER": "devnet",
+  "SWAP_PROGRAM_ADDRESS": "EdeRcNsVGU1s1NXZZo8FhLD8iePxvoUCdbvwVGnj778f"
 }
