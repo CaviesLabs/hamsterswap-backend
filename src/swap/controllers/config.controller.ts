@@ -8,9 +8,19 @@ export class SwapConfigController {
     return {
       maxAllowedOptions: 4,
       maxAllowedItems: 4,
-      allowCurrencies: ['So11111111111111111111111111111111111111112'],
+      allowCurrencies: [
+        {
+          id: 'So11111111111111111111111111111111111111112',
+          image:
+            'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+        },
+      ],
       allowNTFCollections: [
-        '00862ed38eecc476bdfdebe71270cb767b998ba46e1ea59db437bcb899d55c0b',
+        {
+          id: '00862ed38eecc476bdfdebe71270cb767b998ba46e1ea59db437bcb899d55c0b',
+          image:
+            'https://arweave.net/43VYKdB0Cl03MfYyQnAymMwZUonJfCU1B7wZzgS0gl8?ext=jpeg',
+        },
       ],
     };
   }
