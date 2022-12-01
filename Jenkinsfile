@@ -2,7 +2,7 @@
 
 pipeline {
     agent {
-        label 'hamsterswap'
+        label 'hamsterbox'
     }
 
     post {
