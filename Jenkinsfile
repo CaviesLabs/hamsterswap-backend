@@ -30,13 +30,9 @@ pipeline {
         GIT_BRANCH = "${GIT_BRANCH.split("/")[1]}"
         CURRENT_VERSION = sh(returnStdout: true, script: "git tag --sort version:refname | tail -1").trim()
 
-        // credential id
-        GITLAB_PUSH_SECRET = credentials('uid-gitlab-webhook-secret')
-        REGISTRY_URL = credentials('registry-url-backend')
-
         // dokku deployment credential
-        DOKKU_DEV_REMOTE = credentials('dokku-dev-remote-backend')
-        DOKKU_PROD_REMOTE = credentials('dokku-prod-remote-backend')
+        DOKKU_DEV_REMOTE = credentials('dokku-dev-remote')
+        DOKKU_PROD_REMOTE = credentials('dokku-prod-remote')
         SSH_PRIVATE_KEY = credentials('dokku-deployment-private-key')
     }
 
