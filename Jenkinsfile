@@ -7,8 +7,10 @@ pipeline {
 
     post {
         always {
-            cleanWs()
-            deleteDir()
+            node {
+                cleanWs()
+                deleteDir()
+            }
         }
 
         cleanup {
