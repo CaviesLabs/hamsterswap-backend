@@ -7,10 +7,8 @@ pipeline {
 
     post {
         always {
-            if (getContext(hudson.FilePath)) {
-                cleanWs()
-                deleteDir()
-            }
+            cleanWs()
+            deleteDir()
         }
 
         cleanup {
