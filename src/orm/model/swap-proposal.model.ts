@@ -41,7 +41,7 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   fulfillBy?: string;
 
   @Column({ type: String, nullable: true })
-  fulfilledWithOptionId: string;
+  fulfilledWithOptionId?: string;
 
   @ManyToOne(() => SwapOptionModel)
   fulfilledWithOption: SwapOptionModel;
