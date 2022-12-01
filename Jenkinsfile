@@ -7,9 +7,11 @@ pipeline {
 
     post {
         always {
-            node {
-                cleanWs()
-                deleteDir()
+            script {
+                if (getContext(hudson.FilePath)) {
+                    cleanWs()
+                    deleteDir()
+                }
             }
         }
 
