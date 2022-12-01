@@ -1,7 +1,9 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { SwapPlatformConfigEntity } from '../entities/swap-platform-config.entity';
 
 @Controller('platform-config')
+@ApiTags('swap')
 export class SwapConfigController {
   @Get()
   getConfig(): SwapPlatformConfigEntity {

@@ -9,6 +9,7 @@ import {
 } from '../../swap/entities/swap-item.entity';
 import { randomContractAddress, randomOwnerAddress } from './address.factory';
 import { SwapItemModel } from '../../orm/model/swap-item.model';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class SwapItemFactory {
@@ -28,6 +29,7 @@ export class SwapItemFactory {
       SwapItemType.CURRENCY,
     ]);
     return this.entityManager.getRepository(SwapItemModel).create({
+      id: randomUUID(),
       ownerAddress: ownerAddress ?? randomOwnerAddress(),
       contractAddress: contractAddress ?? randomContractAddress(),
       depositedAddress,

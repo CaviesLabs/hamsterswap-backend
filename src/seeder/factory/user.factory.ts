@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
+import { randomUUID } from 'crypto';
 import { EntityManager } from 'typeorm';
 import { UserModel } from '../../orm/model/user.model';
 import { AvatarProvider } from '../../providers/avatar.provider';
@@ -15,6 +16,7 @@ export class UserFactory {
 
   generate() {
     return this.entityManager.create(UserModel, {
+      id: randomUUID(),
       roles: [Role.User],
       avatar: this.avatarProvider.generateRandom(),
     });

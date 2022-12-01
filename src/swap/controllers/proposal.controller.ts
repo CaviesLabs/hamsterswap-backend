@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiTags } from '@nestjs/swagger';
 
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { CurrentSession } from '../../auth/decorators/current-session.decorator';
@@ -21,6 +22,7 @@ import { SwapProposalEntity } from '../entities/swap-proposal.entity';
 import { ProposalService } from '../services/proposal.service';
 
 @Controller('proposal')
+@ApiTags('swap')
 export class ProposalController {
   constructor(private readonly proposalService: ProposalService) {}
   @Get('/:proposalId')

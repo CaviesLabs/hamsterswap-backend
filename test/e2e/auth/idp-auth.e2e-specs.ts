@@ -6,6 +6,7 @@ import { testHelper } from '../test-entrypoint.e2e-spec';
 import { SolanaSignatureData } from '../../../src/providers/idp/solana-wallet-idp.provider';
 import { TestState } from '../state.suite';
 import { SolanaWalletSignatureDto } from '../../../src/user/dto/wallet-signature.dto';
+import { MEMO_TEXT } from '../../../src/auth/entities/auth-challenge.entity';
 
 export async function shouldSignUpSucceedWithSolanaWallet(this: Mocha.Context) {
   const app = testHelper.app;
@@ -38,7 +39,7 @@ export async function shouldSignUpSucceedWithSolanaWallet(this: Mocha.Context) {
 
   expect(authChallengeResponse.statusCode).to.equal(HttpStatus.CREATED);
   expect(authChallengeResponse.body.target).to.equal(keypair.walletAddress);
-  expect(authChallengeResponse.body.memo).to.be.a('string');
+  expect(authChallengeResponse.body.memo).to.be.a('string').to.equal(MEMO_TEXT);
   expect(new Date(authChallengeResponse.body.expiryDate))
     .to.be.a('Date')
     .to.greaterThan(new Date());

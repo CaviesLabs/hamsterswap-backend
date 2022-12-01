@@ -4,8 +4,10 @@ import { Injectable } from '@nestjs/common';
  * @dev Import logic deps.
  */
 import { AuthChallengeModel } from '../../orm/model/auth-challenge.model';
-import { AuthChallengeEntity } from '../entities/auth-challenge.entity';
-import { UtilsProvider } from '../../providers/utils.provider';
+import {
+  AuthChallengeEntity,
+  MEMO_TEXT,
+} from '../entities/auth-challenge.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
 
@@ -47,27 +49,15 @@ export class AuthChallengeService {
       expiryDate: new Date(expiryDate),
       isResolved: false,
       durationDelta: delta,
-      memo: '',
+      memo: MEMO_TEXT,
     };
-
-    /**
-     * @dev Generate checksum based on data.
-     */
-    const checksum = await new UtilsProvider().generateChecksum(
-      JSON.stringify(payload),
-    );
-
-    /**
-     * @dev Generate memo
-     */
-    const message = `Authorize a session for ${target}.\nChallenge hash: ${checksum}.\nDate: ${currentDateTime.toISOString()}.`;
 
     /**
      * @dev Create new auth challenge.
      */
     return this.AuthChallengeRepo.save({
       ...payload,
-      memo: message,
+      memo: MEMO_TEXT,
     });
   }
 

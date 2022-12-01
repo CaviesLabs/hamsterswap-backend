@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { randomInt } from 'crypto';
+import { randomInt, randomUUID } from 'crypto';
 
 import { SwapItemFactory } from './swap-item.factory';
 import { SwapItemEntity } from '../../swap/entities/swap-item.entity';
@@ -19,6 +19,7 @@ export class SwapOptionFactory {
     template: Partial<SwapItemEntity> & Pick<SwapItemEntity, 'status'>,
   ): SwapOptionModel {
     return this.entityManager.getRepository(SwapOptionModel).create({
+      id: randomUUID(),
       items: this.swapItemFactory.generateMany(template, randomInt(1, 4)),
     });
   }

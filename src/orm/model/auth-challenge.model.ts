@@ -1,7 +1,10 @@
 /**
  * @dev Import base Auth entity.
  */
-import { AuthChallengeEntity } from '../../auth/entities/auth-challenge.entity';
+import {
+  AuthChallengeEntity,
+  MEMO_TEXT,
+} from '../../auth/entities/auth-challenge.entity';
 import { Column, Entity, Index } from 'typeorm';
 import { BaseModel } from '../base.model';
 
@@ -20,7 +23,7 @@ export class AuthChallengeModel
   target: string;
 
   @Column({ type: String })
-  memo: string;
+  memo: typeof MEMO_TEXT;
 
   @Column({ type: 'timestamptz' })
   expiryDate: Date;

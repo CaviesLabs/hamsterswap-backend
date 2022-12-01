@@ -23,7 +23,7 @@ export class TokenMetadataProvider {
     );
   }
 
-  getListConcurrency(address: string) {
+  listConcurrency(address: string) {
     return this.networkProvider.request(
       `https://api.solscan.io/account/v2/tokens?address=${address}`,
       {

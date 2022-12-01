@@ -1,3 +1,11 @@
+export const MEMO_TEXT = `Welcome to HamsterSwap!
+
+Approve to sign in.
+
+This request will not trigger a blockchain transaction or cost any gas fees.
+
+Your authentication status will reset after 24 hours.`;
+
 /**
  * @dev Define auth challenge entity.
  * 1) `AuthChallenge` will be used for proof of authorization request.
@@ -12,7 +20,7 @@ export class AuthChallengeEntity {
   /**
    * @dev The memo string the auth challenge contains.
    */
-  public memo: string;
+  public memo: typeof MEMO_TEXT;
 
   /**
    * @dev Expiry date.

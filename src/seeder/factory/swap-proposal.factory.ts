@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 import { faker } from '@faker-js/faker';
-import { randomInt } from 'crypto';
+import { randomInt, randomUUID } from 'crypto';
 
 import { SwapProposalModel } from '../../orm/model/swap-proposal.model';
 import { SwapProposalStatus } from '../../swap/entities/swap-proposal.entity';
@@ -31,6 +31,7 @@ export class SwapProposalFactory {
     const proposal = this.entityManager
       .getRepository(SwapProposalModel)
       .create({
+        id: randomUUID(),
         ownerId,
         ownerAddress: ownerAddress ?? randomOwnerAddress(),
         status: faker.helpers.arrayElement<SwapProposalStatus>([
@@ -71,6 +72,12 @@ export class SwapProposalFactory {
       },
       randomInt(1, 4),
     );
+
+    if (proposal.fulfillBy) {
+      proposal.fulfilledWithOptionId = faker.helpers.arrayElement(
+        proposal.swapOptions,
+      ).id;
+    }
 
     return proposal;
   }
