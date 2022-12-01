@@ -14,6 +14,7 @@ import { AuthSessionService } from '../services/auth-session.service';
 import { AvailableIdpResourceName } from '../../providers/idp/identity-provider.interface';
 import { IdpResourceBuilder } from '../../user/factories/idp-resource.builder';
 import { SolanaWalletAuthenticator } from './idp/solana-wallet-auth.authenticator';
+import { AvatarProvider } from '../../providers/avatar.provider';
 
 /**
  * @dev Define IdpAuthService interface.
@@ -60,6 +61,7 @@ export class IdpAuthBuilder {
     private readonly tokenIssuer: TokenIssuerService,
     private readonly userService: UserService,
     private readonly sessionService: AuthSessionService,
+    private readonly avatarProvider: AvatarProvider,
   ) {}
 
   /**
@@ -81,6 +83,7 @@ export class IdpAuthBuilder {
           this.tokenIssuer,
           this.userService,
           this.sessionService,
+          this.avatarProvider,
         );
     }
 

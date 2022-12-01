@@ -18,6 +18,7 @@ import { AuthSessionService } from '../auth/services/auth-session.service';
 import { IdpAuthBuilder } from '../auth/factories/idp-auth.builder';
 import { JwtAuthStrategy } from '../auth/strategies/premature-auth.strategy';
 import { CookieProvider } from '../providers/cookie.provider';
+import { AvatarProvider } from '../providers/avatar.provider';
 
 @Module({
   /**
@@ -52,6 +53,7 @@ import { CookieProvider } from '../providers/cookie.provider';
     NetworkProvider,
     JwtProvider,
     CookieProvider,
+    AvatarProvider,
 
     /**
      * @dev Import strategies

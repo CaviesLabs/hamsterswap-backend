@@ -1,7 +1,8 @@
+import { Keypair } from '@solana/web3.js';
 import { faker } from '@faker-js/faker';
 
 export const ADDRESS_POOL = Array.from({ length: 10 }, () =>
-  faker.finance.ethereumAddress(),
+  Keypair.generate().publicKey.toBase58(),
 );
 
 export function randomOwnerAddress(): string {
@@ -15,7 +16,7 @@ export function randomFulfillAddress(ownerAddress: string): string {
 }
 
 export const CONTRACT_ADDRESS_POOL = Array.from({ length: 1 }, () =>
-  faker.finance.ethereumAddress(),
+  Keypair.generate().publicKey.toBase58(),
 );
 
 export function randomContractAddress(): string {

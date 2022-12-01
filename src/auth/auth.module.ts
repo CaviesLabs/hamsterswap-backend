@@ -30,6 +30,7 @@ import { IdpResourceBuilder } from '../user/factories/idp-resource.builder';
 import { IdpResourceService } from '../user/services/idp-resource.service';
 import { IdpAuthBuilder } from './factories/idp-auth.builder';
 import { IdpAuthService } from './services/idp-auth.service';
+import { AvatarProvider } from '../providers/avatar.provider';
 
 @Module({
   controllers: [AuthController, AuthSessionController, IdpAuthController],
@@ -92,6 +93,7 @@ import { IdpAuthService } from './services/idp-auth.service';
     CookieProvider,
     OtpProvider,
     NetworkProvider,
+    AvatarProvider,
 
     /**
      * @dev Import strategy

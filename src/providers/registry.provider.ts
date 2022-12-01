@@ -188,10 +188,7 @@ export class RegistryProvider {
     /**
      * @dev Read credentials file
      */
-    const configFilePath = configService.get<string>(
-      'HAMSTER_PASSPORT_CONFIG_FILE',
-      null,
-    );
+    const configFilePath = configService.get<string>('CONFIG_FILE', null);
     if (!configFilePath) {
       throw new Error('APPLICATION_BOOT::CONFIG_FILE_NOT_SET');
     }

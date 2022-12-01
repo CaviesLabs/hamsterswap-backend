@@ -9,7 +9,11 @@ import { SwapProposalStatus } from '../../swap/entities/swap-proposal.entity';
 import { SwapItemFactory } from './swap-item.factory';
 import { SwapOptionFactory } from './swap-option.factory';
 import { SwapItemStatus } from '../../swap/entities/swap-item.entity';
-import { randomFulfillAddress, randomOwnerAddress } from './address.factory';
+import {
+  randomContractAddress,
+  randomFulfillAddress,
+  randomOwnerAddress,
+} from './address.factory';
 
 @Injectable()
 export class SwapProposalFactory {
@@ -48,7 +52,7 @@ export class SwapProposalFactory {
           SwapItemStatus.CREATED,
           SwapItemStatus.DEPOSITED,
         ]);
-    const contractAddress = faker.finance.ethereumAddress();
+    const contractAddress = randomContractAddress();
 
     proposal.offerItems = this.swapItemFactory.generateMany(
       {

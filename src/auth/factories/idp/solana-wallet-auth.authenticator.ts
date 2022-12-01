@@ -14,6 +14,7 @@ import { IdpService } from '../../../user/factories/idp-resource.builder';
 import { EnabledIdpModel } from '../../../orm/model/enabled-idp.model';
 import { Repository } from 'typeorm';
 import { Role } from '../../../user/entities/user.entity';
+import { AvatarProvider } from '../../../providers/avatar.provider';
 
 export class SolanaWalletAuthenticator implements IdpAuthenticator {
   constructor(
@@ -30,6 +31,7 @@ export class SolanaWalletAuthenticator implements IdpAuthenticator {
     private readonly tokenIssuer: TokenIssuerService,
     private readonly userService: UserService,
     private readonly sessionService: AuthSessionService,
+    private readonly avatarProvider: AvatarProvider,
   ) {}
 
   /**
@@ -110,6 +112,7 @@ export class SolanaWalletAuthenticator implements IdpAuthenticator {
      */
     const user = await this.userService.createUser({
       roles: [Role.User],
+      avatar: this.avatarProvider.generateRandom(verifiedWallet.identityId),
     });
 
     /**
