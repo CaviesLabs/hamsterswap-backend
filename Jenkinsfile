@@ -17,11 +17,13 @@ pipeline {
 
         cleanup {
             script {
-                sh '''
-                    docker rmi -f "${REGISTRY_NAME}:${CURRENT_VERSION}-${GIT_BRANCH}"
-                    docker rmi -f "test-${REGISTRY_NAME}:${CURRENT_VERSION}-${GIT_BRANCH}"
-                    docker system prune --volumes -f
-                '''
+                if (getContext(hudson.FilePath)) {
+                    sh '''
+                        docker rmi -f "${REGISTRY_NAME}:${CURRENT_VERSION}-${GIT_BRANCH}"
+                        docker rmi -f "test-${REGISTRY_NAME}:${CURRENT_VERSION}-${GIT_BRANCH}"
+                        docker system prune --volumes -f
+                    '''
+                }
             }
         }
     }
@@ -45,18 +47,10 @@ pipeline {
             steps {
                 gitlabCommitStatus('setup-parameters') {
                     script {
-                        properties([
-                                disableConcurrentBuilds([
-                                        abortPrevious: true
-                                ]),
-                                parameters([
-                                        booleanParam(
-                                                defaultValue: false,
-                                                description: 'Trigger a dokku deployment.',
-                                                name: 'DOKKU_DEPLOY'
-                                        )
-                                ])
-                        ])
+                        properties([disableConcurrentBuilds([abortPrevious: true]),
+                                    parameters([booleanParam(defaultValue: false,
+                                            description: 'Trigger a dokku deployment.',
+                                            name: 'DOKKU_DEPLOY')])])
                     }
                 }
             }
