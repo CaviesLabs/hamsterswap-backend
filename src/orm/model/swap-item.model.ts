@@ -1,4 +1,4 @@
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 import {
   SwapItemEntity,
@@ -6,6 +6,8 @@ import {
   SwapItemType,
 } from '../../swap/entities/swap-item.entity';
 import { BaseModel } from '../base.model';
+import { SwapOptionModel } from './swap-option.model';
+import { SwapProposalModel } from './swap-proposal.model';
 
 @Entity({
   name: 'swap_item',
@@ -31,4 +33,10 @@ export class SwapItemModel extends BaseModel implements SwapItemEntity {
 
   @Column({ type: 'jsonb', nullable: true })
   nftMetadata?: any;
+
+  @ManyToOne(() => SwapProposalModel, { nullable: true })
+  proposal: SwapProposalModel;
+
+  @ManyToOne(() => SwapOptionModel, { nullable: true })
+  swapOption: SwapOptionModel;
 }

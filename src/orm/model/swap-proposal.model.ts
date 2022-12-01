@@ -2,9 +2,11 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
   JoinTable,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
+  OneToOne,
 } from 'typeorm';
 
 import {
@@ -29,12 +31,16 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   @Column({ type: String })
   ownerAddress: string;
 
-  @ManyToMany(() => SwapItemModel, { cascade: true })
+  @OneToMany(() => SwapItemModel, (item) => item.proposal, {
+    cascade: true,
+    nullable: true,
+  })
   @JoinTable()
   offerItems: SwapItemModel[];
 
-  @ManyToMany(() => SwapOptionModel, { cascade: true })
-  @JoinTable()
+  @OneToMany(() => SwapOptionModel, (option) => option.proposal, {
+    cascade: true,
+  })
   swapOptions: SwapOptionModel[];
 
   @Column({ type: String, nullable: true })
@@ -43,7 +49,8 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   @Column({ type: String, nullable: true })
   fulfilledWithOptionId?: string;
 
-  @ManyToOne(() => SwapOptionModel)
+  @OneToOne(() => SwapOptionModel, { nullable: true })
+  @JoinColumn()
   fulfilledWithOption: SwapOptionModel;
 
   @Column({ type: 'timestamptz' })
