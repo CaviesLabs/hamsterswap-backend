@@ -4,7 +4,6 @@ import * as request from 'supertest';
 import { EntityManager } from 'typeorm';
 
 import { SwapProposalModel } from '../../../src/orm/model/swap-proposal.model';
-import { CreateSwapProposalDto } from '../../../src/swap/dto/create-proposal.dto';
 import { TestState } from '../state.suite';
 import { testHelper } from '../test-entrypoint.e2e-spec';
 import { shouldSignUpSucceedWithSolanaWallet } from '../auth/idp-auth.e2e-specs';
@@ -82,10 +81,10 @@ export async function shouldCreateEmptyProposal(this: Mocha.Context) {
 
   // Step 1: Call create empty proposal API
   const createSwapProposalDto = {
-    expireAt: new Date(),
+    expireAt: new Date().toISOString(),
     ownerAddress: state.keypair.walletAddress,
     note: 'This can be omit or empty',
-  } as CreateSwapProposalDto;
+  };
 
   const createProposalResponse = await request(app.getHttpServer())
     .post(`/api/proposal`)
