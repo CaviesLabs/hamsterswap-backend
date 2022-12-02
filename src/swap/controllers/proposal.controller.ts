@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { CurrentSession } from '../../auth/decorators/current-session.decorator';
@@ -25,6 +25,7 @@ import { ProposalService } from '../services/proposal.service';
 @ApiTags('swap')
 export class ProposalController {
   constructor(private readonly proposalService: ProposalService) {}
+
   @Get('/:proposalId')
   getProposal(@Param('proposalId') proposalId: string) {
     return this.proposalService.findById(proposalId);
@@ -39,6 +40,7 @@ export class ProposalController {
   }
 
   @Post()
+  @ApiBearerAuth('jwt')
   @UseGuards(AuthGuard('jwt'))
   createEmpty(
     @CurrentSession() { user }: JwtAuthSession,
@@ -48,6 +50,7 @@ export class ProposalController {
   }
 
   @Patch('/:proposalId/additions')
+  @ApiBearerAuth('jwt')
   @UseGuards(AuthGuard('jwt'))
   updateAdditions(
     @Param('proposalId') proposalId: string,
