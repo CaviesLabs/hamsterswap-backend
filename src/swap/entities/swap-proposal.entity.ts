@@ -23,7 +23,7 @@ export class SwapProposalEntity {
 
   fulfilledWithOptionId?: string;
 
-  expireAt: Date;
+  expiredAt: Date;
 
   status: SwapProposalStatus;
 

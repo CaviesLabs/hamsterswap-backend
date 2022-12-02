@@ -82,7 +82,6 @@ export async function shouldCreateEmptyProposal(this: Mocha.Context) {
   // Step 1: Call create empty proposal API
   const createSwapProposalDto = {
     expireAt: new Date().toISOString(),
-    ownerAddress: state.keypair.walletAddress,
     note: 'This can be omit or empty',
   };
 

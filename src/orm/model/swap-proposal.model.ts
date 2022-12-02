@@ -48,7 +48,7 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   fulfilledWithOptionId?: string;
 
   @Column({ type: 'timestamptz' })
-  expireAt: Date;
+  expiredAt: Date;
 
   @Column({ type: String, enum: SwapProposalStatus })
   status: SwapProposalStatus;

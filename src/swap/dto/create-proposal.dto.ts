@@ -6,18 +6,14 @@ import { SwapProposalEntity } from '../entities/swap-proposal.entity';
 
 // Type hack to implement a PickType so Enity changes => Dto affected
 class _CreateSwapProposalDto extends PickType(SwapProposalEntity, [
-  'ownerAddress',
-  'expireAt',
+  'expiredAt',
   'note',
 ]) {}
 
 export class CreateSwapProposalDto implements _CreateSwapProposalDto {
-  @IsString()
-  ownerAddress: string;
-
   @IsDate()
   @Type(() => Date)
-  expireAt: Date;
+  expiredAt: Date;
 
   @IsString()
   @IsOptional()

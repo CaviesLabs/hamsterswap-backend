@@ -38,7 +38,7 @@ export class SwapProposalFactory {
           SwapProposalStatus.CREATED,
           SwapProposalStatus.DEPOSITED,
         ]),
-        expireAt: faker.date.soon(30),
+        expiredAt: faker.date.soon(30),
         note: faker.lorem.paragraphs(),
       });
 

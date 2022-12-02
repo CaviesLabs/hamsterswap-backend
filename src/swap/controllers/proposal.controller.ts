@@ -15,6 +15,7 @@ import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { CurrentSession } from '../../auth/decorators/current-session.decorator';
 import { JwtAuthSession } from '../../auth/strategies/premature-auth.strategy';
 import { SwapProposalModel } from '../../orm/model/swap-proposal.model';
+import { IdpResourceService } from '../../user/services/idp-resource.service';
 import { CreateSwapProposalDto } from '../dto/create-proposal.dto';
 import { FindProposalDto } from '../dto/find-proposal.dto';
 import { UpdateSwapProposalAdditionsDto } from '../dto/update-proposal.dto';
@@ -24,7 +25,10 @@ import { ProposalService } from '../services/proposal.service';
 @Controller('proposal')
 @ApiTags('swap')
 export class ProposalController {
-  constructor(private readonly proposalService: ProposalService) {}
+  constructor(
+    private readonly proposalService: ProposalService,
+    private readonly idpResourceService: IdpResourceService,
+  ) {}
 
   @Get('/:proposalId')
   getProposal(@Param('proposalId') proposalId: string) {
@@ -42,11 +46,16 @@ export class ProposalController {
   @Post()
   @ApiBearerAuth('jwt')
   @UseGuards(AuthGuard('jwt'))
-  createEmpty(
+  async createEmpty(
     @CurrentSession() { user }: JwtAuthSession,
     @Body() body: CreateSwapProposalDto,
   ): Promise<SwapProposalEntity> {
-    return this.proposalService.create({ ...body, ownerId: user.id });
+    const [idp] = await this.idpResourceService.listUserIdp(user.id);
+    return this.proposalService.create({
+      ...body,
+      ownerId: user.id,
+      ownerAddress: idp.identityId,
+    });
   }
 
   @Patch('/:proposalId/additions')
