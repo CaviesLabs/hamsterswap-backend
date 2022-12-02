@@ -34,8 +34,7 @@ pipeline {
 
         // build info env
         GIT_BRANCH = "${GIT_BRANCH}" //""${GIT_BRANCH.split("/")[1]}"
-        CURRENT_VERSION_STR = sh(returnStdout: true, script: "git tag --sort version:refname | tail -1").trim()
-        CURRENT_VERSION = CURRENT_VERSION_STR == null ? "default" : CURRENT_VERSION_STR
+        CURRENT_VERSION = sh(returnStdout: true, script: "git tag --sort version:refname | tail -1").trim()
 
         // Registry
         REGISTRY_NAME = 'hamsterswap'
