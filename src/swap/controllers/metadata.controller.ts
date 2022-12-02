@@ -7,23 +7,23 @@ import { TokenMetadataProvider } from '../../providers/token-metadata.provider';
 export class MetadataController {
   constructor(private readonly tokenMetadataProvider: TokenMetadataProvider) {}
 
-  @Get('/nft/list')
-  listNft(@Query('address') address: string) {
-    return this.tokenMetadataProvider.listNft(address);
+  @Get('/nft/portfolio')
+  listNft(@Query('walletAddress') walletAddress: string) {
+    return this.tokenMetadataProvider.listNft(walletAddress);
   }
 
-  @Get('/nft/detail/:id')
-  getNftDetail(@Param('id') id: string) {
-    return this.tokenMetadataProvider.getNftDetail(id);
+  @Get('/nft/detail/:mintAddress')
+  getNftDetail(@Param('mintAddress') mintAddress: string) {
+    return this.tokenMetadataProvider.getNftDetail(mintAddress);
   }
 
-  @Get('/currency/:token')
-  getToken(@Param('token') token: string) {
-    return this.tokenMetadataProvider.getConcurrencyDetail(token);
+  @Get('/token/:mintAddress')
+  getToken(@Param('mintAddress') mintAddress: string) {
+    return this.tokenMetadataProvider.getConcurrencyDetail(mintAddress);
   }
 
-  @Get('/currency')
-  listToken(@Query('address') address: string) {
-    return this.tokenMetadataProvider.listConcurrency(address);
+  @Get('/token/portfolio')
+  listToken(@Query('walletAddress') walletAddress: string) {
+    return this.tokenMetadataProvider.listConcurrency(walletAddress);
   }
 }

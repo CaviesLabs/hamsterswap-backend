@@ -9,6 +9,7 @@ import {
   Post,
   UseInterceptors,
   UploadedFiles,
+  Param,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -69,6 +70,29 @@ export class UserController {
     return {
       id: user.id,
       avatar: user.avatar,
+      walletAddress: idp.identityId,
+    };
+  }
+
+  /**
+   * @dev Get user public profile by id.
+   * @param req
+   */
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get user profile successfully',
+    type: UserEntity,
+  })
+  @Get('/profile/:id')
+  @HttpCode(HttpStatus.OK)
+  public async getUserProfileById(
+    @Param('id') id: string,
+  ): Promise<UserProfileDto> {
+    const { avatar } = await this.userService.getUserProfileById(id);
+    const [idp] = await this.idpResourceService.listUserIdp(id);
+    return {
+      id,
+      avatar,
       walletAddress: idp.identityId,
     };
   }
