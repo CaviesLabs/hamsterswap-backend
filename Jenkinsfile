@@ -36,6 +36,9 @@ pipeline {
         GIT_BRANCH = "${GIT_BRANCH}" //""${GIT_BRANCH.split("/")[1]}"
         CURRENT_VERSION = sh(returnStdout: true, script: "git tag --sort version:refname | tail -1").trim()
 
+        // Registry
+        REGISTRY_NAME = 'hamsterswap'
+
         // dokku deployment credential
         DOKKU_DEV_REMOTE = credentials('dokku-dev-remote')
         DOKKU_PROD_REMOTE = credentials('dokku-prod-remote')
