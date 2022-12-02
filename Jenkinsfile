@@ -33,7 +33,7 @@ pipeline {
         // Add something here
 
         // build info env
-        GIT_BRANCH = "${GIT_BRANCH.split("/")[1]}"
+        GIT_BRANCH = "${GIT_BRANCH}" //""${GIT_BRANCH.split("/")[1]}"
         CURRENT_VERSION = sh(returnStdout: true, script: "git tag --sort version:refname | tail -1").trim()
 
         // dokku deployment credential
