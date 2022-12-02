@@ -19,8 +19,8 @@ pipeline {
             script {
                 if (getContext(hudson.FilePath)) {
                     sh '''
-                        docker rmi -f "${REGISTRY_NAME}:${CURRENT_VERSION}-${GIT_BRANCH}"
-                        docker rmi -f "test-${REGISTRY_NAME}:${CURRENT_VERSION}-${GIT_BRANCH}"
+                        docker rmi -f "${REGISTRY_NAME}:${CURRENT_VERSION:-null}-${GIT_BRANCH}"
+                        docker rmi -f "test-${REGISTRY_NAME}:${CURRENT_VERSION:-null}-${GIT_BRANCH}"
                         docker system prune --volumes -f
                     '''
                 }
