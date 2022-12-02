@@ -204,7 +204,7 @@ export class TokenIssuerService {
          * @dev Will be verified by jwt-auth strategy.
          */
         actorId: options.actorId,
-        expiresIn: '5m',
+        expiresIn: '7d',
         authorizedPartyId: this.registryProvider.getConfig().DOMAIN,
 
         /**
