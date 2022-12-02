@@ -1,19 +1,8 @@
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { DataType, newDb } from 'pg-mem';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { v4 } from 'uuid';
 
 import { RegistryProvider } from './providers/registry.provider';
-import { UtilsProvider } from './providers/utils.provider';
-
-let mongod;
-
-export const getMemoryServerMongoUri = async () => {
-  mongod = await MongoMemoryServer.create({
-    instance: { dbName: new UtilsProvider().randomize() },
-  });
-  return mongod.getUri();
-};
 
 export function getDataSourceConfig(registry: RegistryProvider) {
   const engine = registry.getConfig().DB_ENGINE;
