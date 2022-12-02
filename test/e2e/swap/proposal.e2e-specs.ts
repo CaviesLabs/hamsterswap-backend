@@ -36,7 +36,7 @@ export async function shouldRetrieveProposalByOwnerAddress(
     expect(proposal.ownerAddress).to.be.a('string');
     expect(proposal.offerItems).to.be.an('array');
     expect(proposal.swapOptions).to.be.an('array');
-    expect(new Date(proposal.expireAt)).to.be.an('Date');
+    expect(new Date(proposal.expiredAt)).to.be.an('Date');
     expect(proposal.status).to.be.oneOf([
       SwapProposalStatus.CREATED,
       SwapProposalStatus.DEPOSITED,
@@ -64,7 +64,7 @@ export async function shouldRetrieveProposalById(this: Mocha.Context) {
   expect(findProposalResponse.body.ownerAddress).to.be.a('string');
   expect(findProposalResponse.body.offerItems).to.be.an('array');
   expect(findProposalResponse.body.swapOptions).to.be.an('array');
-  expect(new Date(findProposalResponse.body.expireAt)).to.be.an('Date');
+  expect(new Date(findProposalResponse.body.expiredAt)).to.be.an('Date');
   expect(findProposalResponse.body.status).to.be.oneOf([
     SwapProposalStatus.CREATED,
     SwapProposalStatus.DEPOSITED,
@@ -81,7 +81,7 @@ export async function shouldCreateEmptyProposal(this: Mocha.Context) {
 
   // Step 1: Call create empty proposal API
   const createSwapProposalDto = {
-    expireAt: new Date().toISOString(),
+    expiredAt: new Date().toISOString(),
     note: 'This can be omit or empty',
   };
 
@@ -96,7 +96,7 @@ export async function shouldCreateEmptyProposal(this: Mocha.Context) {
   expect(createProposalResponse.body.id).to.be.a('string');
   expect(createProposalResponse.body.ownerId).to.be.a('string');
   expect(createProposalResponse.body.ownerAddress).to.be.a('string');
-  expect(new Date(createProposalResponse.body.expireAt)).to.be.a('date');
+  expect(new Date(createProposalResponse.body.expiredAt)).to.be.a('date');
   expect(createProposalResponse.body.note).to.be.a('string');
   expect(createProposalResponse.body.status).to.equal(
     SwapProposalStatus.CREATED,
