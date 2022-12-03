@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 
 import { UserEntity } from '../entities/user.entity';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -104,6 +108,16 @@ export class UserService {
     id: string,
     updateUserDto: UpdateUserDto,
   ): Promise<UserEntity> {
+    if (updateUserDto.email) {
+      const isTaken = !!(await this.UserRepo.count({
+        where: { email: updateUserDto.email, id: Not(id) },
+      }));
+
+      if (isTaken) {
+        throw new ConflictException('USER::EMAIL_EXISTS');
+      }
+    }
+
     /**
      * @dev Perform user update
      */

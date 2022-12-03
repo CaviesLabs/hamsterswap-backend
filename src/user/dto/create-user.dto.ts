@@ -1,13 +1,26 @@
 /**
  * @dev Import UserAttributes.
  */
+import { PickType } from '@nestjs/swagger';
 import { IsDate, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
-import { Role, UserGroup } from '../entities/user.entity';
+import { Role, UserEntity, UserGroup } from '../entities/user.entity';
+
+class _CreateUserDto extends PickType(UserEntity, [
+  'email',
+  'emailVerified',
+  'birthday',
+  'displayName',
+  'avatar',
+  'roles',
+  'groups',
+  'telegram',
+  'twitter',
+]) {}
 
 /**
  * @dev Declare create user dto
  */
-export class CreateUserDto {
+export class CreateUserDto implements _CreateUserDto {
   @IsEmail()
   @IsOptional()
   email?: string;

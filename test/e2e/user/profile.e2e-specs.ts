@@ -19,12 +19,21 @@ export async function shouldGetUserProfileSucceed(this: Mocha.Context) {
     .auth(state.accessToken, { type: 'bearer' });
 
   expect(getUserProfileResponse.status).to.equal(HttpStatus.OK);
-  expect(Object.keys(getUserProfileResponse.body).length).to.equal(5);
-  expect(getUserProfileResponse.body.id).to.be.a('string');
-  expect(getUserProfileResponse.body.avatar).to.be.a('string');
-  expect(getUserProfileResponse.body.walletAddress).to.be.a('string');
-  expect(getUserProfileResponse.body.telegram).to.be.a('string');
-  expect(getUserProfileResponse.body.twitter).to.be.a('string');
+
+  expect(getUserProfileResponse.body).to.have.property('id');
+  expect(getUserProfileResponse.body).to.have.property('createdAt');
+  expect(getUserProfileResponse.body).to.have.property('updatedAt');
+  expect(getUserProfileResponse.body).to.have.property('deletedAt');
+  expect(getUserProfileResponse.body).to.have.property('email');
+  expect(getUserProfileResponse.body).to.have.property('emailVerified');
+  expect(getUserProfileResponse.body).to.have.property('birthday');
+  expect(getUserProfileResponse.body).to.have.property('displayName');
+  expect(getUserProfileResponse.body).to.have.property('avatar');
+  expect(getUserProfileResponse.body).to.have.property('roles');
+  expect(getUserProfileResponse.body).to.have.property('groups');
+  expect(getUserProfileResponse.body).to.have.property('telegram');
+  expect(getUserProfileResponse.body).to.have.property('twitter');
+  expect(getUserProfileResponse.body).to.have.property('walletAddress');
 }
 
 describe('[User] profile', function () {

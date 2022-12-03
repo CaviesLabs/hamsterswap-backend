@@ -30,4 +30,10 @@ export class UserModel extends BaseModel implements UserEntity {
 
   @OneToMany(() => EnabledIdpModel, (enabledIdp) => enabledIdp.userId)
   enabledIdps: EnabledIdpModel[];
+
+  @Column({ type: String, nullable: true })
+  telegram?: string;
+
+  @Column({ type: String, nullable: true })
+  twitter?: string;
 }

@@ -33,7 +33,7 @@ import {
 import { JwtAuthSession } from '../../auth/strategies/premature-auth.strategy';
 import { CurrentSession } from '../../auth/decorators/current-session.decorator';
 import { IdpResourceService } from '../services/idp-resource.service';
-import { UserProfileDto } from '../dto/user-profile.dto';
+import { UserProfileDto, UserPublicProfileDto } from '../dto/user-profile.dto';
 
 /**
  * @dev Declare user controller, handles profile operations.
@@ -67,12 +67,10 @@ export class UserController {
     @CurrentSession() { user }: JwtAuthSession,
   ): Promise<UserProfileDto> {
     const [idp] = await this.idpResourceService.listUserIdp(user.id);
+
     return {
-      id: user.id,
-      avatar: user.avatar,
+      ...user,
       walletAddress: idp.identityId,
-      telegram: 'https://t.me/lifeinsaudi',
-      twitter: 'https://twitter.com/elonmusk',
     };
   }
 
@@ -83,21 +81,24 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Get user profile successfully',
-    type: UserProfileDto,
+    type: UserPublicProfileDto,
   })
   @Get('/profile/:id')
   @HttpCode(HttpStatus.OK)
   public async getUserProfileById(
     @Param('id') id: string,
-  ): Promise<UserProfileDto> {
-    const { avatar } = await this.userService.getUserProfileById(id);
+  ): Promise<UserPublicProfileDto> {
+    const { avatar, telegram, twitter } =
+      await this.userService.getUserProfileById(id);
+
     const [idp] = await this.idpResourceService.listUserIdp(id);
+
     return {
       id,
       avatar,
       walletAddress: idp.identityId,
-      telegram: 'https://t.me/lifeinsaudi',
-      twitter: 'https://twitter.com/elonmusk',
+      telegram,
+      twitter,
     };
   }
 
