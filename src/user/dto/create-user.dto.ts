@@ -1,7 +1,7 @@
 /**
  * @dev Import UserAttributes.
  */
-import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Role, UserGroup } from '../entities/user.entity';
 
 /**
@@ -13,15 +13,19 @@ export class CreateUserDto {
   email?: string;
 
   @IsString()
+  @IsOptional()
   emailVerified?: boolean;
 
-  @IsString()
+  @IsDate()
+  @IsOptional()
   birthday?: Date;
 
-  @IsString()
+  @IsEmail()
+  @IsOptional()
   displayName?: string;
 
   @IsString()
+  @IsOptional()
   avatar?: string;
 
   @IsEnum(Role, { each: true })
@@ -29,4 +33,12 @@ export class CreateUserDto {
 
   @IsEnum(UserGroup, { each: true })
   groups?: UserGroup[];
+
+  @IsString()
+  @IsOptional()
+  telegram?: string;
+
+  @IsString()
+  @IsOptional()
+  twitter?: string;
 }

@@ -54,7 +54,7 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Get user profile successfully',
-    type: UserEntity,
+    type: UserProfileDto,
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -71,6 +71,8 @@ export class UserController {
       id: user.id,
       avatar: user.avatar,
       walletAddress: idp.identityId,
+      telegram: 'https://t.me/lifeinsaudi',
+      twitter: 'https://twitter.com/elonmusk',
     };
   }
 
@@ -81,7 +83,7 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Get user profile successfully',
-    type: UserEntity,
+    type: UserProfileDto,
   })
   @Get('/profile/:id')
   @HttpCode(HttpStatus.OK)
@@ -94,6 +96,8 @@ export class UserController {
       id,
       avatar,
       walletAddress: idp.identityId,
+      telegram: 'https://t.me/lifeinsaudi',
+      twitter: 'https://twitter.com/elonmusk',
     };
   }
 

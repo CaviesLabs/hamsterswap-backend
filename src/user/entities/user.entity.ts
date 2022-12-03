@@ -30,4 +30,8 @@ export class UserEntity {
   roles: Role[];
 
   groups?: UserGroup[];
+
+  telegram?: string;
+
+  twitter?: string;
 }

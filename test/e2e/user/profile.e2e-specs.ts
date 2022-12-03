@@ -19,10 +19,12 @@ export async function shouldGetUserProfileSucceed(this: Mocha.Context) {
     .auth(state.accessToken, { type: 'bearer' });
 
   expect(getUserProfileResponse.status).to.equal(HttpStatus.OK);
-  expect(Object.keys(getUserProfileResponse.body).length).to.equal(3);
+  expect(Object.keys(getUserProfileResponse.body).length).to.equal(5);
   expect(getUserProfileResponse.body.id).to.be.a('string');
   expect(getUserProfileResponse.body.avatar).to.be.a('string');
   expect(getUserProfileResponse.body.walletAddress).to.be.a('string');
+  expect(getUserProfileResponse.body.telegram).to.be.a('string');
+  expect(getUserProfileResponse.body.twitter).to.be.a('string');
 }
 
 describe('[User] profile', function () {
