@@ -11,6 +11,8 @@ export enum SwapItemStatus {
 }
 
 export class SwapItemEntity {
+  id: string;
+
   ownerAddress?: string;
 
   type: SwapItemType;

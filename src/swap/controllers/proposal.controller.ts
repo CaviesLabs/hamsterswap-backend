@@ -21,12 +21,14 @@ import { FindProposalDto } from '../dto/find-proposal.dto';
 import { UpdateSwapProposalAdditionsDto } from '../dto/update-proposal.dto';
 import { SwapProposalEntity } from '../entities/swap-proposal.entity';
 import { ProposalService } from '../services/proposal.service';
+import { SyncSwapProposalService } from '../services/sync-proposal.service';
 
 @Controller('proposal')
 @ApiTags('swap')
 export class ProposalController {
   constructor(
     private readonly proposalService: ProposalService,
+    private readonly syncSwapProposalService: SyncSwapProposalService,
     private readonly idpResourceService: IdpResourceService,
   ) {}
 
@@ -67,5 +69,10 @@ export class ProposalController {
     body: UpdateSwapProposalAdditionsDto,
   ): Promise<SwapProposalEntity> {
     return this.proposalService.updateAdditional(proposalId, body);
+  }
+
+  @Patch('/:proposalId/sync')
+  syncProposal(@Param('proposalId') proposalId: string) {
+    return this.syncSwapProposalService.syncById(proposalId);
   }
 }

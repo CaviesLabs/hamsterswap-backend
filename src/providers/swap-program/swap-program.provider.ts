@@ -3,8 +3,9 @@ import * as anchor from '@project-serum/anchor';
 import { Program } from '@project-serum/anchor';
 import NodeWallet from '@project-serum/anchor/dist/cjs/nodewallet';
 
-import { SwapIdl, IDL } from './swap.idl';
+import { Swap, IDL } from './swap.idl';
 import { RegistryProvider } from '../registry.provider';
+import { OCSwapPlatformRegistry, OCSwapProposal } from './swap.type';
 
 export const SOLANA_DEVNET_RPC_ENDPOINT = 'https://api.devnet.solana.com';
 export const SOLANA_MAINNET_RPC_RPC_ENDPOINT =
@@ -14,7 +15,7 @@ export const SOLANA_MAINNET_RPC_RPC_ENDPOINT =
  * @dev Swap Program Provider acts as an interface to interact with hamsterswap program on solana.
  */
 export class SwapProgramProvider {
-  private readonly idl: SwapIdl = IDL;
+  private readonly idl: Swap = IDL;
   private readonly rpcEndpoint: string;
   private readonly programId: string;
 
@@ -22,7 +23,7 @@ export class SwapProgramProvider {
    * @dev This is to indicate whether the program is initialized or not.
    * @private
    */
-  private program: Program<SwapIdl>;
+  private program: Program<Swap>;
   private isProgramInitialize = false;
 
   /**
@@ -85,7 +86,7 @@ export class SwapProgramProvider {
     /**
      * @dev Now we create program instance
      */
-    this.program = new Program<SwapIdl>(this.idl, this.programId, provider);
+    this.program = new Program<Swap>(this.idl, this.programId, provider);
 
     /**
      * @dev Return the program again.
@@ -97,12 +98,12 @@ export class SwapProgramProvider {
    * @dev Return swap proposal with proposal id
    * @param proposalId
    */
-  public async getSwapProposal(proposalId: string) {
+  public async getSwapProposal(proposalId: string): Promise<OCSwapProposal> {
     const program = await this.getSwapProgram();
     const [swapProposalPublicKey] = PublicKey.findProgramAddressSync(
       [
         anchor.utils.bytes.utf8.encode('SEED::SWAP::PROPOSAL_SEED'),
-        anchor.utils.bytes.utf8.encode(proposalId),
+        anchor.utils.bytes.utf8.encode(proposalId.slice(0, 10)),
       ],
       program.programId,
     );
@@ -113,7 +114,7 @@ export class SwapProgramProvider {
   /**
    * @dev Return the swap registry.
    */
-  public async getSwapConfig() {
+  public async getSwapConfig(): Promise<OCSwapPlatformRegistry> {
     const program = await this.getSwapProgram();
 
     // find the swap account

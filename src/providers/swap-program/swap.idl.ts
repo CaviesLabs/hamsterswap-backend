@@ -1,4 +1,4 @@
-export type SwapIdl = {
+export type Swap = {
   version: '0.1.0';
   name: 'swap';
   instructions: [
@@ -384,6 +384,12 @@ export type SwapIdl = {
             name: 'amount';
             type: 'u64';
           },
+          {
+            name: 'itemType';
+            type: {
+              defined: 'SwapItemType';
+            };
+          },
         ];
       };
     },
@@ -645,10 +651,10 @@ export type SwapIdl = {
         kind: 'enum';
         variants: [
           {
-            name: 'OnChain';
+            name: 'NFT';
           },
           {
-            name: 'OffChain';
+            name: 'Currency';
           },
         ];
       };
@@ -1017,7 +1023,7 @@ export type SwapIdl = {
   ];
 };
 
-export const IDL: SwapIdl = {
+export const IDL: Swap = {
   version: '0.1.0',
   name: 'swap',
   instructions: [
@@ -1403,6 +1409,12 @@ export const IDL: SwapIdl = {
             name: 'amount',
             type: 'u64',
           },
+          {
+            name: 'itemType',
+            type: {
+              defined: 'SwapItemType',
+            },
+          },
         ],
       },
     },
@@ -1664,10 +1676,10 @@ export const IDL: SwapIdl = {
         kind: 'enum',
         variants: [
           {
-            name: 'OnChain',
+            name: 'NFT',
           },
           {
-            name: 'OffChain',
+            name: 'Currency',
           },
         ],
       },

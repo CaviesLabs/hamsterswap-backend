@@ -15,7 +15,7 @@ export class TokenMetadataProvider {
   }
 
   getNftDetail(token: string) {
-    return this.networkProvider.request(
+    return this.networkProvider.request<{ data: object[] }>(
       `https://pro-api.solscan.io/v1.0/nft/info/${token}`,
       {
         method: 'GET',
@@ -33,7 +33,7 @@ export class TokenMetadataProvider {
   }
 
   getConcurrencyDetail(token: string) {
-    return this.networkProvider.request(
+    return this.networkProvider.request<{ data: object }>(
       `https://api.solscan.io/token/meta?token=${token}`,
       {
         method: 'GET',
