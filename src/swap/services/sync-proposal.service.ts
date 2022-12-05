@@ -41,11 +41,13 @@ export class SyncSwapProposalService {
 
   private async getSwapItems(
     ocItems: OCSwapItem[],
-    dbItems: SwapItemModel[] = [],
+    existedItems: SwapItemModel[] = [],
   ): Promise<SwapItemModel[]> {
     return Promise.all(
       ocItems.map(async (ocItem) => {
-        const dbItem = dbItems.find(({ id }) => isIdsMatched(ocItem.id, id));
+        const dbItem = existedItems.find(({ id }) =>
+          isIdsMatched(ocItem.id, id),
+        );
 
         return this.getSwapItem(ocItem, dbItem);
       }),
@@ -54,11 +56,11 @@ export class SyncSwapProposalService {
 
   private async getSwapOptions(
     ocSwapOptions: OCSwapOption[],
-    dbSwapOptions: SwapOptionModel[] = [],
+    existedSwapOptions: SwapOptionModel[] = [],
   ): Promise<SwapOptionModel[]> {
     return Promise.all(
       ocSwapOptions.map(async (ocSwapOption) => {
-        const dbSwapOption = dbSwapOptions.find(({ id }) =>
+        const dbSwapOption = existedSwapOptions.find(({ id }) =>
           isIdsMatched(ocSwapOption.id, id),
         );
 
@@ -95,10 +97,12 @@ export class SyncSwapProposalService {
 
     proposal.offerItems = await this.getSwapItems(
       ocProposal.offeredItems as OCSwapItem[],
+      proposalExisted.offerItems,
     );
 
     proposal.swapOptions = await this.getSwapOptions(
       ocProposal.swapOptions as OCSwapOption[],
+      proposalExisted.swapOptions,
     );
 
     if (ocProposal.fulfilledWithOptionId) {
