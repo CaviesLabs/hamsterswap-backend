@@ -26,4 +26,9 @@ export class MetadataController {
   listToken(@Query('walletAddress') walletAddress: string) {
     return this.tokenMetadataProvider.listConcurrency(walletAddress);
   }
+
+  @Get('/collection/:collectionId')
+  getCollectionById(@Param('collectionId') collectionId: string) {
+    return this.tokenMetadataProvider.getCollection(collectionId);
+  }
 }

@@ -40,4 +40,13 @@ export class TokenMetadataProvider {
       },
     );
   }
+
+  getCollection(collectionId: string) {
+    return this.networkProvider.request<{ data: object }>(
+      `https://api.solscan.io/collection/id?collectionId=${collectionId}`,
+      {
+        method: 'GET',
+      },
+    );
+  }
 }
