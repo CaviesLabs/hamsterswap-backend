@@ -32,9 +32,9 @@ export class SyncSwapProposalService {
     dbItem: SwapItemModel,
   ): Promise<SwapItemModel> {
     const item = new OCSwapItemDto(ocItem, dbItem);
-    item.nftMetadata = await this.tokenMetadataProvider.getNftDetail(
-      item.contractAddress,
-    );
+    item.nftMetadata = (
+      await this.tokenMetadataProvider.getNftDetail(item.contractAddress)
+    ).data;
 
     return this.entityManager.create<SwapItemModel>(SwapItemModel, item);
   }
