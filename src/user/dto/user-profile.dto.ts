@@ -12,4 +12,12 @@ export class UserPublicProfileDto extends PickType(UserEntity, [
   'twitter',
 ]) {
   walletAddress: string;
+
+  ordersStat: UserOrderStatDto;
+}
+
+export class UserOrderStatDto {
+  orders: number;
+
+  completedOrders: number;
 }

@@ -12,6 +12,9 @@ import { StorageProvider } from '../../providers/s3.provider';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { UserModel } from '../../orm/model/user.model';
+import { SwapProposalModel } from '../../orm/model/swap-proposal.model';
+import { SwapProposalStatus } from '../../swap/entities/swap-proposal.entity';
+import { UserOrderStatDto } from '../dto/user-profile.dto';
 
 /**
  * @dev User service declaration. `UserService` handles all operations related to profile.
@@ -32,6 +35,8 @@ export class UserService {
     private readonly storageProvider: StorageProvider,
     @InjectRepository(UserModel)
     private readonly UserRepo: Repository<UserModel>,
+    @InjectRepository(SwapProposalModel)
+    private readonly proposalRepo: Repository<SwapProposalModel>,
   ) {}
 
   /**
@@ -167,5 +172,22 @@ export class UserService {
     }
 
     return user;
+  }
+
+  public async getUserStat(userId: string): Promise<UserOrderStatDto> {
+    const orders = await this.proposalRepo.countBy({
+      ownerId: userId,
+      status: Not(SwapProposalStatus.CREATED),
+    });
+
+    const completedOrders = await this.proposalRepo.countBy({
+      ownerId: userId,
+      status: SwapProposalStatus.FULFILLED,
+    });
+
+    return {
+      orders,
+      completedOrders,
+    };
   }
 }

@@ -93,12 +93,15 @@ export class UserController {
 
     const [idp] = await this.idpResourceService.listUserIdp(id);
 
+    const ordersStat = await this.userService.getUserStat(id);
+
     return {
       id,
       avatar,
       walletAddress: idp.identityId,
       telegram,
       twitter,
+      ordersStat,
     };
   }
 
