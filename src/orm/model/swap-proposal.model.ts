@@ -1,4 +1,7 @@
+import { Exclude } from 'class-transformer';
 import {
+  BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   Index,
@@ -6,6 +9,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
+import { SwapItemType } from '../../swap/entities/swap-item.entity';
 
 import {
   SwapProposalEntity,
@@ -58,5 +62,34 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
 
   @Column({ type: String, default: '' })
   @Index({ fulltext: true })
+  @Exclude({ toPlainOnly: true })
   searchText: string;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  buildSearchText() {
+    const keyWords = [this.ownerAddress, this.note];
+
+    const extractItemKeyWords = ({
+      type,
+      contractAddress,
+      nftMetadata,
+    }: SwapItemModel) => {
+      keyWords.push(contractAddress);
+      if (type === SwapItemType.NFT) {
+        keyWords.push(
+          nftMetadata['nft_name'],
+          nftMetadata['nft_collection_name'],
+        );
+        const attributes = nftMetadata?.['nft_attributes']?.['attributes'];
+        if (Array.isArray(attributes)) {
+          attributes.forEach(({ value }) => keyWords.push(value));
+        }
+      }
+    };
+
+    this.offerItems.forEach(extractItemKeyWords);
+
+    this.searchText = keyWords.filter((v) => !!v).join(' ');
+  }
 }

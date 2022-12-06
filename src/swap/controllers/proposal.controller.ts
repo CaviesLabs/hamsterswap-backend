@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   Param,
@@ -7,6 +8,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -14,7 +16,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { CurrentSession } from '../../auth/decorators/current-session.decorator';
 import { JwtAuthSession } from '../../auth/strategies/premature-auth.strategy';
-import { SwapProposalModel } from '../../orm/model/swap-proposal.model';
 import { IdpResourceService } from '../../user/services/idp-resource.service';
 import { CreateSwapProposalDto } from '../dto/create-proposal.dto';
 import { FindProposalDto } from '../dto/find-proposal.dto';
@@ -33,15 +34,17 @@ export class ProposalController {
   ) {}
 
   @Get('/:proposalId')
+  @UseInterceptors(ClassSerializerInterceptor)
   getProposal(@Param('proposalId') proposalId: string) {
     return this.proposalService.findById(proposalId);
   }
 
   @Get()
+  @UseInterceptors(ClassSerializerInterceptor)
   find(
     @Query() findProposalDto: FindProposalDto,
     @Query() commonQueryDto: CommonQueryDto,
-  ): Promise<SwapProposalModel[]> {
+  ): Promise<SwapProposalEntity[]> {
     return this.proposalService.find({ ...findProposalDto, ...commonQueryDto });
   }
 
