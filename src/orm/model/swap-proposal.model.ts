@@ -1,7 +1,5 @@
 import { Exclude } from 'class-transformer';
 import {
-  BeforeInsert,
-  BeforeUpdate,
   Column,
   Entity,
   Index,
@@ -65,8 +63,9 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   @Exclude({ toPlainOnly: true })
   searchText: string;
 
-  @BeforeInsert()
-  @BeforeUpdate()
+  /**
+   * @dev Only call this when already fetch full proposal
+   */
   buildSearchText() {
     const keyWords = [this.ownerAddress, this.note];
 
@@ -88,9 +87,11 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
       }
     };
 
-    this.offerItems.forEach(extractItemKeyWords);
+    this.offerItems?.forEach(extractItemKeyWords);
 
-    this.swapOptions.forEach(({ items }) => items.forEach(extractItemKeyWords));
+    this.swapOptions?.forEach(({ items }) =>
+      items?.forEach(extractItemKeyWords),
+    );
 
     this.searchText = keyWords.filter((v) => !!v).join(' ');
   }

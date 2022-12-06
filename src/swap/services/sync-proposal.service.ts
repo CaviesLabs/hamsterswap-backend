@@ -90,7 +90,7 @@ export class SyncSwapProposalService {
 
     const ocProposal = await this.swapProgramProvider.getSwapProposal(id);
 
-    const proposal = this.entityManager.create(
+    const proposal = this.entityManager.create<SwapProposalModel>(
       SwapProposalModel,
       new OCSwapProposalDto(ocProposal, proposalExisted),
     );
@@ -112,6 +112,8 @@ export class SyncSwapProposalService {
 
       proposal.fulfilledWithOptionId = selectedOption?.id;
     }
+
+    proposal.buildSearchText();
 
     await this.swapProposalRepo.save(proposal);
   }

@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 
 import { UserEntity } from '../entities/user.entity';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -14,7 +14,10 @@ import { plainToInstance } from 'class-transformer';
 import { UserModel } from '../../orm/model/user.model';
 import { SwapProposalModel } from '../../orm/model/swap-proposal.model';
 import { SwapProposalStatus } from '../../swap/entities/swap-proposal.entity';
-import { UserOrderStatDto } from '../dto/user-profile.dto';
+import {
+  UserOrderStatDto,
+  UserPublicProfileDto,
+} from '../dto/user-profile.dto';
 
 /**
  * @dev User service declaration. `UserService` handles all operations related to profile.
@@ -34,7 +37,7 @@ export class UserService {
      */
     private readonly storageProvider: StorageProvider,
     @InjectRepository(UserModel)
-    private readonly UserRepo: Repository<UserModel>,
+    private readonly userRepo: Repository<UserModel>,
     @InjectRepository(SwapProposalModel)
     private readonly proposalRepo: Repository<SwapProposalModel>,
   ) {}
@@ -48,7 +51,7 @@ export class UserService {
     /**
      * @dev Find user id.
      */
-    const user = await this.UserRepo.findOne({
+    const user = await this.userRepo.findOne({
       where: { id: userId },
     });
     if (!user) {
@@ -71,7 +74,7 @@ export class UserService {
     /**
      * @dev Create users based on the signed up data.
      */
-    const { id } = await this.UserRepo.save(createUserDto);
+    const { id } = await this.userRepo.save(createUserDto);
 
     /**
      * @dev Returning the payload.
@@ -91,7 +94,7 @@ export class UserService {
     /**
      * @dev TODO: add constraints check.
      */
-    const user = await this.UserRepo.update(
+    const user = await this.userRepo.update(
       {
         id: userId,
       },
@@ -114,7 +117,7 @@ export class UserService {
     updateUserDto: UpdateUserDto,
   ): Promise<UserEntity> {
     if (updateUserDto.email) {
-      const isTaken = !!(await this.UserRepo.count({
+      const isTaken = !!(await this.userRepo.count({
         where: { email: updateUserDto.email, id: Not(id) },
       }));
 
@@ -126,7 +129,7 @@ export class UserService {
     /**
      * @dev Perform user update
      */
-    const user = await this.UserRepo.update({ id }, updateUserDto);
+    const user = await this.userRepo.update({ id }, updateUserDto);
 
     return plainToInstance(UserEntity, user);
   }
@@ -160,7 +163,7 @@ export class UserService {
     /**
      * @dev Find user.
      */
-    const user = await this.UserRepo.findOne({
+    const user = await this.userRepo.findOne({
       where: { id: userId },
     });
 
@@ -172,6 +175,50 @@ export class UserService {
     }
 
     return user;
+  }
+
+  public async getUserProfileByIds(
+    ids: string[],
+  ): Promise<UserPublicProfileDto[]> {
+    /**
+     * @dev fetch users
+     */
+    const users = await this.userRepo.find({
+      where: { id: In(ids) },
+      relations: { enabledIdps: true },
+      select: {
+        id: true,
+        avatar: true,
+        telegram: true,
+        twitter: true,
+        enabledIdps: {
+          identityId: true,
+        },
+      },
+    });
+
+    /**
+     * @dev fetch orders stat
+     */
+    const userOrdersStatsMap: Record<string, UserOrderStatDto> = {};
+    await Promise.all(
+      users.map(async ({ id }) => {
+        userOrdersStatsMap[id] = await this.getUserStat(id);
+      }),
+    );
+
+    return users.map<UserPublicProfileDto>(
+      ({ id, avatar, telegram, twitter, enabledIdps }) => {
+        return {
+          id,
+          avatar,
+          telegram,
+          twitter,
+          walletAddress: enabledIdps[0].identityId,
+          ordersStat: userOrdersStatsMap[id],
+        };
+      },
+    );
   }
 
   public async getUserStat(userId: string): Promise<UserOrderStatDto> {
