@@ -1,6 +1,8 @@
 export enum SwapItemType {
   NFT = 'SWAP_ITEM_TYPE::NFT',
   CURRENCY = 'SWAP_ITEM_TYPE::CURRENCY',
+  CASH = 'SWAP_ITEM_TYPE::CASH',
+  GAME = 'SWAP_ITEM_TYPE::GAME',
 }
 
 export enum SwapItemStatus {
