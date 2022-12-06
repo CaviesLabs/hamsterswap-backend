@@ -90,6 +90,8 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
 
     this.offerItems.forEach(extractItemKeyWords);
 
+    this.swapOptions.forEach(({ items }) => items.forEach(extractItemKeyWords));
+
     this.searchText = keyWords.filter((v) => !!v).join(' ');
   }
 }
