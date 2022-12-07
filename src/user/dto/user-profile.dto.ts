@@ -1,4 +1,5 @@
 import { PickType } from '@nestjs/swagger';
+import { ArrayType } from '../../api-docs/array-type.decorator';
 import { UserEntity } from '../entities/user.entity';
 
 export class UserProfileDto extends UserEntity {
@@ -23,5 +24,6 @@ export class UserOrderStatDto {
 }
 
 export class GetUsersPublicProfileDto {
+  @ArrayType()
   ids: string[];
 }

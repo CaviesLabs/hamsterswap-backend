@@ -42,10 +42,16 @@ export class ProposalController {
   @Get()
   @UseInterceptors(ClassSerializerInterceptor)
   find(
-    @Query() findProposalDto: FindProposalDto,
-    @Query() commonQueryDto: CommonQueryDto,
+    @Query() { ownerAddresses, statuses }: FindProposalDto,
+    @Query() { limit, offset, search }: CommonQueryDto,
   ): Promise<SwapProposalEntity[]> {
-    return this.proposalService.find({ ...findProposalDto, ...commonQueryDto });
+    return this.proposalService.find({
+      ownerAddresses,
+      statuses,
+      limit,
+      offset,
+      search,
+    });
   }
 
   @Post()
