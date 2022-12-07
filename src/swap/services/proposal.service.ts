@@ -44,7 +44,7 @@ export class ProposalService {
     }
 
     if (ownerAddresses && ownerAddresses.length > 0) {
-      filter.ownerAddress = In([ownerAddresses]);
+      filter.ownerAddress = In(ownerAddresses);
     }
 
     if (search) {
