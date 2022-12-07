@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Param,
+  Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -33,7 +34,11 @@ import {
 import { JwtAuthSession } from '../../auth/strategies/premature-auth.strategy';
 import { CurrentSession } from '../../auth/decorators/current-session.decorator';
 import { IdpResourceService } from '../services/idp-resource.service';
-import { UserProfileDto, UserPublicProfileDto } from '../dto/user-profile.dto';
+import {
+  GetUsersPublicProfileDto,
+  UserProfileDto,
+  UserPublicProfileDto,
+} from '../dto/user-profile.dto';
 
 /**
  * @dev Declare user controller, handles profile operations.
@@ -103,6 +108,17 @@ export class UserController {
       twitter,
       ordersStat,
     };
+  }
+
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Get user public profiles successfully',
+    type: UserPublicProfileDto,
+    isArray: true,
+  })
+  @Get('/profile/public')
+  public getPublicProfileByIds(@Query() { ids }: GetUsersPublicProfileDto) {
+    return this.userService.getUserProfileByIds(ids);
   }
 
   /**

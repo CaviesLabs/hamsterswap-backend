@@ -28,7 +28,7 @@ export class UserModel extends BaseModel implements UserEntity {
   @Column({ enum: UserGroup, type: String, array: true, nullable: true })
   groups?: UserGroup[];
 
-  @OneToMany(() => EnabledIdpModel, (enabledIdp) => enabledIdp.userId)
+  @OneToMany(() => EnabledIdpModel, (enabledIdp) => enabledIdp.user)
   enabledIdps: EnabledIdpModel[];
 
   @Column({ type: String, nullable: true })

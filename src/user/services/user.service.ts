@@ -186,15 +186,6 @@ export class UserService {
     const users = await this.userRepo.find({
       where: { id: In(ids) },
       relations: { enabledIdps: true },
-      select: {
-        id: true,
-        avatar: true,
-        telegram: true,
-        twitter: true,
-        enabledIdps: {
-          identityId: true,
-        },
-      },
     });
 
     /**
@@ -214,7 +205,7 @@ export class UserService {
           avatar,
           telegram,
           twitter,
-          walletAddress: enabledIdps[0].identityId,
+          walletAddress: enabledIdps[0]?.identityId,
           ordersStat: userOrdersStatsMap[id],
         };
       },

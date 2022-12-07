@@ -21,3 +21,7 @@ export class UserOrderStatDto {
 
   completedOrders: number;
 }
+
+export class GetUsersPublicProfileDto {
+  ids: string[];
+}
