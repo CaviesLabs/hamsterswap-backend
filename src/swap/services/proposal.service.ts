@@ -16,10 +16,10 @@ import {
 export class ProposalService {
   constructor(
     @InjectRepository(SwapProposalModel)
-    private readonly swapProposalModelRepo: Repository<SwapProposalModel>,
+    private readonly swapProposalRepo: Repository<SwapProposalModel>,
   ) {}
   public async findById(proposalId: string): Promise<SwapProposalEntity> {
-    return this.swapProposalModelRepo.findOneOrFail({
+    return this.swapProposalRepo.findOneOrFail({
       where: { id: proposalId },
       relations: {
         offerItems: true,
@@ -51,7 +51,7 @@ export class ProposalService {
       filter.searchText = ILike(`%${search}%`);
     }
 
-    const proposal = await this.swapProposalModelRepo.find({
+    const proposal = await this.swapProposalRepo.find({
       where: filter,
       skip: offset,
       take: limit,
@@ -61,6 +61,7 @@ export class ProposalService {
           items: true,
         },
       },
+      order: { createdAt: 'DESC' },
     });
     return proposal;
   }
@@ -74,7 +75,7 @@ export class ProposalService {
     ownerId: string;
     ownerAddress: string;
   }): Promise<SwapProposalEntity> {
-    return this.swapProposalModelRepo.save({
+    return this.swapProposalRepo.save({
       ownerId,
       ownerAddress,
       expiredAt,
@@ -88,13 +89,13 @@ export class ProposalService {
     id: string,
     { note }: UpdateSwapProposalAdditionsDto,
   ): Promise<SwapProposalEntity> {
-    const proposal = await this.swapProposalModelRepo.findOne({
+    const proposal = await this.swapProposalRepo.findOne({
       where: { id },
     });
     if (!proposal) throw new NotFoundException('PROPOSAL::NOT_FOUND');
 
     proposal.note = note;
 
-    return this.swapProposalModelRepo.save(proposal);
+    return this.swapProposalRepo.save(proposal);
   }
 }

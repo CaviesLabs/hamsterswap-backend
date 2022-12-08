@@ -10,6 +10,8 @@ export class OCSwapProposalDto extends SwapProposalEntity {
     deposited: SwapProposalStatus.DEPOSITED,
     fulfilled: SwapProposalStatus.FULFILLED,
     canceled: SwapProposalStatus.CANCELED,
+    redeemed: SwapProposalStatus.REDEEMED,
+    withdrawn: SwapProposalStatus.WITHDRAWN,
   };
 
   public static convertStatus(status: object): SwapProposalStatus {

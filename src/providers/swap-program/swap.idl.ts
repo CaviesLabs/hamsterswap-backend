@@ -696,6 +696,12 @@ export type Swap = {
           {
             name: 'Canceled';
           },
+          {
+            name: 'Redeemed';
+          },
+          {
+            name: 'Withdrawn';
+          },
         ];
       };
     },
@@ -1720,6 +1726,12 @@ export const IDL: Swap = {
           },
           {
             name: 'Canceled',
+          },
+          {
+            name: 'Redeemed',
+          },
+          {
+            name: 'Withdrawn',
           },
         ],
       },
