@@ -2,6 +2,7 @@ import { Exclude } from 'class-transformer';
 import {
   Column,
   Entity,
+  Generated,
   Index,
   JoinTable,
   ManyToOne,
@@ -22,6 +23,10 @@ import { UserModel } from './user.model';
   name: 'swap_proposal',
 })
 export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
+  @Column({ type: Number, nullable: true })
+  @Generated('increment')
+  numberId: number;
+
   @Column({ type: String })
   ownerId: string;
 

@@ -11,6 +11,8 @@ export enum SwapProposalStatus {
 export class SwapProposalEntity {
   id: string;
 
+  numberId: number;
+
   ownerId: string;
 
   ownerAddress: string;
