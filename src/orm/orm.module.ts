@@ -13,6 +13,7 @@ import { UserModel } from './model/user.model';
 import { SwapItemModel } from './model/swap-item.model';
 import { SwapOptionModel } from './model/swap-option.model';
 import { SwapProposalModel } from './model/swap-proposal.model';
+import { TokenMetadataModel } from './model/token-metadata.model';
 
 @Module({
   /**
@@ -31,6 +32,7 @@ import { SwapProposalModel } from './model/swap-proposal.model';
       SwapItemModel,
       SwapOptionModel,
       SwapProposalModel,
+      TokenMetadataModel,
     ]),
   ],
   exports: [

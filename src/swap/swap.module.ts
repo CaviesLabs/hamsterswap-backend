@@ -9,6 +9,7 @@ import { IdpResourceService } from '../user/services/idp-resource.service';
 import { SwapConfigController } from './controllers/config.controller';
 import { MetadataController } from './controllers/metadata.controller';
 import { ProposalController } from './controllers/proposal.controller';
+import { TokenMetadataService } from './services/token-metadata.service';
 import { ProposalService } from './services/proposal.service';
 import { SyncSwapProposalService } from './services/sync-proposal.service';
 import { ProposalSubscriber } from './subscribers/proposal.subscriber';
@@ -26,6 +27,7 @@ import { ProposalSubscriber } from './subscribers/proposal.subscriber';
     IdpResourceService,
     ProposalSubscriber,
     SyncSwapProposalService,
+    TokenMetadataService,
   ],
 })
 export class SwapModule {}

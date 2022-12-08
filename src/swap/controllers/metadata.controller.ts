@@ -1,11 +1,15 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TokenMetadataProvider } from '../../providers/token-metadata.provider';
+import { TokenMetadataService } from '../services/token-metadata.service';
 
 @Controller('metadata')
 @ApiTags('metadata')
 export class MetadataController {
-  constructor(private readonly tokenMetadataProvider: TokenMetadataProvider) {}
+  constructor(
+    private readonly tokenMetadataProvider: TokenMetadataProvider,
+    private readonly tokenMetadataService: TokenMetadataService,
+  ) {}
 
   @Get('/nft/portfolio')
   listNft(@Query('walletAddress') walletAddress: string) {
@@ -14,7 +18,7 @@ export class MetadataController {
 
   @Get('/nft/v1/portfolio')
   listNftV1(@Query('walletAddress') walletAddress: string) {
-    return this.tokenMetadataProvider.listNftV1(walletAddress);
+    return this.tokenMetadataService.getNftsByWallet(walletAddress);
   }
 
   @Get('/nft/detail/:mintAddress')
