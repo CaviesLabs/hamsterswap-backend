@@ -12,6 +12,11 @@ export class MetadataController {
     return this.tokenMetadataProvider.listNft(walletAddress);
   }
 
+  @Get('/nft/v1/portfolio')
+  listNftV1(@Query('walletAddress') walletAddress: string) {
+    return this.tokenMetadataProvider.listNftV1(walletAddress);
+  }
+
   @Get('/nft/detail/:mintAddress')
   getNftDetail(@Param('mintAddress') mintAddress: string) {
     return this.tokenMetadataProvider.getNftDetail(mintAddress);

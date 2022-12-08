@@ -14,6 +14,15 @@ export class TokenMetadataProvider {
     );
   }
 
+  listNftV1(address: string) {
+    return this.networkProvider.request(
+      `https://api.solscan.io/account/v2/tokens?address=${address}`,
+      {
+        method: 'GET',
+      },
+    );
+  }
+
   getNftDetail(token: string) {
     return this.networkProvider.request<{ data: object[] }>(
       `https://pro-api.solscan.io/v1.0/nft/info/${token}`,
