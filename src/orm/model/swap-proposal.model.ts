@@ -72,7 +72,10 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
    * @dev Only call this when already fetch full proposal
    */
   buildSearchText() {
-    const keyWords = [this.ownerAddress, this.note];
+    const keyWords = [
+      this.ownerAddress,
+      this.note.trim().replace(/\n|[\s]{2,}/g, ' '),
+    ];
 
     const extractItemKeyWords = ({
       type,
@@ -92,10 +95,10 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
       }
     };
 
-    this.offerItems?.forEach(extractItemKeyWords);
+    this.offerItems?.forEach((item) => extractItemKeyWords(item));
 
     this.swapOptions?.forEach(({ items }) =>
-      items?.forEach(extractItemKeyWords),
+      items?.forEach((item) => extractItemKeyWords(item)),
     );
 
     this.searchText = keyWords.filter((v) => !!v).join(' ');
