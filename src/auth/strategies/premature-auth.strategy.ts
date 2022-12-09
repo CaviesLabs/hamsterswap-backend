@@ -35,13 +35,10 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
    * @dev Initialize passport strategy.
    * @param jwtOptions
    * @param cookieService
-   * @param keycloakAdminProvider
-   * @param userService
-   * @param authService
    * @param registryProvider
-   * @param authenticationService
    * @param sessionService
    * @param ExtendedSessionRepo
+   * @param UserRepo
    */
   constructor(
     /**

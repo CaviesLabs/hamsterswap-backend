@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ThrottlerModule } from '@nestjs/throttler';
+// import { ThrottlerModule } from '@nestjs/throttler';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -23,13 +23,13 @@ import { SwapModule } from './swap/swap.module';
      */
     ConfigModule.forRoot(),
 
-    /**
-     * @dev Enable rate limit.
-     */
-    ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 100,
-    }),
+    // /**
+    //  * @dev Enable rate limit.
+    //  */
+    // ThrottlerModule.forRoot({
+    //   ttl: 60,
+    //   limit: 100,
+    // }),
 
     /**
      * @dev Enable schedule module.
