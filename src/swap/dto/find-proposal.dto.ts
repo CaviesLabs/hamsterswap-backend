@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ArrayType } from '../../api-docs/array-type.decorator';
 
@@ -13,6 +13,7 @@ export class FindProposalDto {
 
   @IsBoolean()
   @IsOptional()
+  @Transform(({ value }) => value === 'true')
   countParticipation?: boolean;
 
   @IsEnum(SwapProposalStatus, { each: true })
