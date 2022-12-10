@@ -58,7 +58,7 @@ export class ProposalService {
     if (countParticipation) {
       filters.push({
         status: filter.status,
-        fulfilledBy: filter.ownerAddress,
+        fulfillBy: filter.ownerAddress,
         searchText: filter.searchText,
       });
     }
