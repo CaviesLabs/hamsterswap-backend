@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
 import { ArrayType } from '../../api-docs/array-type.decorator';
 
 import { SwapProposalStatus } from '../entities/swap-proposal.entity';
@@ -10,6 +10,10 @@ export class FindProposalDto {
   @Type(() => String)
   @ArrayType()
   ownerAddresses?: string[];
+
+  @IsBoolean()
+  @IsOptional()
+  countParticipation?: boolean;
 
   @IsEnum(SwapProposalStatus, { each: true })
   @IsOptional()
