@@ -28,7 +28,7 @@ export class MetadataController {
 
   @Get('/token/:mintAddress')
   getToken(@Param('mintAddress') mintAddress: string) {
-    return this.tokenMetadataProvider.getConcurrencyDetail(mintAddress);
+    return this.tokenMetadataProvider.getCurrencyDetail(mintAddress);
   }
 
   @Get('/token/portfolio')

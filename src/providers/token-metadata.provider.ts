@@ -26,6 +26,18 @@ export interface AccountTokenDetail {
   nft_collection_name: string;
 }
 
+export interface CurrencyData {
+  symbol: string;
+  address: string;
+  name: string;
+  icon: string;
+  website: string;
+  twitter: string;
+  decimals: number;
+  coingeckoId: string;
+  holder: number;
+}
+
 @Injectable()
 export class TokenMetadataProvider {
   constructor(private readonly networkProvider: NetworkProvider) {}
@@ -65,8 +77,8 @@ export class TokenMetadataProvider {
     );
   }
 
-  getConcurrencyDetail(token: string) {
-    return this.networkProvider.request<{ data: object }>(
+  getCurrencyDetail(token: string) {
+    return this.networkProvider.request<{ data: CurrencyData }>(
       `https://api.solscan.io/token/meta?token=${token}`,
       {
         method: 'GET',

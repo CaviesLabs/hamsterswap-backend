@@ -15,6 +15,7 @@ import { OCSwapItemDto } from '../onchain-dto/oc-swap-item.dto';
 import { OCSwapOptionDto } from '../onchain-dto/oc-swap-option.dto';
 import { OCSwapProposalDto } from '../onchain-dto/oc-swap-proposal.dto';
 import { isIdsMatched } from '../onchain-dto/primitive.helper';
+import { SwapItemType } from '../entities/swap-item.entity';
 
 @Injectable()
 export class SyncSwapProposalService {
@@ -32,9 +33,17 @@ export class SyncSwapProposalService {
     dbItem: SwapItemModel,
   ): Promise<SwapItemModel> {
     const item = new OCSwapItemDto(ocItem, dbItem);
-    item.nftMetadata = (
-      await this.tokenMetadataProvider.getNftDetail(item.contractAddress)
-    ).data[0];
+    if (item.type === SwapItemType.NFT) {
+      item.nftMetadata = (
+        await this.tokenMetadataProvider.getNftDetail(item.contractAddress)
+      ).data[0];
+    }
+
+    if (item.type === SwapItemType.CURRENCY) {
+      item.nftMetadata = (
+        await this.tokenMetadataProvider.getCurrencyDetail(item.contractAddress)
+      ).data;
+    }
 
     return this.entityManager.create<SwapItemModel>(SwapItemModel, item);
   }
