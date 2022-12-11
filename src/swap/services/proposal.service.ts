@@ -42,7 +42,10 @@ export class ProposalService {
     const filter: FindOptionsWhere<SwapProposalModel> = {};
     let _statuses = statuses;
 
-    if (_statuses.find((val) => val === SwapProposalStatus.EXPIRED)) {
+    if (
+      _statuses &&
+      _statuses.find((val) => val === SwapProposalStatus.EXPIRED)
+    ) {
       filter.expiredAt = LessThan(new Date());
       // remove EXPIRED from status
       _statuses = statuses.filter((val) => val != SwapProposalStatus.EXPIRED);

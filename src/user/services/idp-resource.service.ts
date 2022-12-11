@@ -66,6 +66,16 @@ export class IdpResourceService {
   }
 
   /**
+   * @dev List all idp that user has.
+   * @param address
+   */
+  public async findUserIdpByAddress(
+    address: string,
+  ): Promise<EnabledIdpModel[]> {
+    return this.EnabledIdpRepo.find({ where: { identityId: address } });
+  }
+
+  /**
    * @dev Link idp provider to account
    * @param type
    * @param payload

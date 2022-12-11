@@ -51,7 +51,6 @@ export class IdpAuthService {
         .getIdpAuthService(type)
         .signUp(signUpPayload.base64Signature);
     } catch (e) {
-      console.log(e);
       throw e;
     }
   }

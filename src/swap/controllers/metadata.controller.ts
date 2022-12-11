@@ -22,8 +22,11 @@ export class MetadataController {
   }
 
   @Get('/nft/detail/:mintAddress')
-  getNftDetail(@Param('mintAddress') mintAddress: string) {
-    return this.tokenMetadataProvider.getNftDetail(mintAddress);
+  async getNftDetail(@Param('mintAddress') mintAddress: string) {
+    const [metadata] = await this.tokenMetadataService.getNftMetadata([
+      mintAddress,
+    ]);
+    return metadata.metadata;
   }
 
   @Get('/token/:mintAddress')

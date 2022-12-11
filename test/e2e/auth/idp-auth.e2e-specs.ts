@@ -66,7 +66,6 @@ export async function shouldSignUpSucceedWithSolanaWallet(this: Mocha.Context) {
   expect(signUpResponse.body.accessToken).to.be.a('string');
 
   state.accessToken = signUpResponse.body.accessToken;
-  console.log(state.accessToken);
 }
 
 export async function shouldSigninSucceedWithSolanaWallet(this: Mocha.Context) {

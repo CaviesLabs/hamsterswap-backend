@@ -41,11 +41,11 @@ export class ProposalController {
 
   @Get()
   @UseInterceptors(ClassSerializerInterceptor)
-  find(
+  async find(
     @Query() { ownerAddresses, statuses, countParticipation }: FindProposalDto,
     @Query() { limit, offset, search }: CommonQueryDto,
   ): Promise<SwapProposalEntity[]> {
-    return this.proposalService.find({
+    const proposals = await this.proposalService.find({
       ownerAddresses,
       statuses,
       limit,
@@ -53,6 +53,17 @@ export class ProposalController {
       countParticipation,
       search,
     });
+
+    return Promise.all(
+      proposals.map(async (pro) => {
+        if (!!pro.fulfillBy) {
+          (pro as any).fulfillByUserId = (
+            await this.idpResourceService.findUserIdpByAddress(pro.fulfillBy)
+          )[0]?.userId;
+        }
+        return pro;
+      }),
+    );
   }
 
   @Post()
