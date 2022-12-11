@@ -26,7 +26,9 @@ export class MetadataController {
     const [metadata] = await this.tokenMetadataService.getNftMetadata([
       mintAddress,
     ]);
-    return metadata.metadata;
+    return {
+      data: [metadata.metadata],
+    };
   }
 
   @Get('/token/:mintAddress')
