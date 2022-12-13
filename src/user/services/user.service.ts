@@ -220,7 +220,7 @@ export class UserService {
 
     const completedOrders = await this.proposalRepo.countBy({
       ownerId: userId,
-      status: SwapProposalStatus.FULFILLED,
+      status: In([SwapProposalStatus.FULFILLED, SwapProposalStatus.REDEEMED]),
     });
 
     return {
