@@ -18,22 +18,26 @@ export class MetadataController {
 
   @Get('/nft/v1/portfolio')
   listNftV1(@Query('walletAddress') walletAddress: string) {
-    return this.tokenMetadataService.getNftsByWallet(walletAddress);
+    return this.tokenMetadataService.listNftsByWallet(walletAddress);
   }
 
   @Get('/nft/detail/:mintAddress')
   async getNftDetail(@Param('mintAddress') mintAddress: string) {
-    const [metadata] = await this.tokenMetadataService.getNftMetadata([
+    const { metadata } = await this.tokenMetadataService.getNftMetadata(
       mintAddress,
-    ]);
+    );
     return {
-      data: [metadata.metadata],
+      data: [metadata],
     };
   }
 
   @Get('/token/:mintAddress')
-  getToken(@Param('mintAddress') mintAddress: string) {
-    return this.tokenMetadataProvider.getCurrencyDetail(mintAddress);
+  async getToken(@Param('mintAddress') mintAddress: string) {
+    const { metadata } = await this.tokenMetadataService.getCurrency(
+      mintAddress,
+    );
+
+    return { data: metadata };
   }
 
   @Get('/token/portfolio')
