@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { SwapItemModel } from '../../orm/model/swap-item.model';
 import { SwapOptionModel } from '../../orm/model/swap-option.model';
@@ -16,6 +17,8 @@ import { OCSwapOptionDto } from '../onchain-dto/oc-swap-option.dto';
 import { OCSwapProposalDto } from '../onchain-dto/oc-swap-proposal.dto';
 import { isIdsMatched } from '../onchain-dto/primitive.helper';
 import { SwapItemType } from '../entities/swap-item.entity';
+import { TokenMetadataService } from './token-metadata.service';
+import { SwapProposalStatus } from '../entities/swap-proposal.entity';
 
 @Injectable()
 export class SyncSwapProposalService {
@@ -26,6 +29,7 @@ export class SyncSwapProposalService {
     private readonly swapProposalRepo: Repository<SwapProposalModel>,
     private readonly swapProgramProvider: SwapProgramProvider,
     private readonly tokenMetadataProvider: TokenMetadataProvider,
+    private readonly tokenMetadataService: TokenMetadataService,
   ) {}
 
   private async getSwapItem(
@@ -34,15 +38,17 @@ export class SyncSwapProposalService {
   ): Promise<SwapItemModel> {
     const item = new OCSwapItemDto(ocItem, dbItem);
     if (item.type === SwapItemType.NFT) {
-      item.nftMetadata = (
-        await this.tokenMetadataProvider.getNftDetail(item.contractAddress)
-      ).data[0];
+      const { metadata } = await this.tokenMetadataService.getNftMetadata(
+        item.contractAddress,
+      );
+      item.nftMetadata = metadata;
     }
 
     if (item.type === SwapItemType.CURRENCY) {
-      item.nftMetadata = (
-        await this.tokenMetadataProvider.getCurrencyDetail(item.contractAddress)
-      ).data;
+      const { metadata } = await this.tokenMetadataService.getCurrency(
+        item.contractAddress,
+      );
+      item.nftMetadata = metadata;
     }
 
     return this.entityManager.create<SwapItemModel>(SwapItemModel, item);
@@ -125,5 +131,38 @@ export class SyncSwapProposalService {
     proposal.buildSearchText();
 
     await this.swapProposalRepo.save(proposal);
+  }
+
+  @Cron(CronExpression.EVERY_5_MINUTES)
+  async syncAllJob() {
+    console.info(
+      `==========Sync All Proposal Started@${new Date().toISOString()}==========`,
+    );
+
+    const proposals = await this.swapProposalRepo.find({
+      where: {
+        status: In([
+          SwapProposalStatus.CREATED,
+          SwapProposalStatus.DEPOSITED,
+          SwapProposalStatus.FULFILLED,
+          SwapProposalStatus.CANCELED,
+        ]),
+      },
+      select: { id: true },
+    });
+
+    await Promise.all(
+      proposals.map(async ({ id }) => {
+        try {
+          await this.syncById(id);
+        } catch (e) {
+          console.error(`ERROR: Sync proposal failed, id: ${id}`, e);
+        }
+      }),
+    );
+
+    console.info(
+      `==========Sync All Proposal Ended@${new Date().toISOString()}==========`,
+    );
   }
 }
