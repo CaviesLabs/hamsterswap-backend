@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, Repository } from 'typeorm';
+import { EntityManager, In, LessThanOrEqual, Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { SwapItemModel } from '../../orm/model/swap-item.model';
@@ -19,6 +19,7 @@ import { isIdsMatched } from '../onchain-dto/primitive.helper';
 import { SwapItemType } from '../entities/swap-item.entity';
 import { TokenMetadataService } from './token-metadata.service';
 import { SwapProposalStatus } from '../entities/swap-proposal.entity';
+import { DateTime } from 'luxon';
 
 @Injectable()
 export class SyncSwapProposalService {
@@ -135,8 +136,9 @@ export class SyncSwapProposalService {
 
   @Cron(CronExpression.EVERY_5_MINUTES)
   async syncAllJob() {
+    const startedAt = DateTime.now();
     console.info(
-      `==========Sync All Proposal Started@${new Date().toISOString()}==========`,
+      `==========Sync All Proposal Started@${startedAt.toISO()}==========`,
     );
 
     const proposals = await this.swapProposalRepo.find({
@@ -147,6 +149,9 @@ export class SyncSwapProposalService {
           SwapProposalStatus.FULFILLED,
           SwapProposalStatus.CANCELED,
         ]),
+        updatedAt: LessThanOrEqual(
+          DateTime.now().minus({ minutes: 5 }).toJSDate(),
+        ),
       },
       select: { id: true },
     });
@@ -159,8 +164,10 @@ export class SyncSwapProposalService {
       }
     }
 
+    const endedAt = DateTime.now();
+    const { seconds } = endedAt.diff(startedAt, 'seconds').toObject();
     console.info(
-      `==========Sync All Proposal Ended@${new Date().toISOString()}==========`,
+      `==========Sync All Proposal Ended@${endedAt.toISO()} Take:${seconds}s==========`,
     );
   }
 }
