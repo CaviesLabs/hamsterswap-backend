@@ -151,15 +151,13 @@ export class SyncSwapProposalService {
       select: { id: true },
     });
 
-    await Promise.all(
-      proposals.map(async ({ id }) => {
-        try {
-          await this.syncById(id);
-        } catch (e) {
-          console.error(`ERROR: Sync proposal failed, id: ${id}`, e);
-        }
-      }),
-    );
+    for (const { id } of proposals) {
+      try {
+        await this.syncById(id);
+      } catch (e) {
+        console.error(`ERROR: Sync proposal failed, id: ${id}`, e);
+      }
+    }
 
     console.info(
       `==========Sync All Proposal Ended@${new Date().toISOString()}==========`,
