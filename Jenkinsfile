@@ -7,17 +7,23 @@ pipeline {
 
     post {
         always {
-            cleanWs()
-            deleteDir()
+            script {
+                if (getContext(hudson.FilePath)) {
+                    cleanWs()
+                    deleteDir()
+                }
+            }
         }
 
         cleanup {
             script {
-                sh '''
-                    docker rmi -f "${REGISTRY_NAME}:${CURRENT_VERSION}-${GIT_BRANCH}"
-                    docker rmi -f "test-${REGISTRY_NAME}:${CURRENT_VERSION}-${GIT_BRANCH}"
-                    docker system prune --volumes -f
-                '''
+                if (getContext(hudson.FilePath)) {
+                    sh '''
+                        docker rmi -f "${REGISTRY_NAME}:${CURRENT_VERSION:-null}-${GIT_BRANCH}"
+                        docker rmi -f "test-${REGISTRY_NAME}:${CURRENT_VERSION:-null}-${GIT_BRANCH}"
+                        docker system prune --volumes -f
+                    '''
+                }
             }
         }
     }
@@ -27,8 +33,11 @@ pipeline {
         // Add something here
 
         // build info env
-        GIT_BRANCH = "${GIT_BRANCH}"//"${GIT_BRANCH.split("/")[1]}"
+        GIT_BRANCH = "${GIT_BRANCH}" //""${GIT_BRANCH.split("/")[1]}"
         CURRENT_VERSION = sh(returnStdout: true, script: "git tag --sort version:refname | tail -1").trim()
+
+        // Registry
+        REGISTRY_NAME = 'hamsterswap'
 
         // dokku deployment credential
         DOKKU_DEV_REMOTE = credentials('dokku-dev-remote')
@@ -39,44 +48,30 @@ pipeline {
     stages {
         stage('setup-parameters') {
             steps {
-                gitlabCommitStatus('setup-parameters') {
-                    script {
-                        properties([
-                                disableConcurrentBuilds([
-                                        abortPrevious: true
-                                ]),
-                                parameters([
-                                        booleanParam(
-                                                defaultValue: false,
-                                                description: 'Trigger a dokku deployment.',
-                                                name: 'DOKKU_DEPLOY'
-                                        )
-                                ])
-                        ])
-                    }
+                script {
+                    properties([disableConcurrentBuilds([abortPrevious: true]),
+                                parameters([booleanParam(defaultValue: false,
+                                        description: 'Trigger a dokku deployment.',
+                                        name: 'DOKKU_DEPLOY')])])
                 }
             }
         }
 
         stage('build-info') {
             steps {
-                gitlabCommitStatus('build-info') {
-                    echo 'Current branch: ' + env.GIT_BRANCH
-                    echo 'Current version: ' + env.CURRENT_VERSION
-                }
+                echo 'Current branch: ' + env.GIT_BRANCH
+                echo 'Current version: ' + env.CURRENT_VERSION
             }
         }
 
         stage('test') {
             steps {
-                gitlabCommitStatus('test') {
-                    script {
-                        def image = docker.build("test-${env.REGISTRY_NAME}:${env.CURRENT_VERSION}-${env.GIT_BRANCH}", "-f Dockerfile.test ./")
-                        image.inside {
-                            sh 'yarn install'
-                            sh 'yarn test'
-                            sh 'yarn test:e2e'
-                        }
+                script {
+                    def image = docker.build("test-${env.REGISTRY_NAME}:${env.CURRENT_VERSION}-${env.GIT_BRANCH}", "-f Dockerfile.test ./")
+                    image.inside {
+                        sh 'yarn install'
+                        sh 'yarn test'
+                        sh 'yarn test:e2e'
                     }
                 }
             }
@@ -98,26 +93,24 @@ pipeline {
             }
 
             steps {
-                gitlabCommitStatus('deploy') {
-                    sh 'echo "Deploying to ${GIT_BRANCH} environment ..."'
-                    sh 'rm -rf .husky/'
+                sh 'echo "Deploying to ${GIT_BRANCH} environment ..."'
+                sh 'rm -rf .husky/'
 
-                    script {
-                        if (env.GIT_BRANCH == 'develop') {
-                            sh '''
+                script {
+                    if (env.GIT_BRANCH == 'develop') {
+                        sh '''
                             set +x
                             GIT_REMOTE_URL=${DOKKU_DEV_REMOTE} SSH_PRIVATE_KEY=$(cat ${SSH_PRIVATE_KEY}) dokku-deploy
                             set -x
                             '''
-                        }
+                    }
 
-                        if (env.GIT_BRANCH == 'main') {
-                            sh '''
+                    if (env.GIT_BRANCH == 'main') {
+                        sh '''
                             set +x
                             GIT_REMOTE_URL=${DOKKU_PROD_REMOTE} SSH_PRIVATE_KEY=$(cat ${SSH_PRIVATE_KEY}) dokku-deploy
                             set -x
                             '''
-                        }
                     }
                 }
             }
