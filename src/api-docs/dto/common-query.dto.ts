@@ -1,5 +1,15 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+
+/**
+ * @dev Supported blockchains
+ */
+export enum SupportedChain {
+  Solana = 'solana',
+  Goerli = 'goerli',
+  BSC = 'bsc',
+  Polygon = 'polygon',
+}
 
 /**
  * @dev DTO for common query params
@@ -18,4 +28,8 @@ export class CommonQueryDto {
   @IsString()
   @IsOptional()
   search?: string;
+
+  @IsString()
+  @IsEnum(SupportedChain)
+  chain: SupportedChain;
 }
