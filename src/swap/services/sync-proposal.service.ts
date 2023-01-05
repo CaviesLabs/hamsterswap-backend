@@ -10,7 +10,7 @@ import {
   OCSwapItem,
   OCSwapOption,
 } from '../../providers/swap-program/swap.type';
-import { TokenMetadataProvider } from '../../providers/token-metadata.provider';
+import { SolanaTokenMetadataProvider } from '../../providers/metadata-provider/solana-token-metadata.provider';
 import { OCSwapItemDto } from '../onchain-dto/oc-swap-item.dto';
 import { OCSwapOptionDto } from '../onchain-dto/oc-swap-option.dto';
 import { OCSwapProposalDto } from '../onchain-dto/oc-swap-proposal.dto';
@@ -25,7 +25,7 @@ export class SyncSwapProposalService {
     @InjectRepository(SwapProposalModel)
     private readonly swapProposalRepo: Repository<SwapProposalModel>,
     private readonly swapProgramProvider: SwapProgramProvider,
-    private readonly tokenMetadataProvider: TokenMetadataProvider,
+    private readonly tokenMetadataProvider: SolanaTokenMetadataProvider,
   ) {}
 
   private async getSwapItem(

@@ -8,12 +8,33 @@ import {
   IsPort,
   IsString,
   IsUrl,
+  ValidateNested,
   validateSync,
 } from 'class-validator';
-import { plainToInstance } from 'class-transformer';
+import { plainToInstance, Type } from 'class-transformer';
 
 import * as fs from 'fs';
 import { DatabaseType } from 'typeorm';
+
+/**
+ * @dev Supported chains
+ */
+export enum SupportedChain {
+  goerli = 'goerli',
+  bsc = 'bsc',
+  solana = 'solana',
+}
+
+export class SwapProgramAddress {
+  @IsString()
+  goerli: string;
+
+  @IsString()
+  bsc: string;
+
+  @IsString()
+  solana: string;
+}
 
 export class SystemConfig {
   /**
@@ -150,11 +171,11 @@ export class SystemConfig {
 
   @IsString()
   @IsNotEmpty()
-  SOLANA_CLUSTER: string;
+  MORALIS_API_KEY: string;
 
-  @IsString()
-  @IsNotEmpty()
-  SWAP_PROGRAM_ADDRESS: string;
+  @ValidateNested()
+  @Type(() => SwapProgramAddress)
+  SWAP_PROGRAM_ADDRESS: SwapProgramAddress;
 
   /**
    * @dev Validate schema.

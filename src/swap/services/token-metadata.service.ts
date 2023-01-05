@@ -7,14 +7,14 @@ import { TokenMetadataModel } from '../../orm/model/token-metadata.model';
 import {
   AccountToken,
   AccountTokenDetail,
-  TokenMetadataProvider,
-} from '../../providers/token-metadata.provider';
+  SolanaTokenMetadataProvider,
+} from '../../providers/metadata-provider/solana-token-metadata.provider';
 import { TokenMetadataEntity } from '../entities/token-metadata.entity';
 
 @Injectable()
 export class TokenMetadataService {
   constructor(
-    private readonly tokenMetadataProvider: TokenMetadataProvider,
+    private readonly tokenMetadataProvider: SolanaTokenMetadataProvider,
     @InjectRepository(TokenMetadataModel)
     private readonly tokenMetadataRepo: Repository<TokenMetadataModel>,
   ) {}

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { NetworkProvider } from './network.provider';
+import { NetworkProvider } from '../network.provider';
 
 export interface AccountV1Token {
   owner: string;
@@ -39,7 +39,7 @@ export interface CurrencyData {
 }
 
 @Injectable()
-export class TokenMetadataProvider {
+export class SolanaTokenMetadataProvider {
   constructor(private readonly networkProvider: NetworkProvider) {}
 
   listNft(address: string) {

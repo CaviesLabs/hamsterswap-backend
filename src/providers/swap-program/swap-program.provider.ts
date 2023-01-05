@@ -33,23 +33,14 @@ export class SwapProgramProvider {
     const registry = new RegistryProvider();
 
     /**
-     * @dev Binding cluster
+     * @dev Binding mainnet cluster by default.
      */
-    switch (registry.getConfig().SOLANA_CLUSTER) {
-      case 'devnet':
-        this.rpcEndpoint = SOLANA_DEVNET_RPC_ENDPOINT;
-        break;
-      case 'mainnet':
-        this.rpcEndpoint = SOLANA_MAINNET_RPC_RPC_ENDPOINT;
-        break;
-      default:
-        throw new Error('RPC not supported');
-    }
+    this.rpcEndpoint = SOLANA_MAINNET_RPC_RPC_ENDPOINT;
 
     /**
      * @dev Binding program id
      */
-    this.programId = registry.getConfig().SWAP_PROGRAM_ADDRESS;
+    this.programId = registry.getConfig().SWAP_PROGRAM_ADDRESS.solana;
 
     /**
      * @dev Initialize program

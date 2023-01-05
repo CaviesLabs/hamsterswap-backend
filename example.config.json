@@ -21,6 +21,10 @@
   "SECRET_TOKEN": "",
   "DOMAIN": "",
   "HOST_URI": "",
-  "SOLANA_CLUSTER": "devnet",
-  "SWAP_PROGRAM_ADDRESS": ""
+  "MORALIS_API_KEY": "",
+  "SWAP_PROGRAM_ADDRESS": {
+      "goerli": "",
+      "bsc": "",
+      "solana": ""
+  }
 }

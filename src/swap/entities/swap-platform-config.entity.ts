@@ -6,10 +6,20 @@ export interface TokenMetadata {
 }
 export class SwapPlatformConfigEntity {
   maxAllowedOptions: number;
-
   maxAllowedItems: number;
 
-  allowNTFCollections: TokenMetadata[];
+  solana: {
+    allowNTFCollections: TokenMetadata[];
+    allowCurrencies: TokenMetadata[];
+  };
 
-  allowCurrencies: TokenMetadata[];
+  goerli: {
+    allowNTFCollections: TokenMetadata[];
+    allowCurrencies: TokenMetadata[];
+  };
+
+  bsc: {
+    allowNTFCollections: TokenMetadata[];
+    allowCurrencies: TokenMetadata[];
+  };
 }

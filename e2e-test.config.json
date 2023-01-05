@@ -21,6 +21,10 @@
   "SECRET_TOKEN": "random",
   "DOMAIN": "hamsterbox.xyz",
   "HOST_URI": "https://hamsterbox.xyz/profile",
-  "SOLANA_CLUSTER": "devnet",
-  "SWAP_PROGRAM_ADDRESS": "EdeRcNsVGU1s1NXZZo8FhLD8iePxvoUCdbvwVGnj778f"
+  "MORALIS_API_KEY": "xxx",
+  "SWAP_PROGRAM_ADDRESS": {
+    "goerli": "",
+    "bsc": "",
+    "solana": "EdeRcNsVGU1s1NXZZo8FhLD8iePxvoUCdbvwVGnj778f"
+  }
 }
