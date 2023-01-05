@@ -95,39 +95,55 @@ export class EvmTokenMetadataProvider {
 
   /**
    * @dev Metadata API
+   * @param chain
    * @param contractAddress
    * @param tokenId
    */
-  public async getNFTMetadata(contractAddress: string, tokenId: string) {
+  public async getNFTMetadata(
+    chain: SupportedChain.bsc | SupportedChain.goerli,
+    contractAddress: string,
+    tokenId: string,
+  ) {
     const instance = await this.getInstance();
 
     return instance.EvmApi.nft.getNFTMetadata({
       tokenId,
       address: contractAddress,
+      chain: SupportedChainMapping[chain],
     });
   }
 
   /**
    * @dev Get token metadata
+   * @param chain
    * @param contractAddresses
    */
-  public async getTokenMetadata(contractAddresses: string[]) {
+  public async getTokenMetadata(
+    chain: SupportedChain.bsc | SupportedChain.goerli,
+    contractAddresses: string[],
+  ) {
     const instance = await this.getInstance();
 
     return instance.EvmApi.token.getTokenMetadata({
       addresses: contractAddresses,
+      chain: SupportedChainMapping[chain],
     });
   }
 
   /**
    * @dev Get token metadata
+   * @param chain
    * @param contractAddress
    */
-  public async getNftFloorPrice(contractAddress: string) {
+  public async getNftFloorPrice(
+    chain: SupportedChain.bsc | SupportedChain.goerli,
+    contractAddress: string,
+  ) {
     const instance = await this.getInstance();
 
     return instance.EvmApi.nft.getNFTLowestPrice({
       address: contractAddress,
+      chain: SupportedChainMapping[chain],
     });
   }
 
@@ -135,11 +151,15 @@ export class EvmTokenMetadataProvider {
    * @dev Get token metadata
    * @param contractAddress
    */
-  public async getTokenPrice(contractAddress: string) {
+  public async getTokenPrice(
+    chain: SupportedChain.bsc | SupportedChain.goerli,
+    contractAddress: string,
+  ) {
     const instance = await this.getInstance();
 
     return instance.EvmApi.token.getTokenPrice({
       address: contractAddress,
+      chain: SupportedChainMapping[chain],
     });
   }
 }
