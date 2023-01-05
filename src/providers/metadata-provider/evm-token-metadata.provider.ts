@@ -149,6 +149,7 @@ export class EvmTokenMetadataProvider {
 
   /**
    * @dev Get token metadata
+   * @param chain
    * @param contractAddress
    */
   public async getTokenPrice(
