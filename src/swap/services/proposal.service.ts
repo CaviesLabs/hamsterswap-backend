@@ -37,6 +37,7 @@ export class ProposalService {
     offset,
     limit,
     countParticipation,
+    chain,
   }: FindProposalDto & CommonQueryDto): Promise<SwapProposalModel[]> {
     const filters = [];
     const filter: FindOptionsWhere<SwapProposalModel> = {};
@@ -63,6 +64,10 @@ export class ProposalService {
       filter.searchText = ILike(`%${search}%`);
     }
 
+    if (search) {
+      filter.chain = chain;
+    }
+
     filters.push(filter);
 
     if (countParticipation) {
@@ -71,6 +76,7 @@ export class ProposalService {
         fulfillBy: filter.ownerAddress,
         searchText: filter.searchText,
         expiredAt: filter.expiredAt,
+        chain: filter.chain,
       });
     }
 

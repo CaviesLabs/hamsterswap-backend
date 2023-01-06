@@ -1,6 +1,8 @@
 import { Column, Entity } from 'typeorm';
-import { TokenMetadataEntity } from '../../swap/entities/token-metadata.entity';
+
 import { BaseModel } from '../base.model';
+import { TokenMetadataEntity } from '../../swap/entities/token-metadata.entity';
+import { SupportedChain } from '../../providers/registry.provider';
 
 @Entity({
   name: 'token_metadata',
@@ -17,4 +19,7 @@ export class TokenMetadataModel
 
   @Column({ type: Boolean })
   isNft: boolean;
+
+  @Column({ type: String })
+  chain: SupportedChain;
 }

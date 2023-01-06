@@ -1,14 +1,14 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SolanaTokenMetadataProvider } from '../../providers/metadata-provider/solana-token-metadata.provider';
-import { TokenMetadataService } from '../services/token-metadata.service';
+import { SolanaTokenMetadataService } from '../services/solana-token-metadata.service';
 
 @Controller('metadata')
 @ApiTags('metadata')
 export class MetadataController {
   constructor(
     private readonly tokenMetadataProvider: SolanaTokenMetadataProvider,
-    private readonly tokenMetadataService: TokenMetadataService,
+    private readonly tokenMetadataService: SolanaTokenMetadataService,
   ) {}
 
   @Get('/nft/portfolio')
@@ -38,7 +38,7 @@ export class MetadataController {
 
   @Get('/token/portfolio')
   listToken(@Query('walletAddress') walletAddress: string) {
-    return this.tokenMetadataProvider.listConcurrency(walletAddress);
+    return this.tokenMetadataProvider.listCurrency(walletAddress);
   }
 
   @Get('/collection/:collectionId')

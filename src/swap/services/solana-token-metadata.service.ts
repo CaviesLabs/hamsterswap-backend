@@ -4,15 +4,12 @@ import { plainToInstance } from 'class-transformer';
 import { In, Repository } from 'typeorm';
 
 import { TokenMetadataModel } from '../../orm/model/token-metadata.model';
-import {
-  AccountToken,
-  AccountTokenDetail,
-  SolanaTokenMetadataProvider,
-} from '../../providers/metadata-provider/solana-token-metadata.provider';
+import { SolanaTokenMetadataProvider } from '../../providers/metadata-provider/solana-token-metadata.provider';
 import { TokenMetadataEntity } from '../entities/token-metadata.entity';
+import { AccountToken, AccountTokenDetail } from '../entities/metadata.entity';
 
 @Injectable()
-export class TokenMetadataService {
+export class SolanaTokenMetadataService {
   constructor(
     private readonly tokenMetadataProvider: SolanaTokenMetadataProvider,
     @InjectRepository(TokenMetadataModel)

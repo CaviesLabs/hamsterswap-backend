@@ -30,9 +30,11 @@ export class SwapProgramAddress {
   goerli: string;
 
   @IsString()
+  @IsNotEmpty()
   bsc: string;
 
   @IsString()
+  @IsNotEmpty()
   solana: string;
 }
 

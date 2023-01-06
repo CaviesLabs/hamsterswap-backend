@@ -1,6 +1,5 @@
 import Moralis from 'moralis';
 import { EvmChain } from '@moralisweb3/common-evm-utils';
-import { SolNetwork } from '@moralisweb3/common-sol-utils';
 
 import { RegistryProvider, SupportedChain } from '../registry.provider';
 
@@ -10,7 +9,6 @@ import { RegistryProvider, SupportedChain } from '../registry.provider';
 export const SupportedChainMapping = {
   [SupportedChain.goerli]: EvmChain.GOERLI,
   [SupportedChain.bsc]: EvmChain.BSC,
-  [SupportedChain.solana]: SolNetwork.MAINNET,
 };
 
 /**
@@ -54,7 +52,7 @@ export class EvmTokenMetadataProvider {
    * @param whitelistedTokenAddresses
    */
   public async listNFTAssets(
-    chain: SupportedChain.bsc | SupportedChain.goerli,
+    chain: SupportedChain,
     owner: string,
     whitelistedTokenAddresses: string[],
   ) {
@@ -77,7 +75,7 @@ export class EvmTokenMetadataProvider {
    * @param whitelistedTokenAddresses
    */
   public async listTokenAssets(
-    chain: SupportedChain.bsc | SupportedChain.goerli,
+    chain: SupportedChain,
     owner: string,
     whitelistedTokenAddresses: string[],
   ) {
@@ -100,7 +98,7 @@ export class EvmTokenMetadataProvider {
    * @param tokenId
    */
   public async getNFTMetadata(
-    chain: SupportedChain.bsc | SupportedChain.goerli,
+    chain: SupportedChain,
     contractAddress: string,
     tokenId: string,
   ) {
@@ -119,7 +117,7 @@ export class EvmTokenMetadataProvider {
    * @param contractAddresses
    */
   public async getTokenMetadata(
-    chain: SupportedChain.bsc | SupportedChain.goerli,
+    chain: SupportedChain,
     contractAddresses: string[],
   ) {
     const instance = await this.getInstance();
@@ -136,7 +134,7 @@ export class EvmTokenMetadataProvider {
    * @param contractAddress
    */
   public async getNftFloorPrice(
-    chain: SupportedChain.bsc | SupportedChain.goerli,
+    chain: SupportedChain,
     contractAddress: string,
   ) {
     const instance = await this.getInstance();
@@ -152,10 +150,7 @@ export class EvmTokenMetadataProvider {
    * @param chain
    * @param contractAddress
    */
-  public async getTokenPrice(
-    chain: SupportedChain.bsc | SupportedChain.goerli,
-    contractAddress: string,
-  ) {
+  public async getTokenPrice(chain: SupportedChain, contractAddress: string) {
     const instance = await this.getInstance();
 
     return instance.EvmApi.token.getTokenPrice({

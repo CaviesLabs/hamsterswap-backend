@@ -18,6 +18,7 @@ import { BaseModel } from '../base.model';
 import { SwapItemModel } from './swap-item.model';
 import { SwapOptionModel } from './swap-option.model';
 import { UserModel } from './user.model';
+import { SupportedChain } from '../../providers/registry.provider';
 
 @Entity({
   name: 'swap_proposal',
@@ -29,6 +30,9 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
 
   @Column({ type: String })
   ownerId: string;
+
+  @Column({ type: String })
+  chain: SupportedChain;
 
   @ManyToOne(() => UserModel)
   owner: UserModel;
@@ -73,6 +77,7 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
    */
   buildSearchText() {
     const keyWords = [
+      this.chain,
       this.ownerAddress,
       this.note.trim().replace(/\n|[\s]{2,}/g, ' '),
     ];

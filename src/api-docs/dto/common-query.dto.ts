@@ -1,15 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
-/**
- * @dev Supported blockchains
- */
-export enum SupportedChain {
-  Solana = 'solana',
-  Goerli = 'goerli',
-  BSC = 'bsc',
-  Polygon = 'polygon',
-}
+import { SupportedChain } from '../../providers/registry.provider';
 
 /**
  * @dev DTO for common query params
@@ -31,5 +23,5 @@ export class CommonQueryDto {
 
   @IsString()
   @IsEnum(SupportedChain)
-  chain: SupportedChain;
+  chain?: SupportedChain = SupportedChain.solana;
 }
