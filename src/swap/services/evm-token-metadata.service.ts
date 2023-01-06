@@ -45,6 +45,7 @@ export class EvmTokenMetadataService {
             ...data.toJSON().normalized_metadata,
           },
           isNft: true,
+          chain,
         };
       }),
     );
