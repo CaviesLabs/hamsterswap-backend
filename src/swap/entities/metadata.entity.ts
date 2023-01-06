@@ -12,6 +12,7 @@ export interface AccountToken {
   nft_status: string;
   nft_collection_id: string;
   nft_image_uri: string;
+  nft_metadata?: object;
 }
 
 export interface AccountTokenDetail {

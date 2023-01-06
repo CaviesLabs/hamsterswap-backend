@@ -7,16 +7,24 @@ import { SolanaTokenMetadataProvider } from '../providers/metadata-provider/sola
 import { IdpResourceBuilder } from '../user/factories/idp-resource.builder';
 import { IdpResourceService } from '../user/services/idp-resource.service';
 import { SwapConfigController } from './controllers/config.controller';
-import { MetadataController } from './controllers/metadata.controller';
+import { SolanaMetadataController } from './controllers/solana-metadata.controller';
 import { ProposalController } from './controllers/proposal.controller';
 import { SolanaTokenMetadataService } from './services/solana-token-metadata.service';
 import { ProposalService } from './services/proposal.service';
 import { SyncSwapProposalService } from './services/sync-proposal.service';
 import { ProposalSubscriber } from './subscribers/proposal.subscriber';
+import { EvmTokenMetadataService } from './services/evm-token-metadata.service';
+import { EvmTokenMetadataProvider } from '../providers/metadata-provider/evm-token-metadata.provider';
+import { EvmMetadataController } from './controllers/evm-metadata.controller';
 
 @Module({
   imports: [OrmModule],
-  controllers: [ProposalController, SwapConfigController, MetadataController],
+  controllers: [
+    ProposalController,
+    SwapConfigController,
+    SolanaMetadataController,
+    EvmMetadataController,
+  ],
   providers: [
     ProposalService,
     NetworkProvider,
@@ -28,6 +36,8 @@ import { ProposalSubscriber } from './subscribers/proposal.subscriber';
     ProposalSubscriber,
     SyncSwapProposalService,
     SolanaTokenMetadataService,
+    EvmTokenMetadataService,
+    EvmTokenMetadataProvider,
   ],
 })
 export class SwapModule {}

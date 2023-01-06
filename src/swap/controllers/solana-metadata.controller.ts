@@ -3,9 +3,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { SolanaTokenMetadataProvider } from '../../providers/metadata-provider/solana-token-metadata.provider';
 import { SolanaTokenMetadataService } from '../services/solana-token-metadata.service';
 
-@Controller('metadata')
-@ApiTags('metadata')
-export class MetadataController {
+@Controller('metadata/solana')
+@ApiTags('metadata/solana')
+export class SolanaMetadataController {
   constructor(
     private readonly tokenMetadataProvider: SolanaTokenMetadataProvider,
     private readonly tokenMetadataService: SolanaTokenMetadataService,

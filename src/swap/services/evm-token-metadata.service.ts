@@ -51,6 +51,35 @@ export class EvmTokenMetadataService {
   }
 
   /**
+   * @dev Fetch NFT metadata
+   * @param chain
+   * @param queryData
+   * @private
+   */
+  private async fetchTokenMetadata(
+    chain: SupportedChain,
+    queryData: string[],
+  ): Promise<TokenMetadataEntity[]> {
+    const data = await this.tokenMetadataProvider.getTokenMetadata(
+      chain,
+      queryData,
+    );
+
+    return Promise.all(
+      data.toJSON().map(async (query) => {
+        /**
+         * @dev Returning the metadata of evm
+         */
+        return {
+          mintAddress: query.address,
+          metadata: query,
+          isNft: false,
+        };
+      }),
+    );
+  }
+
+  /**
    * @dev Get NFT data with cached
    * @param chain
    * @param queryData
@@ -82,35 +111,6 @@ export class EvmTokenMetadataService {
       ...existedTokenMetadata,
       ...newMetadata,
     ]);
-  }
-
-  /**
-   * @dev Fetch NFT metadata
-   * @param chain
-   * @param queryData
-   * @private
-   */
-  private async fetchTokenMetadata(
-    chain: SupportedChain,
-    queryData: string[],
-  ): Promise<TokenMetadataEntity[]> {
-    const data = await this.tokenMetadataProvider.getTokenMetadata(
-      chain,
-      queryData,
-    );
-
-    return Promise.all(
-      data.toJSON().map(async (query) => {
-        /**
-         * @dev Returning the metadata of evm
-         */
-        return {
-          mintAddress: query.address,
-          metadata: query,
-          isNft: false,
-        };
-      }),
-    );
   }
 
   /**
@@ -182,6 +182,7 @@ export class EvmTokenMetadataService {
           nft_status: 'holding',
           nft_collection_id: meta.token_address,
           nft_image_uri: meta.normalized_metadata.image,
+          nft_metadata: meta.normalized_metadata,
         };
       });
 

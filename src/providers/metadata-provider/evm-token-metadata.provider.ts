@@ -1,5 +1,6 @@
 import Moralis from 'moralis';
 import { EvmChain } from '@moralisweb3/common-evm-utils';
+import { Injectable } from '@nestjs/common';
 
 import { RegistryProvider, SupportedChain } from '../registry.provider';
 
@@ -14,6 +15,7 @@ export const SupportedChainMapping = {
 /**
  * @dev EVM token metadata
  */
+@Injectable()
 export class EvmTokenMetadataProvider {
   /**
    * @dev Instance
