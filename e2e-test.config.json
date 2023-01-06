@@ -24,7 +24,7 @@
   "MORALIS_API_KEY": "xxx",
   "SWAP_PROGRAM_ADDRESS": {
     "goerli": "",
-    "bsc": "",
+    "bsc": "EdeRcNsVGU1s1NXZZo8FhLD8iePxvoUCdbvwVGnj778f",
     "solana": "EdeRcNsVGU1s1NXZZo8FhLD8iePxvoUCdbvwVGnj778f"
   }
 }
