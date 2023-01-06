@@ -18,7 +18,7 @@ export class EvmMetadataController {
     @Query('walletAddress') walletAddress: string,
     @Query('chain') chain: SupportedChain.bsc | SupportedChain.goerli,
   ) {
-    return this.tokenMetadataProvider.listNFTAssets(chain, walletAddress, []);
+    return this.tokenMetadataService.getNftsByWallet(chain, walletAddress, []);
   }
 
   @Get('/nft/detail/:mintAddress')

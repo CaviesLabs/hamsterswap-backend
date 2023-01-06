@@ -74,6 +74,7 @@ export class EvmTokenMetadataService {
           mintAddress: query.address,
           metadata: query,
           isNft: false,
+          chain,
         };
       }),
     );
@@ -181,8 +182,8 @@ export class EvmTokenMetadataService {
           nft_symbol: meta.symbol,
           nft_status: 'holding',
           nft_collection_id: meta.token_address,
-          nft_image_uri: meta.normalized_metadata.image,
-          nft_metadata: meta.normalized_metadata,
+          nft_image_uri: JSON.parse(meta.metadata).image,
+          nft_metadata: JSON.parse(meta.metadata),
         };
       });
 
