@@ -18,6 +18,13 @@ export class SwapConfigController {
           name: 'Solana',
           type: 'token',
         },
+        {
+          id: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
+          image:
+            'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I',
+          name: 'Bonk',
+          type: 'token',
+        },
       ],
       allowNTFCollections: [
         {
