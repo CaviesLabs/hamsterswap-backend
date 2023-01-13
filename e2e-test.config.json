@@ -21,6 +21,7 @@
   "SECRET_TOKEN": "random",
   "DOMAIN": "hamsterbox.xyz",
   "HOST_URI": "https://hamsterbox.xyz/profile",
+  "SOLSCAN_API_KEY": "test",
   "SOLANA_CLUSTER": "devnet",
   "SWAP_PROGRAM_ADDRESS": "EdeRcNsVGU1s1NXZZo8FhLD8iePxvoUCdbvwVGnj778f"
 }

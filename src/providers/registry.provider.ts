@@ -156,6 +156,10 @@ export class SystemConfig {
   @IsNotEmpty()
   SWAP_PROGRAM_ADDRESS: string;
 
+  @IsString()
+  @IsNotEmpty()
+  SOLSCAN_API_KEY: string;
+
   /**
    * @dev Validate schema.
    */

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { NetworkProvider } from './network.provider';
+import { RegistryProvider } from './registry.provider';
 
 export interface AccountV1Token {
   owner: string;
@@ -45,8 +46,11 @@ export class TokenMetadataProvider {
   listNft(address: string) {
     return this.networkProvider.request<{
       data: { list_nft: AccountToken[] };
-    }>(`https://pro-api.solscan.io/v1.0/nft/list/${address}`, {
+    }>(`https://pro-api.solscan.io/v1.0/nft/wallet/list_nft/${address}`, {
       method: 'GET',
+      headers: {
+        token: new RegistryProvider().getConfig().SOLSCAN_API_KEY,
+      },
     });
   }
 
@@ -61,9 +65,12 @@ export class TokenMetadataProvider {
 
   getNftDetail(token: string) {
     return this.networkProvider.request<{ data: AccountTokenDetail[] }>(
-      `https://pro-api.solscan.io/v1.0/nft/info/${token}`,
+      `https://pro-api.solscan.io/v1.0/nft/token/info/${token}`,
       {
         method: 'GET',
+        headers: {
+          token: new RegistryProvider().getConfig().SOLSCAN_API_KEY,
+        },
       },
     );
   }
