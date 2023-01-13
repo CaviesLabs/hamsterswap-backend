@@ -37,14 +37,31 @@ export class TokenMetadataService {
   }
 
   public async getNftMetadata(
-    mintAddress: string[],
+    mintAddress: string,
+  ): Promise<TokenMetadataEntity> {
+    const existedTokenMetadata = await this.tokenMetadataRepo.findOneBy({
+      mintAddress,
+    });
+    if (!!existedTokenMetadata) return existedTokenMetadata;
+
+    const { data } = await this.tokenMetadataProvider.getNftDetail(mintAddress);
+    // TODO: what if passed non-nft address
+    return this.tokenMetadataRepo.save({
+      mintAddress,
+      metadata: data[0],
+      isNft: true,
+    });
+  }
+
+  public async listNftMetadata(
+    mintAddresses: string[],
   ): Promise<TokenMetadataEntity[]> {
     const existedTokenMetadata = await this.tokenMetadataRepo.findBy({
-      mintAddress: In(mintAddress),
+      mintAddress: In(mintAddresses),
     });
 
     const wildMintAddresses: string[] = [];
-    mintAddress.forEach((mintAddress) => {
+    mintAddresses.forEach((mintAddress) => {
       if (
         !existedTokenMetadata.find(
           (existed) => existed.mintAddress === mintAddress,
@@ -63,13 +80,13 @@ export class TokenMetadataService {
     ]);
   }
 
-  public async getNftsByWallet(address: string): Promise<AccountToken[]> {
+  public async listNftsByWallet(address: string): Promise<AccountToken[]> {
     /**
      * @dev fetch wallet's tokens
      */
     const tokens = await this.tokenMetadataProvider.listNftV1(address);
 
-    const tokenMetadata = await this.getNftMetadata(
+    const tokenMetadata = await this.listNftMetadata(
       tokens.data.map(({ tokenAddress }) => tokenAddress),
     );
 
@@ -100,5 +117,22 @@ export class TokenMetadataService {
      * @dev return only NFTs
      */
     return accountNfts.filter((nft) => nft != null);
+  }
+
+  public async getCurrency(mintAddress: string): Promise<TokenMetadataEntity> {
+    const existedTokenMetadata = await this.tokenMetadataRepo.findOneBy({
+      mintAddress,
+    });
+    if (!!existedTokenMetadata) return existedTokenMetadata;
+
+    const { data } = await this.tokenMetadataProvider.getCurrencyDetail(
+      mintAddress,
+    );
+
+    return this.tokenMetadataRepo.save({
+      mintAddress,
+      metadata: data[0],
+      isNft: false,
+    });
   }
 }
