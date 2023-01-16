@@ -131,7 +131,7 @@ export class TokenMetadataService {
 
     return this.tokenMetadataRepo.save({
       mintAddress,
-      metadata: data[0],
+      metadata: data,
       isNft: false,
     });
   }
