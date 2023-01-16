@@ -33,13 +33,7 @@ export class ProposalController {
     private readonly idpResourceService: IdpResourceService,
   ) {}
 
-  @Get('/:proposalId')
-  @UseInterceptors(ClassSerializerInterceptor)
-  getProposal(@Param('proposalId') proposalId: string) {
-    return this.proposalService.findById(proposalId);
-  }
-
-  @Get()
+  @Get('')
   @UseInterceptors(ClassSerializerInterceptor)
   async find(
     @Query() { ownerAddresses, statuses, countParticipation }: FindProposalDto,
@@ -64,6 +58,12 @@ export class ProposalController {
         return pro;
       }),
     );
+  }
+
+  @Get('/:proposalId')
+  @UseInterceptors(ClassSerializerInterceptor)
+  getProposal(@Param('proposalId') proposalId: string) {
+    return this.proposalService.findById(proposalId);
   }
 
   @Post()

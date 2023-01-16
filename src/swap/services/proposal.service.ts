@@ -63,19 +63,21 @@ export class ProposalService {
       filter.searchText = ILike(`%${search}%`);
     }
 
-    filters.push(filter);
+    if (Object.keys(filter).length > 0) {
+      filters.push(filter);
 
-    if (countParticipation) {
-      filters.push({
-        status: filter.status,
-        fulfillBy: filter.ownerAddress,
-        searchText: filter.searchText,
-        expiredAt: filter.expiredAt,
-      });
+      if (countParticipation) {
+        filters.push({
+          status: filter.status,
+          fulfillBy: filter.ownerAddress,
+          searchText: filter.searchText,
+          expiredAt: filter.expiredAt,
+        });
+      }
     }
 
     const proposal = await this.swapProposalRepo.find({
-      where: filters,
+      where: filters.length > 0 ? filters : undefined,
       skip: offset,
       take: limit,
       relations: {
