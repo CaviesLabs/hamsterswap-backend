@@ -81,7 +81,7 @@ export class UserController {
 
   /**
    * @dev Get user public profile by id.
-   * @param req
+   * @param id
    */
   @ApiResponse({
     status: HttpStatus.OK,

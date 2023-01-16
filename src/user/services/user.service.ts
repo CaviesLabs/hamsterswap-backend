@@ -27,9 +27,8 @@ export class UserService {
   /**
    * @dev Construct initializes the user service.
    * @param storageProvider
-   * @param keycloakAdminProvider
-   * @param keycloakUserProvider
-   * @param WalletDocument
+   * @param userRepo
+   * @param proposalRepo
    */
   constructor(
     /**
@@ -136,7 +135,7 @@ export class UserService {
 
   /**
    * @dev Upload file and update avatar attribute.
-   * @param authToken
+   * @param userId
    * @param file
    */
   public async uploadAvatar(userId: string, file: any): Promise<UserEntity> {
