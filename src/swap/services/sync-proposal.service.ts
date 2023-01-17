@@ -1,6 +1,12 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, In, LessThanOrEqual, Repository } from 'typeorm';
+import {
+  EntityManager,
+  In,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { SwapItemModel } from '../../orm/model/swap-item.model';
@@ -149,9 +155,8 @@ export class SyncSwapProposalService {
           SwapProposalStatus.FULFILLED,
           SwapProposalStatus.CANCELED,
         ]),
-        updatedAt: LessThanOrEqual(
-          DateTime.now().minus({ minutes: 5 }).toJSDate(),
-        ),
+        createdAt: MoreThanOrEqual(startedAt.minus({ weeks: 1 }).toJSDate()),
+        updatedAt: LessThanOrEqual(startedAt.minus({ minutes: 5 }).toJSDate()),
       },
       select: { id: true },
     });
