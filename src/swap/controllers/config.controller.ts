@@ -25,6 +25,13 @@ export class SwapConfigController {
           name: 'Bonk',
           type: 'token',
         },
+        {
+          id: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+          image:
+            'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
+          name: 'USD Coin',
+          type: 'token',
+        },
       ],
       allowNTFCollections: [
         {
