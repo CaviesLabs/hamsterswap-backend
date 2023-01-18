@@ -17,6 +17,7 @@ export class SwapConfigController {
             'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
           name: 'Solana',
           type: 'token',
+          decimals: 9,
         },
         {
           id: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
@@ -24,6 +25,7 @@ export class SwapConfigController {
             'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I',
           name: 'Bonk',
           type: 'token',
+          decimals: 5,
         },
         {
           id: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
@@ -31,6 +33,7 @@ export class SwapConfigController {
             'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
           name: 'USD Coin',
           type: 'token',
+          decimals: 6,
         },
       ],
       allowNTFCollections: [

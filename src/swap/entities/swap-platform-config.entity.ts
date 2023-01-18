@@ -3,6 +3,7 @@ export interface TokenMetadata {
   image: string;
   type: string;
   name: string;
+  decimals?: number;
 }
 export class SwapPlatformConfigEntity {
   maxAllowedOptions: number;
