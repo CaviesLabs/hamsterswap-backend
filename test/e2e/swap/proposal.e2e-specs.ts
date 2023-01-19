@@ -1,5 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
-import { expect } from 'chai';
+import { expect, use } from 'chai';
+import * as ChaiSorted from 'chai-sorted';
+use(ChaiSorted);
 import * as request from 'supertest';
 import { EntityManager } from 'typeorm';
 
@@ -62,8 +64,13 @@ export async function shouldRetrieveProposalById(this: Mocha.Context) {
 
   expect(findProposalResponse.status).to.equal(HttpStatus.OK);
   expect(findProposalResponse.body.ownerAddress).to.be.a('string');
-  expect(findProposalResponse.body.offerItems).to.be.an('array');
-  expect(findProposalResponse.body.swapOptions).to.be.an('array');
+  (
+    expect(findProposalResponse.body.offerItems).to.be.an('array').to.be as any
+  ).ascendingBy('id');
+  (
+    expect(findProposalResponse.body.swapOptions).to.be.an('array').to.be as any
+  ).ascendingBy('id');
+
   expect(new Date(findProposalResponse.body.expiredAt)).to.be.an('Date');
   expect(findProposalResponse.body.status).to.be.oneOf([
     SwapProposalStatus.CREATED,

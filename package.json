@@ -114,6 +114,7 @@
     "@typescript-eslint/parser": "^5.38.0",
     "aws-sdk-mock": "^5.7.0",
     "chai": "^4.3.6",
+    "chai-sorted": "^0.2.0",
     "dotenv": "^16.0.3",
     "eslint": "^7.30.0",
     "eslint-config-prettier": "^8.3.0",
