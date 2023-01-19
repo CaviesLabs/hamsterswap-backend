@@ -9,7 +9,7 @@ export class TokenMetadataModel
   extends BaseModel
   implements TokenMetadataEntity
 {
-  @Column({ type: String })
+  @Column({ type: String, unique: true })
   mintAddress: string;
 
   @Column({ type: 'json', nullable: true })

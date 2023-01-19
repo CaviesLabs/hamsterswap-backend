@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { plainToInstance } from 'class-transformer';
-import { In, Repository } from 'typeorm';
+import { DateTime } from 'luxon';
+import { In, MoreThan, Repository } from 'typeorm';
 
 import { TokenMetadataModel } from '../../orm/model/token-metadata.model';
 import {
@@ -41,16 +42,26 @@ export class TokenMetadataService {
   ): Promise<TokenMetadataEntity> {
     const existedTokenMetadata = await this.tokenMetadataRepo.findOneBy({
       mintAddress,
+      updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
     });
     if (!!existedTokenMetadata) return existedTokenMetadata;
 
     const { data } = await this.tokenMetadataProvider.getNftDetail(mintAddress);
-    // TODO: what if passed non-nft address
-    return this.tokenMetadataRepo.save({
-      mintAddress,
-      metadata: data[0],
-      isNft: true,
-    });
+
+    /** Upsert token metadata */
+    await this.tokenMetadataRepo.upsert(
+      [
+        {
+          mintAddress,
+          metadata: data[0],
+          isNft: true,
+        },
+      ],
+      ['mintAddress'],
+    );
+
+    /** Return new data */
+    return this.tokenMetadataRepo.findOneBy({ mintAddress });
   }
 
   public async listNftMetadata(
@@ -58,8 +69,10 @@ export class TokenMetadataService {
   ): Promise<TokenMetadataEntity[]> {
     const existedTokenMetadata = await this.tokenMetadataRepo.findBy({
       mintAddress: In(mintAddresses),
+      updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
     });
 
+    /** Filter new or too old metadata */
     const wildMintAddresses: string[] = [];
     mintAddresses.forEach((mintAddress) => {
       if (
@@ -71,8 +84,16 @@ export class TokenMetadataService {
       }
     });
 
+    /** Fetch metadata */
     const wildNftMetadata = await this.fetchNftMetadata(wildMintAddresses);
-    const newMetadata = await this.tokenMetadataRepo.save(wildNftMetadata);
+
+    /** Upsert metadata */
+    await this.tokenMetadataRepo.upsert(wildNftMetadata, ['mintAddress']);
+
+    /** Fetch new update */
+    const newMetadata = await this.tokenMetadataRepo.findBy({
+      mintAddress: In(wildMintAddresses),
+    });
 
     return plainToInstance(TokenMetadataEntity, [
       ...existedTokenMetadata,
@@ -122,6 +143,7 @@ export class TokenMetadataService {
   public async getCurrency(mintAddress: string): Promise<TokenMetadataEntity> {
     const existedTokenMetadata = await this.tokenMetadataRepo.findOneBy({
       mintAddress,
+      updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
     });
     if (!!existedTokenMetadata) return existedTokenMetadata;
 
@@ -129,10 +151,17 @@ export class TokenMetadataService {
       mintAddress,
     );
 
-    return this.tokenMetadataRepo.save({
-      mintAddress,
-      metadata: data,
-      isNft: false,
-    });
+    await this.tokenMetadataRepo.upsert(
+      [
+        {
+          mintAddress,
+          metadata: data,
+          isNft: false,
+        },
+      ],
+      ['mintAddress'],
+    );
+
+    return this.tokenMetadataRepo.findOneBy({ mintAddress });
   }
 }
