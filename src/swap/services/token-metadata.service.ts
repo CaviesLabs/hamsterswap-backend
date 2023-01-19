@@ -39,12 +39,16 @@ export class TokenMetadataService {
 
   public async getNftMetadata(
     mintAddress: string,
+    forceUpdate = false,
   ): Promise<TokenMetadataEntity> {
-    const existedTokenMetadata = await this.tokenMetadataRepo.findOneBy({
-      mintAddress,
-      updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
-    });
-    if (!!existedTokenMetadata) return existedTokenMetadata;
+    /** Skip cache if force update */
+    if (!forceUpdate) {
+      const existedTokenMetadata = await this.tokenMetadataRepo.findOneBy({
+        mintAddress,
+        updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
+      });
+      if (!!existedTokenMetadata) return existedTokenMetadata;
+    }
 
     const { data } = await this.tokenMetadataProvider.getNftDetail(mintAddress);
 
@@ -66,11 +70,17 @@ export class TokenMetadataService {
 
   public async listNftMetadata(
     mintAddresses: string[],
+    forceUpdate = false,
   ): Promise<TokenMetadataEntity[]> {
-    const existedTokenMetadata = await this.tokenMetadataRepo.findBy({
-      mintAddress: In(mintAddresses),
-      updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
-    });
+    let existedTokenMetadata: TokenMetadataEntity[] = [];
+
+    /** Skip cache if force update */
+    if (!forceUpdate) {
+      existedTokenMetadata = await this.tokenMetadataRepo.findBy({
+        mintAddress: In(mintAddresses),
+        updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
+      });
+    }
 
     /** Filter new or too old metadata */
     const wildMintAddresses: string[] = [];
@@ -90,7 +100,7 @@ export class TokenMetadataService {
     /** Upsert metadata */
     await this.tokenMetadataRepo.upsert(wildNftMetadata, ['mintAddress']);
 
-    /** Fetch new update */
+    /** Get new update */
     const newMetadata = await this.tokenMetadataRepo.findBy({
       mintAddress: In(wildMintAddresses),
     });
@@ -140,17 +150,25 @@ export class TokenMetadataService {
     return accountNfts.filter((nft) => nft != null);
   }
 
-  public async getCurrency(mintAddress: string): Promise<TokenMetadataEntity> {
-    const existedTokenMetadata = await this.tokenMetadataRepo.findOneBy({
-      mintAddress,
-      updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
-    });
-    if (!!existedTokenMetadata) return existedTokenMetadata;
+  public async getCurrency(
+    mintAddress: string,
+    forceUpdate = false,
+  ): Promise<TokenMetadataEntity> {
+    /** Skip cache if force update */
+    if (!forceUpdate) {
+      const existedTokenMetadata = await this.tokenMetadataRepo.findOneBy({
+        mintAddress,
+        updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
+      });
+      if (!!existedTokenMetadata) return existedTokenMetadata;
+    }
 
+    /** Fetch metadata */
     const { data } = await this.tokenMetadataProvider.getCurrencyDetail(
       mintAddress,
     );
 
+    /** Upsert metadata */
     await this.tokenMetadataRepo.upsert(
       [
         {
@@ -162,6 +180,7 @@ export class TokenMetadataService {
       ['mintAddress'],
     );
 
+    /** Return new update */
     return this.tokenMetadataRepo.findOneBy({ mintAddress });
   }
 }

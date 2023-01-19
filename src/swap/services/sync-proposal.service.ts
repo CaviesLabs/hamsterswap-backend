@@ -47,6 +47,7 @@ export class SyncSwapProposalService {
     if (item.type === SwapItemType.NFT) {
       const { metadata } = await this.tokenMetadataService.getNftMetadata(
         item.contractAddress,
+        true,
       );
       item.nftMetadata = metadata;
     }
@@ -54,6 +55,7 @@ export class SyncSwapProposalService {
     if (item.type === SwapItemType.CURRENCY) {
       const { metadata } = await this.tokenMetadataService.getCurrency(
         item.contractAddress,
+        true,
       );
       item.nftMetadata = metadata;
     }
