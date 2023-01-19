@@ -27,6 +27,17 @@ export class ProposalService {
           items: true,
         },
       },
+      order: {
+        offerItems: {
+          id: 'ASC',
+        },
+        swapOptions: {
+          id: 'ASC',
+          items: {
+            id: 'ASC',
+          },
+        },
+      },
     });
   }
 
@@ -76,7 +87,7 @@ export class ProposalService {
       }
     }
 
-    const proposal = await this.swapProposalRepo.find({
+    return this.swapProposalRepo.find({
       where: filters.length > 0 ? filters : undefined,
       skip: offset,
       take: limit,
@@ -86,9 +97,19 @@ export class ProposalService {
           items: true,
         },
       },
-      order: { createdAt: 'DESC' },
+      order: {
+        createdAt: 'DESC',
+        offerItems: {
+          id: 'ASC',
+        },
+        swapOptions: {
+          id: 'ASC',
+          items: {
+            id: 'ASC',
+          },
+        },
+      },
     });
-    return proposal;
   }
 
   create({
