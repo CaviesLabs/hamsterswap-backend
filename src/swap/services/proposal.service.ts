@@ -88,10 +88,13 @@ export class ProposalService {
     }
 
     const entityIds = await this.swapProposalRepo.find({
-      where: filters,
+      where: filters.length > 0 ? filters : undefined,
       skip: offset,
       take: limit,
       select: { id: true },
+      order: {
+        createdAt: 'DESC',
+      },
     });
 
     return this.swapProposalRepo.find({
