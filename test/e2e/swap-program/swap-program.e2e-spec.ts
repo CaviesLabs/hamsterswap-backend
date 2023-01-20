@@ -2,7 +2,7 @@ import { expect } from 'chai';
 
 import { SwapProgramProvider } from '../../../src/providers/swap-program/swap-program.provider';
 
-describe('[swap-program] query swap program via solana rpc', function () {
+describe('[program] query swap program via solana rpc', function () {
   it('should: get swap registry state successfully', async () => {
     const programProvider = new SwapProgramProvider();
     const state = await programProvider.getSwapConfig();
@@ -14,7 +14,7 @@ describe('[swap-program] query swap program via solana rpc', function () {
   });
 });
 
-describe('[swap-program] get swap proposal by id', function () {
+describe('[program] get swap proposal by id', function () {
   it('should get swap proposal successfully', async function () {
     // const programProvider = new SwapProgramProvider();
     // const proposal = await programProvider.getSwapProposal(

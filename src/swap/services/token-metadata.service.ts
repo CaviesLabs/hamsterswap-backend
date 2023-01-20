@@ -25,9 +25,7 @@ export class TokenMetadataService {
   ): Promise<TokenMetadataEntity[]> {
     const metadata = await Promise.all(
       mintAddress.map(async (address) => {
-        const { data } = await this.tokenMetadataProvider.getNftDetailV2(
-          address,
-        );
+        const { data } = await this.tokenMetadataProvider.getNftDetail(address);
         return {
           mintAddress: address,
           metadata: data[0],
@@ -52,9 +50,7 @@ export class TokenMetadataService {
       if (!!existedTokenMetadata) return existedTokenMetadata;
     }
 
-    const { data } = await this.tokenMetadataProvider.getNftDetailV2(
-      mintAddress,
-    );
+    const { data } = await this.tokenMetadataProvider.getNftDetail(mintAddress);
 
     /** Upsert token metadata */
     await this.tokenMetadataRepo.upsert(
