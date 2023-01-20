@@ -25,6 +25,7 @@ export interface AccountTokenDetail {
   nft_image: string;
   nft_collection_id: string;
   nft_collection_name: string;
+  nft_attributes: any;
 }
 
 export interface CurrencyData {
@@ -73,6 +74,57 @@ export class TokenMetadataProvider {
         },
       },
     );
+  }
+
+  async getNftDetailV2(token: string): Promise<{ data: AccountTokenDetail[] }> {
+    const {
+      data: {
+        mint: nft_address,
+        collection: nft_collection_name,
+        collectionId: nft_collection_id,
+      },
+    } = await this.networkProvider.request<any>(
+      `https://api.solscan.io/nft/detail?mint=${token}`,
+      {
+        method: 'GET',
+      },
+    );
+    const {
+      data: {
+        metadata: {
+          data: { uri },
+        },
+      },
+    } = await this.networkProvider.request<any>(
+      `https://api.solscan.io/account?address=${token}`,
+      {
+        method: 'GET',
+      },
+    );
+
+    const nft_attributes = await this.networkProvider.request<any>(uri, {
+      method: 'GET',
+    });
+
+    const {
+      name: nft_name,
+      symbol: nft_symbol,
+      image: nft_image,
+    } = nft_attributes;
+
+    return {
+      data: [
+        {
+          nft_address,
+          nft_name,
+          nft_symbol,
+          nft_collection_id,
+          nft_collection_name,
+          nft_image,
+          nft_attributes,
+        },
+      ],
+    };
   }
 
   listConcurrency(address: string) {

@@ -25,7 +25,9 @@ export class TokenMetadataService {
   ): Promise<TokenMetadataEntity[]> {
     const metadata = await Promise.all(
       mintAddress.map(async (address) => {
-        const { data } = await this.tokenMetadataProvider.getNftDetail(address);
+        const { data } = await this.tokenMetadataProvider.getNftDetailV2(
+          address,
+        );
         return {
           mintAddress: address,
           metadata: data[0],
@@ -45,12 +47,14 @@ export class TokenMetadataService {
     if (!forceUpdate) {
       const existedTokenMetadata = await this.tokenMetadataRepo.findOneBy({
         mintAddress,
-        updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
+        updatedAt: MoreThan(DateTime.now().minus({ days: 15 }).toJSDate()),
       });
       if (!!existedTokenMetadata) return existedTokenMetadata;
     }
 
-    const { data } = await this.tokenMetadataProvider.getNftDetail(mintAddress);
+    const { data } = await this.tokenMetadataProvider.getNftDetailV2(
+      mintAddress,
+    );
 
     /** Upsert token metadata */
     await this.tokenMetadataRepo.upsert(
@@ -78,7 +82,7 @@ export class TokenMetadataService {
     if (!forceUpdate) {
       existedTokenMetadata = await this.tokenMetadataRepo.findBy({
         mintAddress: In(mintAddresses),
-        updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
+        updatedAt: MoreThan(DateTime.now().minus({ days: 15 }).toJSDate()),
       });
     }
 
@@ -158,7 +162,7 @@ export class TokenMetadataService {
     if (!forceUpdate) {
       const existedTokenMetadata = await this.tokenMetadataRepo.findOneBy({
         mintAddress,
-        updatedAt: MoreThan(DateTime.now().minus({ days: 1 }).toJSDate()),
+        updatedAt: MoreThan(DateTime.now().minus({ days: 15 }).toJSDate()),
       });
       if (!!existedTokenMetadata) return existedTokenMetadata;
     }
