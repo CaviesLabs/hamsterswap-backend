@@ -1,12 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
-import {
-  EntityManager,
-  In,
-  LessThanOrEqual,
-  MoreThanOrEqual,
-  Repository,
-} from 'typeorm';
+import { Between, EntityManager, In, Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 import { SwapItemModel } from '../../orm/model/swap-item.model';
@@ -160,8 +154,10 @@ export class SyncSwapProposalService {
           SwapProposalStatus.FULFILLED,
           SwapProposalStatus.CANCELED,
         ]),
-        createdAt: MoreThanOrEqual(startedAt.minus({ weeks: 1 }).toJSDate()),
-        updatedAt: LessThanOrEqual(startedAt.minus({ minutes: 5 }).toJSDate()),
+        updatedAt: Between(
+          startedAt.minus({ weeks: 1 }).toJSDate(),
+          startedAt.minus({ minutes: 5 }).toJSDate(),
+        ),
       },
       select: { id: true },
     });
@@ -169,6 +165,7 @@ export class SyncSwapProposalService {
     for (const { id } of proposals) {
       try {
         await this.syncById(id);
+        console.log(`Synced completed for: ${id}`);
       } catch (e) {
         console.error(`ERROR: Sync proposal failed, id: ${id}`, e);
       }
