@@ -119,6 +119,9 @@ export class SyncSwapProposalService {
       new OCSwapProposalDto(ocProposal, proposalExisted),
     );
 
+    // resync owner again
+    proposal.ownerAddress = ocProposal.owner.toBase58();
+
     proposal.offerItems = await this.getSwapItems(
       ocProposal.offeredItems as OCSwapItem[],
       proposalExisted.offerItems,
