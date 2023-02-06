@@ -66,36 +66,50 @@ export class ProposalService {
       baseFilter.searchText = ILike(`%${search}%`);
     }
 
-    statuses.map((status) => {
-      const initialFilter = { ...baseFilter };
+    if (!!statuses) {
+      statuses.map((status) => {
+        const initialFilter = { ...baseFilter };
 
-      switch (status) {
-        case ComputedSwapProposalStatus.EXPIRED:
-          initialFilter.status = SwapProposalStatus.DEPOSITED;
-          initialFilter.expiredAt = LessThan(new Date());
-          break;
+        switch (status) {
+          case ComputedSwapProposalStatus.EXPIRED:
+            initialFilter.status = SwapProposalStatus.DEPOSITED;
+            initialFilter.expiredAt = LessThan(new Date());
+            break;
 
-        case ComputedSwapProposalStatus.ACTIVE:
-          initialFilter.status = SwapProposalStatus.DEPOSITED;
-          initialFilter.expiredAt = MoreThan(new Date());
-          break;
+          case ComputedSwapProposalStatus.ACTIVE:
+            initialFilter.status = SwapProposalStatus.DEPOSITED;
+            initialFilter.expiredAt = MoreThan(new Date());
+            break;
 
-        default:
-          initialFilter.status = status as string as SwapProposalStatus;
-          break;
-      }
+          default:
+            initialFilter.status = status as string as SwapProposalStatus;
+            break;
+        }
 
-      filters.push(initialFilter);
+        filters.push(initialFilter);
+
+        if (countParticipation) {
+          filters.push({
+            fulfillBy: initialFilter.ownerAddress,
+            searchText: initialFilter.searchText,
+            status: initialFilter.status,
+            expiredAt: initialFilter.expiredAt,
+          });
+        }
+      });
+    } else {
+      filters.push({
+        fulfillBy: baseFilter.ownerAddress,
+        searchText: baseFilter.searchText,
+      });
 
       if (countParticipation) {
         filters.push({
-          fulfillBy: initialFilter.ownerAddress,
-          searchText: initialFilter.searchText,
-          status: initialFilter.status,
-          expiredAt: initialFilter.expiredAt,
+          fulfillBy: baseFilter.ownerAddress,
+          searchText: baseFilter.searchText,
         });
       }
-    });
+    }
 
     return filters;
   }
