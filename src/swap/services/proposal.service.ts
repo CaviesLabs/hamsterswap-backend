@@ -1,6 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsWhere, ILike, In, LessThan, Repository } from 'typeorm';
+import {
+  FindOptionsWhere,
+  ILike,
+  In,
+  LessThan,
+  MoreThan,
+  Repository,
+} from 'typeorm';
 
 import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
 import { SwapProposalModel } from '../../orm/model/swap-proposal.model';
@@ -8,6 +15,7 @@ import { CreateSwapProposalDto } from '../dto/create-proposal.dto';
 import { FindProposalDto } from '../dto/find-proposal.dto';
 import { UpdateSwapProposalAdditionsDto } from '../dto/update-proposal.dto';
 import {
+  ComputedSwapProposalStatus,
   SwapProposalEntity,
   SwapProposalStatus,
 } from '../entities/swap-proposal.entity';
@@ -41,6 +49,57 @@ export class ProposalService {
     });
   }
 
+  private buildFilters({
+    search,
+    ownerAddresses,
+    statuses,
+    countParticipation,
+  }: FindProposalDto & CommonQueryDto) {
+    const filters: FindOptionsWhere<SwapProposalModel>[] = [];
+    const baseFilter: FindOptionsWhere<SwapProposalModel> = {};
+
+    if (ownerAddresses && ownerAddresses.length > 0) {
+      baseFilter.ownerAddress = In(ownerAddresses);
+    }
+
+    if (search) {
+      baseFilter.searchText = ILike(`%${search}%`);
+    }
+
+    statuses.map((status) => {
+      const initialFilter = { ...baseFilter };
+
+      switch (status) {
+        case ComputedSwapProposalStatus.EXPIRED:
+          initialFilter.status = SwapProposalStatus.DEPOSITED;
+          initialFilter.expiredAt = LessThan(new Date());
+          break;
+
+        case ComputedSwapProposalStatus.ACTIVE:
+          initialFilter.status = SwapProposalStatus.DEPOSITED;
+          initialFilter.expiredAt = MoreThan(new Date());
+          break;
+
+        default:
+          initialFilter.status = status as string as SwapProposalStatus;
+          break;
+      }
+
+      filters.push(initialFilter);
+
+      if (countParticipation) {
+        filters.push({
+          fulfillBy: initialFilter.ownerAddress,
+          searchText: initialFilter.searchText,
+          status: initialFilter.status,
+          expiredAt: initialFilter.expiredAt,
+        });
+      }
+    });
+
+    return filters;
+  }
+
   public async find({
     search,
     ownerAddresses,
@@ -49,43 +108,12 @@ export class ProposalService {
     limit,
     countParticipation,
   }: FindProposalDto & CommonQueryDto): Promise<SwapProposalModel[]> {
-    const filters = [];
-    const filter: FindOptionsWhere<SwapProposalModel> = {};
-    let _statuses = statuses;
-
-    if (
-      _statuses &&
-      _statuses.find((val) => val === SwapProposalStatus.EXPIRED)
-    ) {
-      filter.expiredAt = LessThan(new Date());
-      // remove EXPIRED from status
-      _statuses = statuses.filter((val) => val != SwapProposalStatus.EXPIRED);
-    }
-
-    if (_statuses && _statuses.length > 0) {
-      filter.status = In(_statuses);
-    }
-
-    if (ownerAddresses && ownerAddresses.length > 0) {
-      filter.ownerAddress = In(ownerAddresses);
-    }
-
-    if (search) {
-      filter.searchText = ILike(`%${search}%`);
-    }
-
-    if (Object.keys(filter).length > 0) {
-      filters.push(filter);
-
-      if (countParticipation) {
-        filters.push({
-          status: filter.status,
-          fulfillBy: filter.ownerAddress,
-          searchText: filter.searchText,
-          expiredAt: filter.expiredAt,
-        });
-      }
-    }
+    const filters = this.buildFilters({
+      search,
+      ownerAddresses,
+      statuses,
+      countParticipation,
+    });
 
     const entityIds = await this.swapProposalRepo.find({
       where: filters.length > 0 ? filters : undefined,

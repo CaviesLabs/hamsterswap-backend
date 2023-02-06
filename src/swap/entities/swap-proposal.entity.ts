@@ -11,6 +11,13 @@ export enum SwapProposalStatus {
   EXPIRED = 'SWAP_PROPOSAL_STATUS::EXPIRED',
 }
 
+export enum ComputedSwapProposalStatus {
+  ACTIVE = 'SWAP_PROPOSAL_STATUS::ACTIVE',
+  EXPIRED = 'SWAP_PROPOSAL_STATUS::EXPIRED',
+  REDEEMED = 'SWAP_PROPOSAL_STATUS::REDEEMED',
+  WITHDRAWN = 'SWAP_PROPOSAL_STATUS::WITHDRAWN',
+}
+
 export class SwapProposalEntity {
   id: string;
 
