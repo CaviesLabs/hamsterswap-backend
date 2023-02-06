@@ -99,7 +99,7 @@ export class ProposalService {
       });
     } else {
       filters.push({
-        fulfillBy: baseFilter.ownerAddress,
+        ownerAddress: baseFilter.ownerAddress,
         searchText: baseFilter.searchText,
       });
 
