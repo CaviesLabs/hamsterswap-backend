@@ -81,6 +81,10 @@ export class ProposalService {
             initialFilter.expiredAt = MoreThan(new Date());
             break;
 
+          case ComputedSwapProposalStatus.SWAPPED:
+            initialFilter.status = SwapProposalStatus.FULFILLED;
+            break;
+
           default:
             initialFilter.status = status as string as SwapProposalStatus;
             break;
