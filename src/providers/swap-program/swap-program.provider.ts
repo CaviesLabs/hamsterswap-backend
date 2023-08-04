@@ -9,7 +9,7 @@ import { OCSwapPlatformRegistry, OCSwapProposal } from './swap.type';
 
 export const SOLANA_DEVNET_RPC_ENDPOINT = 'https://api.devnet.solana.com';
 export const SOLANA_MAINNET_RPC_RPC_ENDPOINT =
-  'https://boldest-few-field.solana-mainnet.quiknode.pro/0ffa9f9f5e9141aa33a030081b78fdfe40bfbae6/';
+  'https://solana-rpc.hamsterbox.xyz/';
 
 /**
  * @dev Swap Program Provider acts as an interface to interact with hamsterswap program on solana.
