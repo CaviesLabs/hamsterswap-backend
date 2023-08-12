@@ -5,6 +5,7 @@ import {
   IsBoolean,
   IsIn,
   IsNotEmpty,
+  IsObject,
   IsPort,
   IsString,
   IsUrl,
@@ -159,6 +160,9 @@ export class SystemConfig {
   @IsString()
   @IsNotEmpty()
   SOLSCAN_API_KEY: string;
+
+  @IsObject()
+  NETWORKS: object;
 
   /**
    * @dev Validate schema.

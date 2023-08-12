@@ -83,7 +83,6 @@ export class ProposalController {
 
   @Patch('/:proposalId/additions')
   @ApiBearerAuth('jwt')
-  @UseGuards(AuthGuard('jwt'))
   updateAdditions(
     @Param('proposalId') proposalId: string,
     @Body()

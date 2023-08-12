@@ -5,14 +5,12 @@ import {
   Patch,
   HttpCode,
   HttpStatus,
-  UseGuards,
   Post,
   UseInterceptors,
   UploadedFiles,
   Param,
   Query,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -65,7 +63,6 @@ export class UserController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Session is not authorized',
   })
-  @UseGuards(AuthGuard('jwt'))
   @Get('/profile')
   @HttpCode(HttpStatus.OK)
   public async getUserProfile(
@@ -139,7 +136,6 @@ export class UserController {
     status: HttpStatus.BAD_REQUEST,
     description: "Wrong fields' formats.",
   })
-  @UseGuards(AuthGuard('jwt'))
   @Patch('/profile')
   @HttpCode(HttpStatus.OK)
   public async updateUserProfile(
@@ -185,7 +181,6 @@ export class UserController {
       },
     },
   })
-  @UseGuards(AuthGuard('jwt'))
   @Post('/profile/avatar/upload')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(
