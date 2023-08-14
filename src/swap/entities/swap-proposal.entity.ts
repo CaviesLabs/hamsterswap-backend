@@ -1,5 +1,6 @@
 import { SwapItemEntity } from './swap-item.entity';
 import { SwapOptionEntity } from './swap-option.entity';
+import { ChainId } from './swap-platform-config.entity';
 
 export enum SwapProposalStatus {
   CREATED = 'SWAP_PROPOSAL_STATUS::CREATED',
@@ -21,6 +22,8 @@ export enum ComputedSwapProposalStatus {
 
 export class SwapProposalEntity {
   id: string;
+
+  chainId: ChainId;
 
   numberId: number;
 

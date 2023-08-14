@@ -18,6 +18,7 @@ import { BaseModel } from '../base.model';
 import { SwapItemModel } from './swap-item.model';
 import { SwapOptionModel } from './swap-option.model';
 import { UserModel } from './user.model';
+import { ChainId } from '../../swap/entities/swap-platform-config.entity';
 
 @Entity({
   name: 'swap_proposal',
@@ -26,6 +27,9 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
   @Column({ type: Number, nullable: true })
   @Generated('increment')
   numberId: number;
+
+  @Column({ type: String, enum: ChainId, default: ChainId.Solana })
+  chainId: ChainId;
 
   @Column({ type: String })
   ownerId: string;

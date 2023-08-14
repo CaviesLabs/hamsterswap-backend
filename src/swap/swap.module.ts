@@ -6,9 +6,9 @@ import { SwapProgramProvider } from '../providers/swap-program/swap-program.prov
 import { TokenMetadataProvider } from '../providers/token-metadata.provider';
 import { IdpResourceBuilder } from '../user/factories/idp-resource.builder';
 import { IdpResourceService } from '../user/services/idp-resource.service';
-import { SwapConfigController } from './controllers/config.controller';
-import { MetadataController } from './controllers/metadata.controller';
-import { ProposalController } from './controllers/proposal.controller';
+import { SwapConfigController } from './controllers/solana/config.controller';
+import { MetadataController } from './controllers/solana/metadata.controller';
+import { ProposalController } from './controllers/solana/proposal.controller';
 import { TokenMetadataService } from './services/token-metadata.service';
 import { ProposalService } from './services/proposal.service';
 import { SyncSwapProposalService } from './services/sync-proposal.service';

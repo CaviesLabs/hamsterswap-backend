@@ -23,5 +23,23 @@
   "HOST_URI": "https://hamsterbox.xyz/profile",
   "SOLSCAN_API_KEY": "test",
   "SOLANA_CLUSTER": "devnet",
-  "SWAP_PROGRAM_ADDRESS": "EdeRcNsVGU1s1NXZZo8FhLD8iePxvoUCdbvwVGnj778f"
+  "SWAP_PROGRAM_ADDRESS": "EdeRcNsVGU1s1NXZZo8FhLD8iePxvoUCdbvwVGnj778f",
+  "NETWORKS": {
+    "solana": {
+      "RPC_URL": "/",
+      "OPERATOR_SECRET_KEY": "",
+      "SWAP_PROGRAM_ADDRESS": "",
+      "INDEXER_API_KEY": ""
+    },
+    "klaytn": {
+      "WAGMI_KEY": "",
+      "DEBANK_KEY": "",
+      "RPC_URL": "",
+      "CHAIN_ID": 8217,
+      "OPERATOR_SECRET_KEY": "",
+      "SWAP_PROGRAM_ADDRESS": "",
+      "MULTICALL3_PROGRAM_ADDRESS": "",
+      "INDEXER_API_KEY": ""
+    }
+  }
 }

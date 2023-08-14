@@ -1,3 +1,5 @@
+import { ChainId } from './swap-platform-config.entity';
+
 export enum SwapItemType {
   NFT = 'SWAP_ITEM_TYPE::NFT',
   CURRENCY = 'SWAP_ITEM_TYPE::CURRENCY',
@@ -14,6 +16,8 @@ export enum SwapItemStatus {
 
 export class SwapItemEntity {
   id: string;
+
+  chainId: ChainId;
 
   ownerAddress?: string;
 

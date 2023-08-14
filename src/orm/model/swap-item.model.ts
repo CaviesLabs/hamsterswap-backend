@@ -8,6 +8,7 @@ import {
 import { BaseModel } from '../base.model';
 import { SwapOptionModel } from './swap-option.model';
 import { SwapProposalModel } from './swap-proposal.model';
+import { ChainId } from '../../swap/entities/swap-platform-config.entity';
 
 @Entity({
   name: 'swap_item',
@@ -22,6 +23,9 @@ export class SwapItemModel extends BaseModel implements SwapItemEntity {
 
   @Column({ type: String, enum: SwapItemType })
   type: SwapItemType;
+
+  @Column({ type: String, enum: ChainId, default: ChainId.Solana })
+  chainId: ChainId;
 
   @Column({ type: String })
   contractAddress: string;

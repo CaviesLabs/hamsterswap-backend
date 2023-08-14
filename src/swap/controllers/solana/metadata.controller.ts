@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { TokenMetadataProvider } from '../../providers/token-metadata.provider';
-import { TokenMetadataService } from '../services/token-metadata.service';
+import { TokenMetadataProvider } from '../../../providers/token-metadata.provider';
+import { TokenMetadataService } from '../../services/token-metadata.service';
 
 @Controller('metadata')
 @ApiTags('metadata')

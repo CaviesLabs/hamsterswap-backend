@@ -33,7 +33,7 @@ export class SolanaConfig {
   programAddress: string;
   explorerUrl: string;
   chainName: string;
-  chainLogo: string;
+  chainIcon: string;
   maxAllowedOptions: number;
   maxAllowedItems: number;
   collections: WhitelistedCollection[];
@@ -45,9 +45,13 @@ export class WhitelistedCollection {
   addresses: string[];
   marketUrl: string;
   name: string;
-  logo: string;
+  icon: string;
 }
 
+export enum ChainId {
+  Solana = 'solana',
+  Klaytn = 'klaytn',
+}
 export class WhitelistedCurrency {
   currencyId: string;
   address: string;
@@ -55,13 +59,13 @@ export class WhitelistedCurrency {
   explorerUrl: string;
   symbol: string;
   name: string;
-  logo: string;
+  icon: string;
 }
 
 export class EVMChainConfig {
   wagmiKey: string;
   chainName: string;
-  chainLogo: string;
+  chainIcon: string;
   rpcUrl: string;
   chainId: number;
   explorerUrl: string;
@@ -71,6 +75,6 @@ export class EVMChainConfig {
 }
 
 export class ChainConfigEntity {
-  solana: SolanaConfig;
-  klaytn: EVMChainConfig;
+  [ChainId.Solana]: SolanaConfig;
+  [ChainId.Klaytn]: EVMChainConfig;
 }
