@@ -19,6 +19,7 @@ import {
   SwapProposalEntity,
   SwapProposalStatus,
 } from '../entities/swap-proposal.entity';
+import { ChainId } from '../entities/swap-platform-config.entity';
 
 @Injectable()
 export class ProposalService {
@@ -26,6 +27,7 @@ export class ProposalService {
     @InjectRepository(SwapProposalModel)
     private readonly swapProposalRepo: Repository<SwapProposalModel>,
   ) {}
+
   public async findById(proposalId: string): Promise<SwapProposalEntity> {
     return this.swapProposalRepo.findOneOrFail({
       where: { id: proposalId },
@@ -53,10 +55,13 @@ export class ProposalService {
     search,
     ownerAddresses,
     statuses,
+    chainId,
     countParticipation,
   }: FindProposalDto & CommonQueryDto) {
     const filters: FindOptionsWhere<SwapProposalModel>[] = [];
-    const baseFilter: FindOptionsWhere<SwapProposalModel> = {};
+    const baseFilter: FindOptionsWhere<SwapProposalModel> = {
+      chainId,
+    };
 
     if (ownerAddresses && ownerAddresses.length > 0) {
       baseFilter.ownerAddress = In(ownerAddresses);
@@ -105,6 +110,7 @@ export class ProposalService {
       filters.push({
         ownerAddress: baseFilter.ownerAddress,
         searchText: baseFilter.searchText,
+        chainId: baseFilter.chainId,
       });
 
       if (countParticipation) {
@@ -115,12 +121,18 @@ export class ProposalService {
       }
     }
 
-    return filters;
+    filters.map((filter) => {
+      Object.keys(filter).forEach((key) =>
+        filter[key] === undefined ? delete filter[key] : {},
+      );
+    });
+    return filters.filter((f) => Object.keys(f).length > 0);
   }
 
   public async find({
     search,
     ownerAddresses,
+    chainId,
     statuses,
     offset,
     limit,
@@ -130,6 +142,7 @@ export class ProposalService {
       search,
       ownerAddresses,
       statuses,
+      chainId,
       countParticipation,
     });
 
@@ -170,6 +183,7 @@ export class ProposalService {
     ownerId,
     ownerAddress,
     expiredAt,
+    chainId,
     note,
   }: CreateSwapProposalDto & {
     ownerId: string;
@@ -180,6 +194,7 @@ export class ProposalService {
       ownerAddress,
       expiredAt,
       note,
+      chainId: chainId || ChainId.Solana,
       offerItems: [],
       swapOptions: [],
       status: SwapProposalStatus.CREATED,

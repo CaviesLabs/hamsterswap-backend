@@ -10,6 +10,7 @@ import {
   UploadedFiles,
   Param,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -37,6 +38,7 @@ import {
   UserProfileDto,
   UserPublicProfileDto,
 } from '../dto/user-profile.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 /**
  * @dev Declare user controller, handles profile operations.
@@ -65,6 +67,8 @@ export class UserController {
   })
   @Get('/profile')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('jwt')
+  @UseGuards(AuthGuard('jwt'))
   public async getUserProfile(
     @CurrentSession() { user }: JwtAuthSession,
   ): Promise<UserProfileDto> {
@@ -114,6 +118,8 @@ export class UserController {
     isArray: true,
   })
   @Get('/profile/public')
+  @ApiBearerAuth('jwt')
+  @UseGuards(AuthGuard('jwt'))
   public getPublicProfileByIds(@Query() { ids }: GetUsersPublicProfileDto) {
     return this.userService.getUserProfileByIds(ids);
   }
@@ -138,6 +144,8 @@ export class UserController {
   })
   @Patch('/profile')
   @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('jwt')
+  @UseGuards(AuthGuard('jwt'))
   public async updateUserProfile(
     @CurrentSession() { user }: JwtAuthSession,
     @Body() updateUserDto: UpdateUserDto,
@@ -188,6 +196,8 @@ export class UserController {
       fileFilter: imageFileFilter,
     }),
   )
+  @ApiBearerAuth('jwt')
+  @UseGuards(AuthGuard('jwt'))
   public async upload(
     @UploadedFiles() files: Express.Multer.File[],
     @CurrentSession() { user }: JwtAuthSession,

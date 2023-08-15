@@ -3,22 +3,21 @@ import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Between, EntityManager, In, Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
-import { SwapItemModel } from '../../orm/model/swap-item.model';
-import { SwapOptionModel } from '../../orm/model/swap-option.model';
-import { SwapProposalModel } from '../../orm/model/swap-proposal.model';
-import { SwapProgramProvider } from '../../providers/swap-program/swap-program.provider';
+import { SwapItemModel } from '../../../orm/model/swap-item.model';
+import { SwapOptionModel } from '../../../orm/model/swap-option.model';
+import { SwapProposalModel } from '../../../orm/model/swap-proposal.model';
+import { SwapProgramProvider } from '../../../providers/swap-program/swap-program.provider';
 import {
   OCSwapItem,
   OCSwapOption,
-} from '../../providers/swap-program/swap.type';
-import { TokenMetadataProvider } from '../../providers/token-metadata.provider';
-import { OCSwapItemDto } from '../onchain-dto/oc-swap-item.dto';
-import { OCSwapOptionDto } from '../onchain-dto/oc-swap-option.dto';
-import { OCSwapProposalDto } from '../onchain-dto/oc-swap-proposal.dto';
-import { isIdsMatched } from '../onchain-dto/primitive.helper';
-import { SwapItemType } from '../entities/swap-item.entity';
+} from '../../../providers/swap-program/swap.type';
+import { OCSwapItemDto } from '../../onchain-dto/oc-swap-item.dto';
+import { OCSwapOptionDto } from '../../onchain-dto/oc-swap-option.dto';
+import { OCSwapProposalDto } from '../../onchain-dto/oc-swap-proposal.dto';
+import { isIdsMatched } from '../../onchain-dto/primitive.helper';
+import { SwapItemType } from '../../entities/swap-item.entity';
 import { TokenMetadataService } from './token-metadata.service';
-import { SwapProposalStatus } from '../entities/swap-proposal.entity';
+import { SwapProposalStatus } from '../../entities/swap-proposal.entity';
 import { DateTime } from 'luxon';
 
 @Injectable()
@@ -29,7 +28,6 @@ export class SyncSwapProposalService {
     @InjectRepository(SwapProposalModel)
     private readonly swapProposalRepo: Repository<SwapProposalModel>,
     private readonly swapProgramProvider: SwapProgramProvider,
-    private readonly tokenMetadataProvider: TokenMetadataProvider,
     private readonly tokenMetadataService: TokenMetadataService,
   ) {}
 

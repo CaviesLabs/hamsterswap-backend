@@ -1,5 +1,10 @@
 import { Column, Entity } from 'typeorm';
-import { TokenMetadataEntity } from '../../swap/entities/token-metadata.entity';
+
+import {
+  NFTMetadata,
+  TokenMetadata,
+  TokenMetadataEntity,
+} from '../../swap/entities/token-metadata.entity';
 import { BaseModel } from '../base.model';
 import { ChainId } from '../../swap/entities/swap-platform-config.entity';
 
@@ -17,7 +22,7 @@ export class TokenMetadataModel
   mintAddress: string;
 
   @Column({ type: 'json', nullable: true })
-  metadata: object;
+  metadata: TokenMetadata | NFTMetadata;
 
   @Column({ type: Boolean })
   isNft: boolean;

@@ -18,6 +18,8 @@ import { DatabaseType } from 'typeorm';
 import {
   ChainConfigEntity,
   ChainId,
+  WhitelistedCollection,
+  WhitelistedCurrency,
 } from '../swap/entities/swap-platform-config.entity';
 
 export class SystemConfig {
@@ -246,6 +248,31 @@ export class RegistryProvider {
   }
 
   /**
+   * @dev Get the whitelisted collection.
+   * @param chainId
+   * @param address
+   */
+  public findCollection(
+    chainId: ChainId,
+    address: string,
+  ): WhitelistedCollection {
+    return this.getChainConfig()[chainId].collections.find((col) =>
+      col.addresses.includes(address),
+    );
+  }
+
+  /**
+   * @dev Get the whitelisted currency.
+   * @param chainId
+   * @param address
+   */
+  public findToken(chainId: ChainId, address: string): WhitelistedCurrency {
+    return this.getChainConfig()[chainId].currencies.find(
+      (col) => col.address === address,
+    );
+  }
+
+  /**
    * @dev Get the chain config.
    */
   public getChainConfig(): ChainConfigEntity {
@@ -345,7 +372,7 @@ export class RegistryProvider {
             marketUrl: 'https://opensea.io/collection/mtdz-1',
             addresses: ['0x46dbdc7965cf3cd2257c054feab941a05ff46488'],
             icon: 'https://i.seadn.io/gcs/files/cf5c7e5cd3f6808a1adbdaecce2f453b.gif?auto=format&dpr=1&w=384',
-            collectionId: 'mtdz1',
+            collectionId: 'mtdz-1',
             name: 'Meta Toy DragonZ',
           },
           {

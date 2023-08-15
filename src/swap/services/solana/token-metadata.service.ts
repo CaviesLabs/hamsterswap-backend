@@ -4,13 +4,14 @@ import { plainToInstance } from 'class-transformer';
 import { DateTime } from 'luxon';
 import { In, MoreThan, Repository } from 'typeorm';
 
-import { TokenMetadataModel } from '../../orm/model/token-metadata.model';
+import { TokenMetadataModel } from '../../../orm/model/token-metadata.model';
 import {
   AccountToken,
   AccountTokenDetail,
   TokenMetadataProvider,
-} from '../../providers/token-metadata.provider';
-import { TokenMetadataEntity } from '../entities/token-metadata.entity';
+} from '../../../providers/token-metadata.provider';
+import { TokenMetadataEntity } from '../../entities/token-metadata.entity';
+import { ChainId } from '../../entities/swap-platform-config.entity';
 
 @Injectable()
 export class TokenMetadataService {
@@ -30,11 +31,12 @@ export class TokenMetadataService {
           mintAddress: address,
           metadata: data[0],
           isNft: !!data[0],
+          chainId: ChainId.Solana,
         };
       }),
     );
 
-    return metadata;
+    return metadata as unknown as TokenMetadataEntity[];
   }
 
   public async getNftMetadata(
@@ -57,8 +59,9 @@ export class TokenMetadataService {
       [
         {
           mintAddress,
-          metadata: data[0],
+          metadata: data[0] as any,
           isNft: true,
+          chainId: ChainId.Solana,
         },
       ],
       ['mintAddress'],
@@ -132,7 +135,7 @@ export class TokenMetadataService {
 
         if (!nft.isNft) return null;
 
-        const meta = nft.metadata as AccountTokenDetail;
+        const meta = nft.metadata as unknown as AccountTokenDetail;
         return {
           nft_address: meta.nft_address,
           nft_name: meta.nft_name,
@@ -175,6 +178,7 @@ export class TokenMetadataService {
           mintAddress,
           metadata: data,
           isNft: false,
+          chainId: ChainId.Solana,
         },
       ],
       ['mintAddress'],

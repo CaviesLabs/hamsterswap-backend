@@ -53,7 +53,29 @@ export interface NFTWithDetails {
  * @notice TokenEvmMetadataProvider is a provider for token metadata on EVM chains
  */
 export class OpenSeaProvider {
-  constructor(private readonly networkProvider: NetworkProvider) {}
+  constructor(
+    private readonly registry: RegistryProvider,
+    private readonly networkProvider: NetworkProvider,
+  ) {}
+
+  /**
+   * @notice Get config for OpenSea API
+   * @param chainId
+   * @private
+   */
+  private getConfig(chainId: ChainId) {
+    const apiKey = this.registry.getConfig().NETWORKS[chainId].OPENSEA_API_KEY;
+    const chainKey =
+      this.registry.getConfig().NETWORKS[chainId].OPENSEA_CHAIN_KEY;
+
+    return {
+      headers: {
+        'X-API-KEY': apiKey,
+        accept: 'application/json',
+      },
+      chainKey,
+    };
+  }
 
   /**
    * @notice Get NFT data from OpenSea API
@@ -65,19 +87,14 @@ export class OpenSeaProvider {
     chainId: ChainId,
     nftContractAddress: string,
     tokenId: string,
-  ): Promise<NFTWithDetails> {
-    const registry = new RegistryProvider();
-    const apiKey = registry.getConfig().NETWORKS[chainId].OPENSEA_API_KEY;
+  ): Promise<{ nft: NFTWithDetails }> {
+    const config = this.getConfig(chainId);
 
-    const headers = new Headers();
-    headers.append('X-API-KEY', apiKey);
-    headers.append('accept', 'application/json');
-
-    return this.networkProvider.request<NFTWithDetails>(
-      `https://api.opensea.io/v2/chain/${chainId}/contract/${nftContractAddress}/nfts/${tokenId}`,
+    return this.networkProvider.request<{ nft: NFTWithDetails }>(
+      `https://api.opensea.io/v2/chain/${config.chainKey}/contract/${nftContractAddress}/nfts/${tokenId}`,
       {
         method: 'GET',
-        headers,
+        headers: config.headers,
       },
     );
   }

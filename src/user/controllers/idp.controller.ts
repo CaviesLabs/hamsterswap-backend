@@ -133,6 +133,7 @@ export class IdpController {
     status: HttpStatus.CONFLICT,
     description: 'Identity already existed.',
   })
+  @ApiBearerAuth('jwt')
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(HttpStatus.NO_CONTENT)
   @Put('/:provider/link')

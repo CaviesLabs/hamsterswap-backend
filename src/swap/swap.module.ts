@@ -8,16 +8,30 @@ import { IdpResourceBuilder } from '../user/factories/idp-resource.builder';
 import { IdpResourceService } from '../user/services/idp-resource.service';
 import { SwapConfigController } from './controllers/solana/config.controller';
 import { MetadataController } from './controllers/solana/metadata.controller';
-import { ProposalController } from './controllers/solana/proposal.controller';
-import { TokenMetadataService } from './services/token-metadata.service';
+import { ProposalController } from './controllers/proposal.controller';
+import { TokenMetadataService } from './services/solana/token-metadata.service';
 import { ProposalService } from './services/proposal.service';
-import { SyncSwapProposalService } from './services/sync-proposal.service';
+import { SyncSwapProposalService } from './services/solana/sync-proposal.service';
 import { ProposalSubscriber } from './subscribers/proposal.subscriber';
+import { EvmSwapConfigController } from './controllers/evm/config.controller';
+import { EvmMetadataController } from './controllers/evm/metadata.controller';
+import { EvmBalanceService } from './services/evm/evm-balance.service';
+import { EvmMetadataService } from './services/evm/evm-metadata.service';
+import { RegistryProvider } from '../providers/registry.provider';
 
 @Module({
   imports: [OrmModule],
-  controllers: [ProposalController, SwapConfigController, MetadataController],
+  controllers: [
+    EvmSwapConfigController,
+    EvmMetadataController,
+    ProposalController,
+    SwapConfigController,
+    MetadataController,
+  ],
   providers: [
+    EvmMetadataService,
+    EvmBalanceService,
+    RegistryProvider,
     ProposalService,
     NetworkProvider,
     SwapProgramProvider,

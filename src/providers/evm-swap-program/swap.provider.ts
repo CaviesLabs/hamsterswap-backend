@@ -36,4 +36,12 @@ export class EvmSwapProvider {
       provider,
     );
   }
+
+  public getProposal(proposalId: string) {
+    return this.swapContract.proposals(proposalId);
+  }
+
+  public getSwapItemsAndOptions(proposalId: string) {
+    return this.swapContract.getProposalItemsAndOptions(proposalId);
+  }
 }

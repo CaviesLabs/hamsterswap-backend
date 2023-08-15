@@ -58,6 +58,7 @@ export class AuthSessionController {
     description: 'Session is not found.',
   })
   @ApiBearerAuth('jwt')
+  @UseGuards(AuthGuard('jwt'))
   @SetMetadata('scopes', [AuthScope.WriteProfile])
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/:id')
@@ -102,6 +103,7 @@ export class AuthSessionController {
     description: "The session isn't valid, and get rejected.",
   })
   @ApiBearerAuth('jwt')
+  @UseGuards(AuthGuard('jwt'))
   @SetMetadata('scopes', [AuthScope.ReadProfile])
   @HttpCode(HttpStatus.OK)
   @Get('/')

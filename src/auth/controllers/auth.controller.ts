@@ -39,12 +39,9 @@ import { AuthScope } from '../entities/auth-session.entity';
 export class AuthController {
   /**
    * @dev Constructor that initializes AuthController.s
-   * @param otpPolicyService
-   * @param authService
    * @param sessionService
-   * @param permissionService
    * @param tokenIssuerService
-   * @param otpService
+   * @param authChallengeService
    */
   constructor(
     private readonly sessionService: AuthSessionService,
@@ -111,7 +108,6 @@ export class AuthController {
 
   /**
    * @dev Request an auth challenge.
-   * @param req
    * @param body
    */
   @CommonApiResponse(CommonResponse.WRONG_FIELD_FORMATS)
@@ -125,7 +121,6 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @Post('/challenge/request')
   public async requestAuthChallenge(
-    @Request() req,
     @Body() body: AuthChallengeDto,
   ): Promise<AuthChallengeModel> {
     return this.authChallengeService.generateAuthChallenge(body.target);

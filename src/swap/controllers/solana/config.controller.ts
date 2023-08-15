@@ -1,7 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SwapPlatformConfigEntity } from '../../entities/swap-platform-config.entity';
-import { RegistryProvider } from '../../../providers/registry.provider';
 
 @Controller('platform-config')
 @ApiTags('swap')
@@ -140,10 +139,5 @@ export class SwapConfigController {
         },
       ],
     };
-  }
-
-  @Get('chain-config')
-  getChainConfig() {
-    return new RegistryProvider().getChainConfig();
   }
 }

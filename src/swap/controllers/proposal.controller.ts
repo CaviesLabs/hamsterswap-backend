@@ -7,20 +7,22 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-import { CommonQueryDto } from '../../../api-docs/dto/common-query.dto';
-import { CurrentSession } from '../../../auth/decorators/current-session.decorator';
-import { JwtAuthSession } from '../../../auth/strategies/premature-auth.strategy';
-import { IdpResourceService } from '../../../user/services/idp-resource.service';
-import { CreateSwapProposalDto } from '../../dto/create-proposal.dto';
-import { FindProposalDto } from '../../dto/find-proposal.dto';
-import { UpdateSwapProposalAdditionsDto } from '../../dto/update-proposal.dto';
-import { SwapProposalEntity } from '../../entities/swap-proposal.entity';
-import { ProposalService } from '../../services/proposal.service';
-import { SyncSwapProposalService } from '../../services/sync-proposal.service';
+import { CommonQueryDto } from '../../api-docs/dto/common-query.dto';
+import { CurrentSession } from '../../auth/decorators/current-session.decorator';
+import { JwtAuthSession } from '../../auth/strategies/premature-auth.strategy';
+import { IdpResourceService } from '../../user/services/idp-resource.service';
+import { CreateSwapProposalDto } from '../dto/create-proposal.dto';
+import { FindProposalDto } from '../dto/find-proposal.dto';
+import { UpdateSwapProposalAdditionsDto } from '../dto/update-proposal.dto';
+import { SwapProposalEntity } from '../entities/swap-proposal.entity';
+import { ProposalService } from '../services/proposal.service';
+import { SyncSwapProposalService } from '../services/solana/sync-proposal.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('proposal')
 @ApiTags('swap')
@@ -34,11 +36,13 @@ export class ProposalController {
   @Get('')
   @UseInterceptors(ClassSerializerInterceptor)
   async find(
-    @Query() { ownerAddresses, statuses, countParticipation }: FindProposalDto,
+    @Query()
+    { ownerAddresses, statuses, countParticipation, chainId }: FindProposalDto,
     @Query() { limit, offset, search }: CommonQueryDto,
   ): Promise<SwapProposalEntity[]> {
     const proposals = await this.proposalService.find({
       ownerAddresses,
+      chainId,
       statuses,
       limit,
       offset,
@@ -65,6 +69,8 @@ export class ProposalController {
   }
 
   @Post()
+  @ApiBearerAuth('jwt')
+  @UseGuards(AuthGuard('jwt'))
   async createEmpty(
     @CurrentSession() { user }: JwtAuthSession,
     @Body() body: CreateSwapProposalDto,
@@ -78,6 +84,8 @@ export class ProposalController {
   }
 
   @Patch('/:proposalId/additions')
+  @ApiBearerAuth('jwt')
+  @UseGuards(AuthGuard('jwt'))
   updateAdditions(
     @Param('proposalId') proposalId: string,
     @Body()
