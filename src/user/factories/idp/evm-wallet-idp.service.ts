@@ -14,17 +14,17 @@ import { Repository } from 'typeorm';
  */
 import { EnabledIdpModel } from '../../../orm/model/enabled-idp.model';
 import { AuthChallengeService } from '../../../auth/services/auth-challenge.service';
-import { SolanaWalletSignatureDto } from '../../dto/wallet-signature.dto';
+import { EVMWalletSignatureDto } from '../../dto/wallet-signature.dto';
 import { IdpService } from '../idp-resource.builder';
 import { AvailableIdpResourceName } from '../../../providers/idp/identity-provider.interface';
 import {
-  SolanaSignatureData,
-  SolanaWalletIdentity,
-  SolanaWalletIdpProvider,
-} from '../../../providers/idp/solana-wallet-idp.provider';
+  EVMSignatureData,
+  EVMWalletIdentity,
+  EVMWalletIdpProvider,
+} from '../../../providers/idp/evm-wallet-idp.provider';
 
 @Injectable()
-export class SolanaWalletIdpResourceService implements IdpService {
+export class EvmWalletIdpResourceService implements IdpService {
   constructor(
     /**
      * @dev Inject models
@@ -54,17 +54,17 @@ export class SolanaWalletIdpResourceService implements IdpService {
    */
   public async verifyIdentity(
     signature: string,
-  ): Promise<SolanaWalletIdentity | null> {
+  ): Promise<EVMWalletIdentity | null> {
     /**
      * @dev Decode base64 string
      */
     const decodedBase64 = Buffer.from(signature, 'base64').toString();
-    const data: SolanaSignatureData = JSON.parse(decodedBase64);
+    const data: EVMSignatureData = JSON.parse(decodedBase64);
 
     /**
      * @dev Load into dto class, and validate schema.
      */
-    const dto = plainToInstance(SolanaWalletSignatureDto, data);
+    const dto = plainToInstance(EVMWalletSignatureDto, data);
     const errors = validateSync(dto);
 
     /**
@@ -85,8 +85,8 @@ export class SolanaWalletIdpResourceService implements IdpService {
     /**
      * @dev Use infra to verify identity.
      */
-    const solanaIdp = new SolanaWalletIdpProvider();
-    const result = solanaIdp.verify({ ...dto, rawContent: authChallenge.memo });
+    const evmIdp = new EVMWalletIdpProvider();
+    const result = evmIdp.verify({ ...dto, rawContent: authChallenge.memo });
 
     /**
      * @dev Resolve challenge if verification is ok.
@@ -134,7 +134,7 @@ export class SolanaWalletIdpResourceService implements IdpService {
      */
     this.EnabledIdpRepo.create({
       userId,
-      type: AvailableIdpResourceName.SolanaWallet,
+      type: AvailableIdpResourceName.EVMWallet,
       identityId: verifiedWallet.identityId,
     });
   }

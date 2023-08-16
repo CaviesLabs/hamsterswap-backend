@@ -1,7 +1,7 @@
 export class TestState {
   keypair: {
-    sign: (message: string) => string;
-    privateKey: Uint8Array;
+    sign: (message: string) => string | Promise<string>;
+    privateKey: Uint8Array | string;
     walletAddress: string;
   };
 

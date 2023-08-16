@@ -15,6 +15,7 @@ import { AvailableIdpResourceName } from '../../providers/idp/identity-provider.
 import { IdpResourceBuilder } from '../../user/factories/idp-resource.builder';
 import { SolanaWalletAuthenticator } from './idp/solana-wallet-auth.authenticator';
 import { AvatarProvider } from '../../providers/avatar.provider';
+import { EvmWalletAuthAuthenticator } from './idp/evm-wallet-auth.authenticator';
 
 /**
  * @dev Define IdpAuthService interface.
@@ -79,6 +80,19 @@ export class IdpAuthBuilder {
           this.ExtendedSessionRepo,
           this.idpResourceBuilder.getIdpResource(
             AvailableIdpResourceName.SolanaWallet,
+          ),
+          this.tokenIssuer,
+          this.userService,
+          this.sessionService,
+          this.avatarProvider,
+        );
+
+      case AvailableIdpResourceName.EVMWallet:
+        return new EvmWalletAuthAuthenticator(
+          this.EnabledIdpRepo,
+          this.ExtendedSessionRepo,
+          this.idpResourceBuilder.getIdpResource(
+            AvailableIdpResourceName.EVMWallet,
           ),
           this.tokenIssuer,
           this.userService,

@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-const Web3 = require('web3');
+import { ethers } from "ethers";
 
 /**
  * @dev Import deps
@@ -55,8 +55,6 @@ export class EVMWalletIdpProvider
   public async verify(
     signatureData: EVMSignatureData,
   ): Promise<EVMWalletIdentity | null> {
-    const web3Instance = new Web3();
-
     /**
      * @dev Initially set result is null.
      */
@@ -66,7 +64,7 @@ export class EVMWalletIdpProvider
       /**
        * @dev Recover message
        */
-      const walletAddress = await web3Instance.eth.personal.ecRecover(
+      const walletAddress = ethers.verifyMessage(
         signatureData.rawContent,
         signatureData.signature,
       );

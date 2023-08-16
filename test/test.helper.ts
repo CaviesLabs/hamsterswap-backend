@@ -13,6 +13,7 @@ import * as bs from 'bs58';
 import { AppModule } from '../src/app.module';
 import { globalApply } from '../src/main';
 import { FastifyAdapter } from '@nestjs/platform-fastify';
+import { ethers } from 'ethers';
 
 /**
  * @dev Test helper to setup fixtures and other helpers.
@@ -48,7 +49,6 @@ export class TestHelper {
 
   /**
    * @dev Support creating Solana keypair.
-   * @param keyPair
    */
   public createSolanaKeyPair() {
     const keypair = Keypair.generate();
@@ -62,6 +62,21 @@ export class TestHelper {
       sign,
       privateKey: keypair.secretKey,
       walletAddress: publicKey,
+    };
+  }
+
+  /**
+   * @dev Support creating evm keypair.
+   */
+  public createEvmKeyPair() {
+    const keypair = ethers.Wallet.createRandom();
+
+    return {
+      sign: async (message: string) => {
+        return await keypair.signMessage(message);
+      },
+      privateKey: keypair.privateKey,
+      walletAddress: keypair.address,
     };
   }
 
