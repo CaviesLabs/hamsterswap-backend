@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+
 import { AuthChallengeService } from '../auth/services/auth-challenge.service';
 import { OrmModule } from '../orm/orm.module';
 import { NetworkProvider } from '../providers/network.provider';
@@ -18,6 +19,8 @@ import { EvmMetadataController } from './controllers/evm/metadata.controller';
 import { EvmBalanceService } from './services/evm/evm-balance.service';
 import { EvmMetadataService } from './services/evm/evm-metadata.service';
 import { RegistryProvider } from '../providers/registry.provider';
+import { EvmParser } from './services/evm/evm.parser';
+import { EvmSyncProposalService } from './services/evm/sync-proposal.service';
 
 @Module({
   imports: [OrmModule],
@@ -29,6 +32,8 @@ import { RegistryProvider } from '../providers/registry.provider';
     MetadataController,
   ],
   providers: [
+    EvmParser,
+    EvmSyncProposalService,
     EvmMetadataService,
     EvmBalanceService,
     RegistryProvider,

@@ -1,9 +1,10 @@
-import { Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { SwapOptionEntity } from '../../swap/entities/swap-option.entity';
 import { BaseModel } from '../base.model';
 import { SwapItemModel } from './swap-item.model';
 import { SwapProposalModel } from './swap-proposal.model';
+import { ChainId } from '../../swap/entities/swap-platform-config.entity';
 
 @Entity({
   name: 'swap_option',
@@ -17,4 +18,7 @@ export class SwapOptionModel extends BaseModel implements SwapOptionEntity {
     nullable: true,
   })
   items: SwapItemModel[];
+
+  @Column({ type: String, enum: ChainId, default: ChainId.Solana })
+  chainId: ChainId;
 }

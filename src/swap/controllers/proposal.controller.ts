@@ -23,6 +23,7 @@ import { SwapProposalEntity } from '../entities/swap-proposal.entity';
 import { ProposalService } from '../services/proposal.service';
 import { SyncSwapProposalService } from '../services/solana/sync-proposal.service';
 import { AuthGuard } from '@nestjs/passport';
+import { EvmSyncProposalService } from '../services/evm/sync-proposal.service';
 
 @Controller('proposal')
 @ApiTags('swap')
@@ -30,6 +31,7 @@ export class ProposalController {
   constructor(
     private readonly proposalService: ProposalService,
     private readonly syncSwapProposalService: SyncSwapProposalService,
+    private readonly evmSyncProposalService: EvmSyncProposalService,
     private readonly idpResourceService: IdpResourceService,
   ) {}
 
@@ -97,5 +99,10 @@ export class ProposalController {
   @Patch('/:proposalId/sync')
   syncProposal(@Param('proposalId') proposalId: string) {
     return this.syncSwapProposalService.syncById(proposalId);
+  }
+
+  @Patch('/evm/:proposalId/sync')
+  syncEvmProposal(@Param('proposalId') proposalId: string) {
+    return this.evmSyncProposalService.syncById(proposalId);
   }
 }

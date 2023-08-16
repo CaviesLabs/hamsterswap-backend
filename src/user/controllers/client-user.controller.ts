@@ -39,7 +39,6 @@ export class ClientUserController {
    * @dev Declare endpoint for get user profile by querying with wallet address or user id.
    * `userId` query is preferred.
    * @param userId
-   * @param walletAddress
    */
   @ApiResponse({
     status: HttpStatus.OK,
@@ -62,7 +61,6 @@ export class ClientUserController {
     status: HttpStatus.NOT_FOUND,
     description: 'The requested resource is not found',
   })
-  @ApiQuery({ name: 'walletAddress', required: false, type: String })
   @ApiQuery({ name: 'userId', required: false, type: String })
   @UseGuards(AuthGuard('jwt'))
   @Get('/')
