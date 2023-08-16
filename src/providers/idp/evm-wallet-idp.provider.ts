@@ -77,7 +77,7 @@ export class EVMWalletIdpProvider
         signatureData.desiredWallet.toLowerCase()
       ) {
         result = {
-          identityId: walletAddress.toLowerCase(),
+          identityId: walletAddress,
         };
       }
     } catch {}
