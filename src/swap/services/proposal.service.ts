@@ -6,6 +6,7 @@ import {
   In,
   LessThan,
   MoreThan,
+  Not,
   Repository,
 } from 'typeorm';
 
@@ -65,6 +66,8 @@ export class ProposalService {
 
     if (ownerAddresses && ownerAddresses.length > 0) {
       baseFilter.ownerAddress = In(ownerAddresses);
+    } else {
+      baseFilter.ownerAddress = Not('');
     }
 
     if (search) {
