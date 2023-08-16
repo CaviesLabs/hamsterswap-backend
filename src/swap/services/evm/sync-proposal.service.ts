@@ -45,7 +45,7 @@ export class EvmSyncProposalService {
     return this.entityManager.transaction(async () => {
       const startedAt = DateTime.now();
       console.info(
-        `==========Sync All Proposal Started@${startedAt.toISO()}==========`,
+        `==========Sync All EVM Proposals Started@${startedAt.toISO()}==========`,
       );
 
       const proposals = await this.entityManager.find(SwapProposalModel, {
@@ -77,7 +77,7 @@ export class EvmSyncProposalService {
       const endedAt = DateTime.now();
       const { seconds } = endedAt.diff(startedAt, 'seconds').toObject();
       console.info(
-        `==========Sync All Proposal Ended@${endedAt.toISO()} Take:${seconds}s==========`,
+        `==========Sync All EVM Proposals Ended@${endedAt.toISO()} Take:${seconds}s==========`,
       );
     });
   }
