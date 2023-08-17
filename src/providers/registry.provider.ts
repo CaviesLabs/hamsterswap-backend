@@ -286,6 +286,8 @@ export class RegistryProvider {
         chainId: this.getConfig().NETWORKS['klaytn'].CHAIN_ID,
         programAddress:
           this.getConfig().NETWORKS['klaytn'].SWAP_PROGRAM_ADDRESS,
+        multicall3Address:
+          this.getConfig().NETWORKS['klaytn'].MULTICALL3_PROGRAM_ADDRESS,
         explorerUrl: 'https://scope.klaytn.com/',
         maxAllowedItems: 4,
         maxAllowedOptions: 4,
@@ -381,6 +383,13 @@ export class RegistryProvider {
             icon: 'https://i.seadn.io/gae/AX_uuKN-OFhtHXtzw5PJ3K-bGW5tg2svacBEv8xO_ii3UCEo6UTjqec4MiXFGP3gsxPD-p-W0d315pEvIOxG3pKNWfT3G8KvAgIl?auto=format&dpr=1&w=384',
             collectionId: 'the-meta-kongz-klaytn',
             name: 'THE META KONGZ KLAYTN',
+          },
+          {
+            marketUrl: 'https://opensea.io/collection/sheepfarm',
+            addresses: ['0xa9f07b1260bb9eebcbaba66700b00fe08b61e1e6'],
+            icon: 'https://i.seadn.io/gae/ynlAQE698lEpXooP100VUIGQIUdFapJZweh8WhPuvnucEuRv5DcL0PFo80dgkdiQY3ydUaTl7ZzsGl51NCNpuAp-Wxswlq1O6RS6JQ?auto=format&dpr=1&w=384',
+            collectionId: 'sheepfarm',
+            name: 'SheepFarm',
           },
         ],
       },

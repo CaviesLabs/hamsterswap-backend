@@ -70,6 +70,7 @@ export class EVMChainConfig {
   chainId: number;
   explorerUrl: string;
   programAddress: string;
+  multicall3Address: string;
   collections: WhitelistedCollection[];
   currencies: WhitelistedCurrency[];
 }
