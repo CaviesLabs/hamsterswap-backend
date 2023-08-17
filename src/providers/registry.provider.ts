@@ -391,6 +391,28 @@ export class RegistryProvider {
             collectionId: 'sheepfarm',
             name: 'SheepFarm',
           },
+          {
+            marketUrl:
+              'https://opensea.io/collection/afk-battle-idle-princess-bb',
+            addresses: ['0x018200befc26d8d50c3caf4791bfb36a9217a1a2'],
+            icon: 'https://i.seadn.io/gae/X-AKKG-dlYq8xDXnaGNQ0vsrwNg0N53PLHHSaIt2NF3ByJ-7IhQixPmPgR1zqx8M_WBVBu7VsZ6iVzM1-TNLU7hFjxoy8p6gya5OtQ?auto=format&dpr=1&w=384',
+            collectionId: 'afk-battle-idle-princess-bb',
+            name: 'AFK Battle Idle Princess BB',
+          },
+          {
+            marketUrl: 'https://opensea.io/collection/age-of-zen-heroes-images',
+            addresses: ['0x96a08c2ae33757c1d4d237450b74c41a12161636'],
+            icon: 'https://i.seadn.io/gae/QhJRxfPxuXtm_KMuEkKDGskrsFSI8pC1mbTzpzx0q1Lr92C4IEJ6Ne_e4Wkht0rDphqzsLJP4mYW1eo8B5GBhE8vElzGWKtDveVqCQ?auto=format&dpr=1&w=384',
+            collectionId: 'age-of-zen-heroes-images',
+            name: 'Age of Zen Heroes Images',
+          },
+          {
+            marketUrl: 'https://opensea.io/collection/klaykingdoms-502',
+            addresses: ['0xa513819bcc1e157c0567a652c4a775642b62a4ad'],
+            icon: 'https://i.seadn.io/gae/wo2c9o7uh0t_-j0KK-GUYCom9xgEnOwgz83gTCzOjkAALxmzsZBWAyjwo01DGa2qZNH4ROdjysGWBkT0ejEfWrLUjGI-uX8nIIhJ?auto=format&dpr=1&w=384',
+            collectionId: 'klaykingdoms-502',
+            name: 'Klay Kingdoms 502',
+          },
         ],
       },
       [ChainId.Solana]: {
