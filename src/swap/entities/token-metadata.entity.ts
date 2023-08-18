@@ -25,6 +25,8 @@ export interface NFTMetadata {
   attributes: NFTAttribute[];
   collectionId: string;
   collectionSlug: string;
+  collectionName: string;
+  collectionUrl: string;
   isWhiteListed: boolean;
   chainId: ChainId;
 }

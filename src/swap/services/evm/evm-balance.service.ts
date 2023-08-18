@@ -84,15 +84,19 @@ export class EvmBalanceService {
     );
 
     return rawNftBalances.map((balance) => {
+      const mappedCollection = this.registry.findCollection(
+        chainId,
+        balance.contract_id,
+      );
+
       return {
         id: balance.inner_id,
         address: balance.contract_id,
         chainId,
         collectionId: `${chainId}:${balance.contract_id}`,
-        collectionSlug: this.registry.findCollection(
-          chainId,
-          balance.contract_id,
-        )?.collectionId,
+        collectionSlug: mappedCollection?.collectionId,
+        collectionName: mappedCollection?.name,
+        collectionUrl: mappedCollection?.marketUrl,
         isWhiteListed: !!this.registry.findCollection(
           chainId,
           balance.contract_id,

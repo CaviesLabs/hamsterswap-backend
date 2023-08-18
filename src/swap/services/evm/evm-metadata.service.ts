@@ -58,6 +58,8 @@ export class EvmMetadataService {
       tokenId,
     );
 
+    const collection = this.registry.findCollection(chainId, contractAddress);
+
     const nftMetadata: NFTMetadata = {
       id: tokenId,
       address: contractAddress,
@@ -66,7 +68,9 @@ export class EvmMetadataService {
       name: data.name,
       collectionId: `${chainId}:${contractAddress}`,
       collectionSlug: data.collection,
-      isWhiteListed: !!this.registry.findCollection(chainId, contractAddress),
+      isWhiteListed: !!collection,
+      collectionName: collection?.name,
+      collectionUrl: collection?.marketUrl,
       chainId,
     };
 
