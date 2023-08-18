@@ -300,6 +300,7 @@ export class RegistryProvider {
             icon: 'https://assets.coingecko.com/coins/images/9672/small/klaytn.png?1660288824',
             name: 'Klaytn',
             symbol: 'WKLAY',
+            isNativeToken: true,
             decimals: 18,
           },
           {
@@ -310,6 +311,7 @@ export class RegistryProvider {
             icon: 'https://assets.coingecko.com/coins/images/26273/small/-p1Br7oh_400x400.png?1656999148',
             name: 'Orbit USDT',
             symbol: 'oUSDT',
+            isNativeToken: false,
             currencyId: 'orbit-bridge-klaytn-usd-tether',
           },
         ],
@@ -538,6 +540,7 @@ export class RegistryProvider {
             icon: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/icon.png',
             name: 'Solana',
             symbol: 'WSOL',
+            isNativeToken: true,
             decimals: 9,
           },
           {
@@ -549,6 +552,7 @@ export class RegistryProvider {
               'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I',
             name: 'Bonk',
             symbol: 'BONK',
+            isNativeToken: false,
             decimals: 5,
           },
           {
@@ -560,6 +564,7 @@ export class RegistryProvider {
               'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/icon.png',
             name: 'USD Coin',
             symbol: 'USDC',
+            isNativeToken: false,
             decimals: 6,
           },
         ],

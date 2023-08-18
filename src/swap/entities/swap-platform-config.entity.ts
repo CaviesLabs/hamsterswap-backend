@@ -60,6 +60,7 @@ export class WhitelistedCurrency {
   symbol: string;
   name: string;
   icon: string;
+  isNativeToken: boolean;
 }
 
 export class EVMChainConfig {
