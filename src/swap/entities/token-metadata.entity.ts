@@ -19,6 +19,7 @@ export interface TokenMetadata {
 
 export interface NFTMetadata {
   id: string;
+  tokenId: string;
   name: string;
   image: string;
   address: string;

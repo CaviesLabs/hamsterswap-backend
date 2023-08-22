@@ -91,6 +91,7 @@ export class EvmBalanceService {
 
       return {
         id: balance.inner_id,
+        tokenId: balance.inner_id,
         address: balance.contract_id,
         chainId,
         collectionId: `${chainId}:${balance.contract_id}`,
