@@ -62,7 +62,7 @@ export class EvmMetadataService {
 
     const nftMetadata: NFTMetadata = {
       id: tokenId,
-      tokenId: tokenId,
+      tokenId: Number(tokenId),
       address: contractAddress,
       attributes: data.traits,
       image: data.image_url,
