@@ -22,6 +22,7 @@ import { SwapItemModel } from '../../../orm/model/swap-item.model';
 import { SwapOptionEntity } from '../../entities/swap-option.entity';
 import { SwapProposalModel } from '../../../orm/model/swap-proposal.model';
 import { SwapOptionModel } from '../../../orm/model/swap-option.model';
+import { toUUIDv4 } from '../../onchain-dto/primitive.helper';
 
 /**
  * @dev Define the item type
@@ -100,7 +101,7 @@ export class EvmParser {
     return Promise.all(
       items.map(async (item) => {
         const onChainSwapItem = {
-          id: item.id,
+          id: toUUIDv4(item.id),
           chainId,
           status: this.mapItemStatus(item.status as unknown as ItemStatus),
           ownerAddress: item.owner,
