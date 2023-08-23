@@ -124,8 +124,6 @@ export class EvmParser {
                 ),
         } as SwapItemEntity;
 
-        console.log({ item, onChainSwapItem });
-
         return this.entityManager.create<SwapItemModel>(
           SwapItemModel,
           onChainSwapItem,
@@ -146,18 +144,14 @@ export class EvmParser {
       await provider.getSwapItemsAndOptions(proposalId);
 
     const proposal = new SwapProposalEntity();
-    // assign existed data to proposal
     Object.assign(proposal, existedProposal);
 
-    proposal.chainId = provider.chainId;
     proposal.status = this.mapProposalStatus(
       onChainProposal.status as unknown as ProposalStatus,
     );
     proposal.ownerAddress = onChainProposal.owner;
     proposal.expiredAt = new Date(Number(onChainProposal.expiredAt) * 1000);
-
     proposal.offerItems = await this.getSwapItems(chainId, onChainSwapItems);
-
     proposal.swapOptions = await Promise.all(
       onChainSwapOptions.map(async (option) => {
         const onChainSwapOption = {
@@ -181,7 +175,7 @@ export class EvmParser {
       proposal.fulfilledWithOptionId = onChainProposal.fulfilledByOptionId;
     }
 
-    if (proposal.expiredAt > new Date()) {
+    if (proposal.expiredAt < new Date()) {
       proposal.status = SwapProposalStatus.EXPIRED;
     }
 
