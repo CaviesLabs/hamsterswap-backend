@@ -37,6 +37,67 @@ export class EvmSwapProvider {
     );
   }
 
+  public async getMultipleProposals(proposalIds: string[]) {
+    const calls = [];
+
+    await Promise.all(
+      proposalIds.map(async (id) => {
+        const fetchProposal = {
+          target: await this.swapContract.getAddress(),
+          callData: this.swapContract.interface.encodeFunctionData(
+            'proposals',
+            [id],
+          ),
+          allowFailure: false,
+        };
+
+        const fetchSwapItemsAndOptions = {
+          target: await this.swapContract.getAddress(),
+          callData: this.swapContract.interface.encodeFunctionData(
+            'getProposalItemsAndOptions',
+            [id],
+          ),
+          allowFailure: false,
+        };
+        calls.push(fetchProposal, fetchSwapItemsAndOptions);
+      }),
+    );
+
+    const callResults = await this.multicall3Contract.aggregate3.staticCall(
+      calls,
+    );
+
+    const proposals = [];
+
+    for (let index = 0; index < callResults.length; index += 2) {
+      // skip failed calls
+      if (callResults[index].success === false) {
+        continue;
+      }
+
+      // decode proposal
+      const proposal = this.swapContract.interface.decodeFunctionResult(
+        'proposals',
+        callResults[index].returnData,
+      );
+
+      // decode swap items and options
+      const swapItemsAndOptions =
+        this.swapContract.interface.decodeFunctionResult(
+          'getProposalItemsAndOptions',
+          callResults[index + 1].returnData,
+        );
+
+      proposals.push({
+        proposal,
+        swapItems: swapItemsAndOptions[0],
+        swapOptions: swapItemsAndOptions[1],
+      });
+    }
+
+    return proposals;
+  }
+
   public getProposal(proposalId: string) {
     return this.swapContract.proposals(proposalId);
   }

@@ -24,6 +24,7 @@ import { ProposalService } from '../services/proposal.service';
 import { SyncSwapProposalService } from '../services/solana/sync-proposal.service';
 import { AuthGuard } from '@nestjs/passport';
 import { EvmSyncProposalService } from '../services/evm/sync-proposal.service';
+import { ChainId } from '../entities/swap-platform-config.entity';
 
 @Controller('proposal')
 @ApiTags('swap')
@@ -94,6 +95,17 @@ export class ProposalController {
     body: UpdateSwapProposalAdditionsDto,
   ): Promise<SwapProposalEntity> {
     return this.proposalService.updateAdditional(proposalId, body);
+  }
+
+  @Post('/:chainId/:ownerAddress/sync')
+  syncProposalByAddress(
+    @Param('chainId') chainId: ChainId,
+    @Param('ownerAddress') ownerAddress: string,
+  ) {
+    return this.evmSyncProposalService.syncByAddress(
+      ownerAddress,
+      chainId as ChainId,
+    );
   }
 
   @Patch('/:proposalId/sync')

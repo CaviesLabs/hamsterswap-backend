@@ -22,6 +22,7 @@ import { SwapItemModel } from '../../../orm/model/swap-item.model';
 import { SwapOptionEntity } from '../../entities/swap-option.entity';
 import { SwapProposalModel } from '../../../orm/model/swap-proposal.model';
 import { SwapOptionModel } from '../../../orm/model/swap-option.model';
+import SwapOptionStructOutput = Entity.SwapOptionStructOutput;
 
 /**
  * @dev Define the item type
@@ -131,17 +132,14 @@ export class EvmParser {
     );
   }
 
-  public async fetchProposalFromOnChainData(
+  private async handleSingleProposal(
     chainId: ChainId,
-    proposalId: string,
     existedProposal: SwapProposalModel,
+    onChainProposal: any,
+    onChainSwapItems: SwapItemStructOutput[],
+    onChainSwapOptions: SwapOptionStructOutput[],
   ) {
-    const provider = this.getEvmSwapProvider(chainId);
-
-    const onChainProposal = await provider.getProposal(proposalId);
-    const [onChainSwapItems, onChainSwapOptions] =
-      await provider.getSwapItemsAndOptions(proposalId);
-
+    console.log({ existedProposal });
     const proposal = new SwapProposalEntity();
     Object.assign(proposal, existedProposal);
 
@@ -185,5 +183,49 @@ export class EvmParser {
     model.buildSearchText();
 
     return model;
+  }
+
+  public async fetchMultipleProposalsFromOnChainData(
+    chainId: ChainId,
+    existedProposals: SwapProposalModel[],
+  ) {
+    const provider = this.getEvmSwapProvider(chainId);
+    const proposalIds = existedProposals.map(({ id }) => id);
+
+    const onChainProposals = await provider.getMultipleProposals(proposalIds);
+
+    return Promise.all(
+      onChainProposals.map((onChainProposal, index) => {
+        const { proposal, swapItems, swapOptions } = onChainProposal;
+
+        return this.handleSingleProposal(
+          chainId,
+          existedProposals[index],
+          proposal,
+          swapItems,
+          swapOptions,
+        );
+      }),
+    );
+  }
+
+  public async fetchProposalFromOnChainData(
+    chainId: ChainId,
+    existedProposal: SwapProposalModel,
+  ) {
+    const provider = this.getEvmSwapProvider(chainId);
+    const proposalId = existedProposal.id;
+
+    const onChainProposal = await provider.getProposal(proposalId);
+    const [onChainSwapItems, onChainSwapOptions] =
+      await provider.getSwapItemsAndOptions(proposalId);
+
+    return this.handleSingleProposal(
+      chainId,
+      existedProposal,
+      onChainProposal,
+      onChainSwapItems,
+      onChainSwapOptions,
+    );
   }
 }

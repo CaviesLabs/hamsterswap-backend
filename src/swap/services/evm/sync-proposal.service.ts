@@ -36,11 +36,41 @@ export class EvmSyncProposalService {
 
     const onchainProposal = await this.evmParser.fetchProposalFromOnChainData(
       proposal.chainId,
-      proposalId,
       proposal,
     );
 
     await this.entityManager.save(SwapProposalModel, onchainProposal, {});
+  }
+
+  public async syncByAddress(ownerAddress: string, chainId: ChainId) {
+    if (chainId === ChainId.Solana) {
+      throw new BadRequestException('NOT_SUPPORTED_CHAIN_ID: Solana');
+    }
+
+    const proposals = await this.entityManager.find(SwapProposalModel, {
+      where: {
+        ownerAddress: ownerAddress,
+        chainId: In([ChainId.Klaytn]),
+      },
+      relations: { offerItems: true, swapOptions: { items: true } },
+    });
+
+    const onChainProposals =
+      await this.evmParser.fetchMultipleProposalsFromOnChainData(
+        chainId,
+        proposals,
+      );
+
+    await Promise.all(
+      onChainProposals.map(async (proposal) => {
+        try {
+          await this.entityManager.save(SwapProposalModel, proposal, {});
+          console.log(`Synced completed for: ${proposal.id}`);
+        } catch (e) {
+          console.log('ERROR: Sync proposal failed', e);
+        }
+      }),
+    );
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
