@@ -22,7 +22,6 @@ import { SwapItemModel } from '../../../orm/model/swap-item.model';
 import { SwapOptionEntity } from '../../entities/swap-option.entity';
 import { SwapProposalModel } from '../../../orm/model/swap-proposal.model';
 import { SwapOptionModel } from '../../../orm/model/swap-option.model';
-import { toUUIDv4 } from '../../onchain-dto/primitive.helper';
 
 /**
  * @dev Define the item type
@@ -101,7 +100,7 @@ export class EvmParser {
     return Promise.all(
       items.map(async (item) => {
         const onChainSwapItem = {
-          id: toUUIDv4(item.id),
+          id: item.id,
           chainId,
           status: this.mapItemStatus(item.status as unknown as ItemStatus),
           ownerAddress: item.owner,
@@ -155,7 +154,7 @@ export class EvmParser {
     proposal.swapOptions = await Promise.all(
       onChainSwapOptions.map(async (option) => {
         const onChainSwapOption = {
-          id: toUUIDv4(option.id),
+          id: option.id,
           chainId,
           items: await this.getSwapItems(chainId, option.askingItems),
         } as SwapOptionEntity;

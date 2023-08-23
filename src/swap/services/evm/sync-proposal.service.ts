@@ -40,7 +40,7 @@ export class EvmSyncProposalService {
       proposal,
     );
 
-    await this.entityManager.save(SwapProposalModel, onchainProposal);
+    await this.entityManager.save(SwapProposalModel, onchainProposal, {});
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
