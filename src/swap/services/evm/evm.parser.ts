@@ -28,30 +28,30 @@ import { toUUIDv4 } from '../../onchain-dto/primitive.helper';
  * @dev Define the item type
  */
 enum ItemType {
-  Nft,
-  Currency,
+  Nft = 0,
+  Currency = 1,
 }
 
 /**
  * @dev Define status enum
  */
 enum ItemStatus {
-  Created,
-  Deposited,
-  Redeemed,
-  Withdrawn,
+  Created = 0,
+  Deposited = 1,
+  Redeemed = 2,
+  Withdrawn = 3,
 }
 
 /**
  * @dev Define proposal status
  */
 enum ProposalStatus {
-  Created,
-  Deposited,
-  Fulfilled,
-  Canceled,
-  Redeemed,
-  Withdrawn,
+  Created = 0,
+  Deposited = 1,
+  Fulfilled = 2,
+  Canceled = 3,
+  Redeemed = 4,
+  Withdrawn = 5,
 }
 
 @Injectable()
@@ -68,31 +68,31 @@ export class EvmParser {
   }
 
   private mapProposalStatus(status: number) {
-    switch (status) {
-      case ProposalStatus.Created:
+    switch (Number(status)) {
+      case Number(ProposalStatus.Created):
         return SwapProposalStatus.CREATED;
-      case ProposalStatus.Deposited:
+      case Number(ProposalStatus.Deposited):
         return SwapProposalStatus.DEPOSITED;
-      case ProposalStatus.Fulfilled:
+      case Number(ProposalStatus.Fulfilled):
         return SwapProposalStatus.FULFILLED;
-      case ProposalStatus.Canceled:
+      case Number(ProposalStatus.Canceled):
         return SwapProposalStatus.CANCELED;
-      case ProposalStatus.Redeemed:
+      case Number(ProposalStatus.Redeemed):
         return SwapProposalStatus.REDEEMED;
-      case ProposalStatus.Withdrawn:
+      case Number(ProposalStatus.Withdrawn):
         return SwapProposalStatus.WITHDRAWN;
     }
   }
 
   private mapItemStatus(status: number) {
-    switch (status) {
-      case ItemStatus.Created:
+    switch (Number(status)) {
+      case Number(ItemStatus.Created):
         return SwapItemStatus.CREATED;
-      case ItemStatus.Deposited:
+      case Number(ItemStatus.Deposited):
         return SwapItemStatus.DEPOSITED;
-      case ItemStatus.Redeemed:
+      case Number(ItemStatus.Redeemed):
         return SwapItemStatus.REDEEMED;
-      case ItemStatus.Withdrawn:
+      case Number(ItemStatus.Withdrawn):
         return SwapItemStatus.WITHDRAWN;
     }
   }
@@ -124,6 +124,8 @@ export class EvmParser {
                 ),
         } as SwapItemEntity;
 
+        console.log({ item, onChainSwapItem });
+
         return this.entityManager.create<SwapItemModel>(
           SwapItemModel,
           onChainSwapItem,
@@ -135,6 +137,7 @@ export class EvmParser {
   public async fetchProposalFromOnChainData(
     chainId: ChainId,
     proposalId: string,
+    existedProposal: SwapProposalModel,
   ) {
     const provider = this.getEvmSwapProvider(chainId);
 
@@ -143,8 +146,9 @@ export class EvmParser {
       await provider.getSwapItemsAndOptions(proposalId);
 
     const proposal = new SwapProposalEntity();
+    // assign existed data to proposal
+    Object.assign(proposal, existedProposal);
 
-    proposal.id = proposalId;
     proposal.chainId = provider.chainId;
     proposal.status = this.mapProposalStatus(
       onChainProposal.status as unknown as ProposalStatus,
@@ -157,7 +161,7 @@ export class EvmParser {
     proposal.swapOptions = await Promise.all(
       onChainSwapOptions.map(async (option) => {
         const onChainSwapOption = {
-          id: option.id,
+          id: toUUIDv4(option.id),
           chainId,
           items: await this.getSwapItems(chainId, option.askingItems),
         } as SwapOptionEntity;

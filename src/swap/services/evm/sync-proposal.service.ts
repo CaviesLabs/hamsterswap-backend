@@ -1,5 +1,5 @@
-import { InjectEntityManager } from '@nestjs/typeorm';
-import { Between, EntityManager, In } from 'typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
+import { Between, EntityManager, In, Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { DateTime } from 'luxon';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -14,13 +14,15 @@ export class EvmSyncProposalService {
     private readonly evmParser: EvmParser,
     @InjectEntityManager()
     private readonly entityManager: EntityManager,
+    @InjectRepository(SwapProposalModel)
+    private readonly swapProposalRepo: Repository<SwapProposalModel>,
   ) {}
 
   public async syncById(proposalId: string) {
-    const proposal = await this.entityManager.findOneBy<SwapProposalModel>(
-      SwapProposalModel,
-      { id: proposalId },
-    );
+    const proposal = await this.swapProposalRepo.findOne({
+      where: { id: proposalId },
+      relations: { offerItems: true, swapOptions: { items: true } },
+    });
 
     if (!proposal) {
       throw new NotFoundException(`PROPOSAL_NOT_FOUND: ${proposalId}`);
@@ -35,6 +37,7 @@ export class EvmSyncProposalService {
     const onchainProposal = await this.evmParser.fetchProposalFromOnChainData(
       proposal.chainId,
       proposalId,
+      proposal,
     );
 
     await this.entityManager.save(SwapProposalModel, onchainProposal);
