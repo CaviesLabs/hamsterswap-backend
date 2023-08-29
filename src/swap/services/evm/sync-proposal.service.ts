@@ -48,10 +48,16 @@ export class EvmSyncProposalService {
     }
 
     const proposals = await this.entityManager.find(SwapProposalModel, {
-      where: {
-        ownerAddress: ownerAddress,
-        chainId: In([ChainId.Klaytn]),
-      },
+      where: [
+        {
+          ownerAddress: ownerAddress,
+          chainId: In([ChainId.Klaytn]),
+        },
+        {
+          fulfillBy: ownerAddress,
+          chainId: In([ChainId.Klaytn]),
+        },
+      ],
       relations: { offerItems: true, swapOptions: { items: true } },
     });
 
