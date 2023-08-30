@@ -19,7 +19,10 @@ import { SwapItemModel } from './swap-item.model';
 import { SwapOptionModel } from './swap-option.model';
 import { UserModel } from './user.model';
 import { ChainId } from '../../swap/entities/swap-platform-config.entity';
-import { NFTMetadata } from '../../swap/entities/token-metadata.entity';
+import {
+  NFTMetadata,
+  TokenMetadata,
+} from '../../swap/entities/token-metadata.entity';
 
 @Entity({
   name: 'swap_proposal',
@@ -108,6 +111,7 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
           const metadata = nftMetadata['metadata'] as NFTMetadata;
 
           keyWords.push(
+            metadata.id,
             metadata.name,
             metadata.collectionName,
             metadata.address,
@@ -117,6 +121,17 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
           if (attributes) {
             attributes.forEach(({ value }) => keyWords.push(value.toString()));
           }
+
+          return;
+        }
+      }
+
+      if (type === SwapItemType.CURRENCY) {
+        // handle new data format
+        if (nftMetadata['metadata']) {
+          const metadata = nftMetadata['metadata'] as TokenMetadata;
+
+          keyWords.push(metadata.symbol, metadata.name, metadata.address);
 
           return;
         }
