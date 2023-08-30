@@ -19,6 +19,7 @@ import { SwapItemModel } from './swap-item.model';
 import { SwapOptionModel } from './swap-option.model';
 import { UserModel } from './user.model';
 import { ChainId } from '../../swap/entities/swap-platform-config.entity';
+import { NFTMetadata } from '../../swap/entities/token-metadata.entity';
 
 @Entity({
   name: 'swap_proposal',
@@ -88,13 +89,34 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
     }: SwapItemModel) => {
       keyWords.push(contractAddress);
       if (type === SwapItemType.NFT) {
-        keyWords.push(
-          nftMetadata['nft_name'],
-          nftMetadata['nft_collection_name'],
-        );
-        const attributes = nftMetadata?.['nft_attributes']?.['attributes'];
-        if (Array.isArray(attributes)) {
-          attributes.forEach(({ value }) => keyWords.push(value));
+        // legacy data
+        if (nftMetadata['nft_name']) {
+          keyWords.push(
+            nftMetadata['nft_name'],
+            nftMetadata['nft_collection_name'],
+          );
+          const attributes = nftMetadata?.['nft_attributes']?.['attributes'];
+          if (Array.isArray(attributes)) {
+            attributes.forEach(({ value }) => keyWords.push(value));
+          }
+
+          return;
+        }
+
+        // handle new data format
+        if (nftMetadata['metadata']) {
+          const metadata = nftMetadata['metadata'] as NFTMetadata;
+
+          keyWords.push(
+            metadata.name,
+            metadata.collectionName,
+            metadata.address,
+          );
+
+          const attributes = metadata?.attributes;
+          attributes.forEach(({ value }) => keyWords.push(value.toString()));
+
+          return;
         }
       }
     };

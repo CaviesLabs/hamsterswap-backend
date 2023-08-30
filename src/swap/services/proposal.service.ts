@@ -129,6 +129,7 @@ export class ProposalService {
         filter[key] === undefined ? delete filter[key] : {},
       );
     });
+
     return filters.filter((f) => Object.keys(f).length > 0);
   }
 
