@@ -23,6 +23,7 @@ import {
   NFTMetadata,
   TokenMetadata,
 } from '../../swap/entities/token-metadata.entity';
+import { RegistryProvider } from '../../providers/registry.provider';
 
 @Entity({
   name: 'swap_proposal',
@@ -110,11 +111,18 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
         if (nftMetadata['metadata']) {
           const metadata = nftMetadata['metadata'] as NFTMetadata;
 
+          const collection = new RegistryProvider().findCollection(
+            this.chainId,
+            metadata.address,
+          );
+
           keyWords.push(
             metadata.id,
             metadata.name,
             metadata.collectionName,
             metadata.address,
+            collection.collectionId,
+            collection.name,
           );
 
           const attributes = metadata?.attributes;
@@ -132,6 +140,15 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
           const metadata = nftMetadata['metadata'] as TokenMetadata;
 
           keyWords.push(metadata.symbol, metadata.name, metadata.address);
+
+          const registry = new RegistryProvider().findToken(
+            this.chainId,
+            metadata.address,
+          );
+
+          if (registry) {
+            keyWords.push(registry.name);
+          }
 
           return;
         }
