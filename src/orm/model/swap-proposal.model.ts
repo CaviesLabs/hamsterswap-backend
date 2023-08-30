@@ -121,8 +121,8 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
             metadata.name,
             metadata.collectionName,
             metadata.address,
-            collection.collectionId,
-            collection.name,
+            collection?.collectionId,
+            collection?.name,
           );
 
           const attributes = metadata?.attributes;
