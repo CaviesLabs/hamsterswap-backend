@@ -79,7 +79,7 @@ export class EvmSyncProposalService {
     );
   }
 
-  @Cron(CronExpression.EVERY_5_MINUTES)
+  @Cron(CronExpression.EVERY_MINUTE)
   public syncAllJobs() {
     return this.entityManager.transaction(async () => {
       const startedAt = DateTime.now();
@@ -101,17 +101,25 @@ export class EvmSyncProposalService {
           ),
           chainId: In([ChainId.Klaytn]),
         },
-        select: { id: true },
+        relations: { offerItems: true, swapOptions: { items: true } },
       });
 
-      for (const { id } of proposals) {
-        try {
-          await this.syncById(id);
-          console.log(`Synced completed for: ${id}`);
-        } catch (e) {
-          console.error(`ERROR: Sync proposal failed, id: ${id}`, e);
-        }
-      }
+      const onChainProposals =
+        await this.evmParser.fetchMultipleProposalsFromOnChainData(
+          ChainId.Klaytn,
+          proposals,
+        );
+
+      await Promise.all(
+        onChainProposals.map(async (proposal) => {
+          try {
+            await this.entityManager.save(SwapProposalModel, proposal, {});
+            console.log(`Synced completed for: ${proposal.id}`);
+          } catch (e) {
+            console.log('ERROR: Sync proposal failed', e);
+          }
+        }),
+      );
 
       const endedAt = DateTime.now();
       const { seconds } = endedAt.diff(startedAt, 'seconds').toObject();
