@@ -4,7 +4,6 @@ import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
 
 import { Entity } from '../../../providers/evm-swap-program/lib/contracts/Swap.sol/HamsterSwap';
-import SwapItemStructOutput = Entity.SwapItemStructOutput;
 import { RegistryProvider } from '../../../providers/registry.provider';
 import { EvmMetadataService } from './evm-metadata.service';
 import { EvmSwapProvider } from '../../../providers/evm-swap-program/swap.provider';
@@ -22,6 +21,7 @@ import { SwapItemModel } from '../../../orm/model/swap-item.model';
 import { SwapOptionEntity } from '../../entities/swap-option.entity';
 import { SwapProposalModel } from '../../../orm/model/swap-proposal.model';
 import { SwapOptionModel } from '../../../orm/model/swap-option.model';
+import SwapItemStructOutput = Entity.SwapItemStructOutput;
 import SwapOptionStructOutput = Entity.SwapOptionStructOutput;
 
 /**
@@ -139,7 +139,6 @@ export class EvmParser {
     onChainSwapItems: SwapItemStructOutput[],
     onChainSwapOptions: SwapOptionStructOutput[],
   ) {
-    console.log({ existedProposal });
     const proposal = new SwapProposalEntity();
     Object.assign(proposal, existedProposal);
 
@@ -172,7 +171,10 @@ export class EvmParser {
       proposal.fulfilledWithOptionId = onChainProposal.fulfilledByOptionId;
     }
 
-    if (proposal.expiredAt < new Date()) {
+    if (
+      proposal.expiredAt < new Date() &&
+      proposal.status == SwapProposalStatus.DEPOSITED
+    ) {
       proposal.status = SwapProposalStatus.EXPIRED;
     }
 
