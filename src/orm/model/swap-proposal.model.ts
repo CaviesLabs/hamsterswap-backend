@@ -114,7 +114,9 @@ export class SwapProposalModel extends BaseModel implements SwapProposalEntity {
           );
 
           const attributes = metadata?.attributes;
-          attributes.forEach(({ value }) => keyWords.push(value.toString()));
+          if (attributes) {
+            attributes.forEach(({ value }) => keyWords.push(value.toString()));
+          }
 
           return;
         }
