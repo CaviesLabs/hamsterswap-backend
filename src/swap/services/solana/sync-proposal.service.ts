@@ -52,7 +52,7 @@ export class SyncSwapProposalService {
       item.nftMetadata = metadata;
     }
 
-    return this.entityManager.create<SwapItemModel>(SwapItemModel, item);
+    return this.entityManager.create(SwapItemModel, item);
   }
 
   private async getSwapItems(
@@ -80,7 +80,7 @@ export class SyncSwapProposalService {
           isIdsMatched(ocSwapOption.id, id),
         );
 
-        const option = this.entityManager.create<SwapOptionModel>(
+        const option = this.entityManager.create(
           SwapOptionModel,
           new OCSwapOptionDto(ocSwapOption, dbSwapOption),
         );
@@ -106,7 +106,7 @@ export class SyncSwapProposalService {
 
     const ocProposal = await this.swapProgramProvider.getSwapProposal(id);
 
-    const proposal = this.entityManager.create<SwapProposalModel>(
+    const proposal = this.entityManager.create(
       SwapProposalModel,
       new OCSwapProposalDto(ocProposal, proposalExisted),
     );

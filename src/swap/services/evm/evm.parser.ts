@@ -124,10 +124,7 @@ export class EvmParser {
                 ),
         } as SwapItemEntity;
 
-        return this.entityManager.create<SwapItemModel>(
-          SwapItemModel,
-          onChainSwapItem,
-        );
+        return this.entityManager.create(SwapItemModel, onChainSwapItem);
       }),
     );
   }
@@ -156,10 +153,7 @@ export class EvmParser {
           items: await this.getSwapItems(chainId, option.askingItems),
         } as SwapOptionEntity;
 
-        return this.entityManager.create<SwapOptionModel>(
-          SwapOptionModel,
-          onChainSwapOption,
-        );
+        return this.entityManager.create(SwapOptionModel, onChainSwapOption);
       }),
     );
 
@@ -178,10 +172,7 @@ export class EvmParser {
       proposal.status = SwapProposalStatus.EXPIRED;
     }
 
-    const model = this.entityManager.create<SwapProposalModel>(
-      SwapProposalModel,
-      proposal,
-    );
+    const model = this.entityManager.create(SwapProposalModel, proposal);
     model.buildSearchText();
 
     return model;
