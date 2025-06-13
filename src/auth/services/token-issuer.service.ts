@@ -86,6 +86,7 @@ export class TokenIssuerService {
      */
     const duration = Number(
       ms(
+        // @ts-ignore
         config.expiresIn || String(this.jwtProvider.getSignOptions().expiresIn),
       ),
     );
