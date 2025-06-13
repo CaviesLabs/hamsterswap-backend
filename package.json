@@ -1,6 +1,6 @@
 {
   "engines": {
-    "node": "18",
+    "node": "20",
     "npm": "8.8.0"
   },
   "name": "hamsterpassport",
