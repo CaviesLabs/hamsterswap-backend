@@ -78,5 +78,5 @@ export class EVMChainConfig {
 
 export class ChainConfigEntity {
   [ChainId.Solana]: SolanaConfig;
-  [ChainId.Klaytn]: EVMChainConfig;
+  // [ChainId.Klaytn]: EVMChainConfig;
 }
