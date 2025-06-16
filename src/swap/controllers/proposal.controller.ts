@@ -102,6 +102,11 @@ export class ProposalController {
     @Param('chainId') chainId: ChainId,
     @Param('ownerAddress') ownerAddress: string,
   ) {
+    if (chainId === ChainId.Solana) {
+      return this.syncSwapProposalService.syncByAddress(
+        ownerAddress,
+      );
+    }
     return this.evmSyncProposalService.syncByAddress(
       ownerAddress,
       chainId as ChainId,

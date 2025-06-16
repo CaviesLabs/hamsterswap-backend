@@ -19,6 +19,7 @@ import { SwapItemType } from '../../entities/swap-item.entity';
 import { TokenMetadataService } from './token-metadata.service';
 import { SwapProposalStatus } from '../../entities/swap-proposal.entity';
 import { DateTime } from 'luxon';
+import { ChainId } from 'src/swap/entities/swap-platform-config.entity';
 
 @Injectable()
 export class SyncSwapProposalService {
@@ -135,6 +136,35 @@ export class SyncSwapProposalService {
     proposal.buildSearchText();
 
     await this.swapProposalRepo.save(proposal);
+  }
+
+  public async syncByAddress(
+    ownerAddress: string,
+  ): Promise<void> {
+    const proposals = await this.swapProposalRepo.find({
+      where: [
+        { ownerAddress, chainId: ChainId.Solana },
+        { fulfillBy: ownerAddress, chainId: ChainId.Solana },   
+      ],
+    });
+
+    if (proposals.length === 0) {
+      console.warn(
+        `No proposals found for address: ${ownerAddress} on chain: ${ChainId.Solana}`,
+      );
+      return;
+    }
+
+    await Promise.all(
+      proposals.map(async (proposal) => {
+        try {
+          await this.syncById(proposal.id);
+          console.log(`Synced completed for: ${proposal.id}`);
+        } catch (e) {
+          console.error(`ERROR: Sync proposal failed, id: ${proposal.id}`, e);
+        }
+      }),
+    );
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
